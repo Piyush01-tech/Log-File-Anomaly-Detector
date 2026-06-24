@@ -1,0 +1,62 @@
+# =============================================================================
+# .gitignore — Log-File-Anomaly-Detector
+# =============================================================================
+# This file prevents accidental commits of secrets, binaries, generated
+# files, and environment-specific artifacts.
+# =============================================================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# --- Virtual Environments ---
+venv/
+.venv/
+env/
+ENV/
+
+# --- Environment Variables (NEVER commit secrets) ---
+.env
+*.env
+
+# --- Trained ML Models (large binary files — store in artifact registry) ---
+ml_engine/models/*.joblib
+ml_engine/models/*.pkl
+
+# --- Data Files (can be large; use DVC or S3 in production) ---
+data/raw_logs/*.evtx
+data/processed/*.csv
+data/processed/*.parquet
+
+# --- Django ---
+web_dashboard/db.sqlite3
+web_dashboard/staticfiles/
+web_dashboard/mediafiles/
+
+# --- IDE ---
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Coverage & Test Reports ---
+.coverage
+htmlcov/
+.pytest_cache/

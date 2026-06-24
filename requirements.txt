@@ -1,0 +1,38 @@
+# =============================================================================
+# Log-File-Anomaly-Detector — Requirements
+# =============================================================================
+# Pin ALL versions to guarantee reproducibility across environments.
+# Update versions deliberately, never automatically.
+#
+# Install with:
+#   pip install -r requirements.txt
+# =============================================================================
+
+# --- Core Web Frameworks ---
+Flask==3.0.3
+Django==5.0.6
+
+# --- ML & Data Science ---
+scikit-learn==1.5.0
+pandas==2.2.2
+numpy==1.26.4
+joblib==1.4.2
+
+# --- EVTX Parsing ---
+python-evtx==0.7.4
+
+# --- HTTP Client (Django → Flask communication) ---
+requests==2.32.3
+
+# --- Environment Management ---
+python-dotenv==1.0.1
+
+# --- Django Extras ---
+django-crispy-forms==2.1
+crispy-bootstrap5==2024.2
+
+# --- Development & Utilities ---
+Werkzeug==3.0.3         # Required by Flask
+
+# --- Optional: WSGI server for production ---
+# gunicorn==22.0.0      # Uncomment when deploying to Linux

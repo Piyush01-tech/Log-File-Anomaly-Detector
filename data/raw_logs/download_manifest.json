@@ -1,0 +1,367 @@
+{
+  "repository": "sbousseaden/EVTX-ATTACK-SAMPLES",
+  "generated_at": "2026-06-24T15:57:02Z",
+  "total_files": 45,
+  "files": [
+    {
+      "tactic": "Credential Access",
+      "filename": "4794_DSRM_password_change_t1098.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Credential Access\\4794_DSRM_password_change_t1098.evtx",
+      "status": "downloaded",
+      "sha256": "6858de83024b72dff54d75b882103f760eaa85847831578abab78ab5c7f62061"
+    },
+    {
+      "tactic": "Credential Access",
+      "filename": "ACL_ForcePwd_SPNAdd_User_Computer_Accounts.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Credential Access\\ACL_ForcePwd_SPNAdd_User_Computer_Accounts.evtx",
+      "status": "downloaded",
+      "sha256": "f09f993909deb7acdae4c4f6f48e5a8447487e89437873fd8e653436a3dce36c"
+    },
+    {
+      "tactic": "Credential Access",
+      "filename": "CA_4624_4625_LogonType2_LogonProc_chrome.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Credential Access\\CA_4624_4625_LogonType2_LogonProc_chrome.evtx",
+      "status": "downloaded",
+      "sha256": "75f199b68d473172705bf874720b01820317fdd7aa4843545c98720dd6de197f"
+    },
+    {
+      "tactic": "Credential Access",
+      "filename": "CA_DCSync_4662.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Credential Access\\CA_DCSync_4662.evtx",
+      "status": "downloaded",
+      "sha256": "679b2ff27af6c932c07bf3e81391e455fae98e69bf3aff0f524e31aadc418131"
+    },
+    {
+      "tactic": "Credential Access",
+      "filename": "CA_Mimikatz_Memssp_Default_Logs_Sysmon_11.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Credential Access\\CA_Mimikatz_Memssp_Default_Logs_Sysmon_11.evtx",
+      "status": "downloaded",
+      "sha256": "a5c52377c8a430fc4838fdc9b7c1638125b95c618d7efa930be0562124e0bfba"
+    },
+    {
+      "tactic": "Defense Evasion",
+      "filename": "DE_104_system_log_cleared.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Defense Evasion\\DE_104_system_log_cleared.evtx",
+      "status": "downloaded",
+      "sha256": "5579cdca073ee4864ea82d656aa2d25400b5c1e85b8e688db5d85f6dc558c2af"
+    },
+    {
+      "tactic": "Defense Evasion",
+      "filename": "DE_1102_security_log_cleared.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Defense Evasion\\DE_1102_security_log_cleared.evtx",
+      "status": "downloaded",
+      "sha256": "a0615707b547a2ac254688fd725c3c590f62440fc9b7947c2843dd40498a39e8"
+    },
+    {
+      "tactic": "Defense Evasion",
+      "filename": "DE_BYOV_Zam64_CA_Memdump_sysmon_7_10.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Defense Evasion\\DE_BYOV_Zam64_CA_Memdump_sysmon_7_10.evtx",
+      "status": "downloaded",
+      "sha256": "329b2a8c70d43789e03bad581e971c4f84aeb2852c5a7c960fa57454225e5199"
+    },
+    {
+      "tactic": "Defense Evasion",
+      "filename": "DE_EventLog_Service_Crashed.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Defense Evasion\\DE_EventLog_Service_Crashed.evtx",
+      "status": "downloaded",
+      "sha256": "97637b9c858afe52cd644108b30f0aaaeea8837db900b06e40c00c9bc45a3963"
+    },
+    {
+      "tactic": "Defense Evasion",
+      "filename": "DE_Fake_ComputerAccount_4720.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Defense Evasion\\DE_Fake_ComputerAccount_4720.evtx",
+      "status": "downloaded",
+      "sha256": "8b0c2b1998bbd6292fbd23c2fbd954ed2a0db5ae38f39493e718262b215b4da9"
+    },
+    {
+      "tactic": "Discovery",
+      "filename": "4799_remote_local_groups_enumeration.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Discovery\\4799_remote_local_groups_enumeration.evtx",
+      "status": "downloaded",
+      "sha256": "c998491414379a4cd7b2f2d6025b7e4c1d1e13e8c31c623368d32b7acebcf93f"
+    },
+    {
+      "tactic": "Discovery",
+      "filename": "Discovery_Remote_System_NamedPipes_Sysmon_18.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Discovery\\Discovery_Remote_System_NamedPipes_Sysmon_18.evtx",
+      "status": "downloaded",
+      "sha256": "40d36563e61b022c7115b5723a796cb138b60eb61d85d9bcf8fc8dfdf0cf02f9"
+    },
+    {
+      "tactic": "Discovery",
+      "filename": "dicovery_4661_net_group_domain_admins_target.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Discovery\\dicovery_4661_net_group_domain_admins_target.evtx",
+      "status": "downloaded",
+      "sha256": "3e1451e5d8845360044e11807219073a289c9183142a7032bbee2796d2577a37"
+    },
+    {
+      "tactic": "Discovery",
+      "filename": "discovery_UEFI_Settings_rweverything_sysmon_6.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Discovery\\discovery_UEFI_Settings_rweverything_sysmon_6.evtx",
+      "status": "downloaded",
+      "sha256": "1f1903ca9c4a89b9e463c0c0de671da0862b0aa06af9145cfabd0255468b5eba"
+    },
+    {
+      "tactic": "Discovery",
+      "filename": "discovery_bloodhound.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Discovery\\discovery_bloodhound.evtx",
+      "status": "downloaded",
+      "sha256": "34f153b6384a6842fe4c635ec224f7551aef2c69b89267715413fd7d00690eb0"
+    },
+    {
+      "tactic": "Execution",
+      "filename": "Exec_sysmon_meterpreter_reversetcp_msipackage.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Execution\\Exec_sysmon_meterpreter_reversetcp_msipackage.evtx",
+      "status": "downloaded",
+      "sha256": "328ec1b4b6c531af991a2de2221900ec93db1853f7446f61c7e3c9bf9bf052e3"
+    },
+    {
+      "tactic": "Execution",
+      "filename": "Exec_via_cpl_Application_Experience_EventID_17_ControlPanelApplet.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Execution\\Exec_via_cpl_Application_Experience_EventID_17_ControlPanelApplet.evtx",
+      "status": "downloaded",
+      "sha256": "435da66e3edbb223208cdd31f2aff37ffb3037b091d728fa427d5067022fcc92"
+    },
+    {
+      "tactic": "Execution",
+      "filename": "Sysmon_Exec_CompiledHTML.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Execution\\Sysmon_Exec_CompiledHTML.evtx",
+      "status": "downloaded",
+      "sha256": "c139f6920de2f2712137589196ab733d2566cd211e4f8dca62fd7f35a88fb21e"
+    },
+    {
+      "tactic": "Execution",
+      "filename": "Sysmon_meterpreter_ReflectivePEInjection_to_notepad_.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Execution\\Sysmon_meterpreter_ReflectivePEInjection_to_notepad_.evtx",
+      "status": "downloaded",
+      "sha256": "872e959cb691d3e3d3a48068c02c7fb579c2d818a007fbd2831f6616bb8c7082"
+    },
+    {
+      "tactic": "Execution",
+      "filename": "evasion_execution_imageload_wuauclt_lolbas.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Execution\\evasion_execution_imageload_wuauclt_lolbas.evtx",
+      "status": "downloaded",
+      "sha256": "6e2101b499829c9c7b273309821d63addd0a5020fd1069b29d9bd146586814e2"
+    },
+    {
+      "tactic": "Lateral Movement",
+      "filename": "DFIR_RDP_Client_TimeZone_RdpCoreTs_104_example.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Lateral Movement\\DFIR_RDP_Client_TimeZone_RdpCoreTs_104_example.evtx",
+      "status": "downloaded",
+      "sha256": "b0d91162d7e3b211968ab9d797374a4576cc5cb233757e4f62776a60eb456e9d"
+    },
+    {
+      "tactic": "Lateral Movement",
+      "filename": "ImpersonateUser-via local Pass The Hash Sysmon and Security.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Lateral Movement\\ImpersonateUser-via local Pass The Hash Sysmon and Security.evtx",
+      "status": "downloaded",
+      "sha256": "b3cdcbad24144417123becbc62d73d7954e832657d92f3a6b63e7b61291afede"
+    },
+    {
+      "tactic": "Lateral Movement",
+      "filename": "LM_4624_mimikatz_sekurlsa_pth_source_machine.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Lateral Movement\\LM_4624_mimikatz_sekurlsa_pth_source_machine.evtx",
+      "status": "downloaded",
+      "sha256": "bbfd87cacdd56a9135de1838666937cd6c74daba47b366bba0c11f95ce97f461"
+    },
+    {
+      "tactic": "Lateral Movement",
+      "filename": "LM_5145_Remote_FileCopy.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Lateral Movement\\LM_5145_Remote_FileCopy.evtx",
+      "status": "downloaded",
+      "sha256": "3806a2b6662d82e13969939251539e10532bda11f10a5ed6c3565b9c0679907e"
+    },
+    {
+      "tactic": "Lateral Movement",
+      "filename": "LM_DCOM_MSHTA_LethalHTA_Sysmon_3_1.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Lateral Movement\\LM_DCOM_MSHTA_LethalHTA_Sysmon_3_1.evtx",
+      "status": "downloaded",
+      "sha256": "155cc5da10cb63a7fb69747c440796be17d1f4230ba24e7cb45423bdd9c368b6"
+    },
+    {
+      "tactic": "Persistence",
+      "filename": "DACL_DCSync_Right_Powerview_ Add-DomainObjectAcl.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Persistence\\DACL_DCSync_Right_Powerview_ Add-DomainObjectAcl.evtx",
+      "status": "downloaded",
+      "sha256": "3acc52d1c27a22db5cf7def3c317caf1c2f44b9db837e676815f9fa233e5a314"
+    },
+    {
+      "tactic": "Persistence",
+      "filename": "Network_Service_Guest_added_to_admins_4732.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Persistence\\Network_Service_Guest_added_to_admins_4732.evtx",
+      "status": "downloaded",
+      "sha256": "9619b9d9d7bb8a277080167ff639fd9162e3d88d61d674cf1606beadce17ea5a"
+    },
+    {
+      "tactic": "Persistence",
+      "filename": "Persistence_Shime_Microsoft-Windows-Application-Experience_Program-Telemetry_500.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Persistence\\Persistence_Shime_Microsoft-Windows-Application-Experience_Program-Telemetry_500.evtx",
+      "status": "downloaded",
+      "sha256": "f13ef5a54ea84140024e30f968ac00e5ce4b4434426f66fafa4479b01d92832a"
+    },
+    {
+      "tactic": "Persistence",
+      "filename": "Persistence_Winsock_Catalog Change EventId_1.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Persistence\\Persistence_Winsock_Catalog Change EventId_1.evtx",
+      "status": "downloaded",
+      "sha256": "c53b6f9d958302626c3a7c217b77d49dc5e239210820c3448c60667a41325e3f"
+    },
+    {
+      "tactic": "Persistence",
+      "filename": "evasion_persis_hidden_run_keyvalue_sysmon_13.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Persistence\\evasion_persis_hidden_run_keyvalue_sysmon_13.evtx",
+      "status": "downloaded",
+      "sha256": "b8df8232d917fed223e2bf9abebb249489f84c6204c40b72dab6a74157d6f8bd"
+    },
+    {
+      "tactic": "Privilege Escalation",
+      "filename": "4624 LT3 AnonymousLogon Localhost - JuicyPotato.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Privilege Escalation\\4624 LT3 AnonymousLogon Localhost - JuicyPotato.evtx",
+      "status": "downloaded",
+      "sha256": "b058ae02bbed96921cc0bb65088a3692b4ccd1c5b7aa65a318df353f09fcf6da"
+    },
+    {
+      "tactic": "Privilege Escalation",
+      "filename": "4765_sidhistory_add_t1178.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Privilege Escalation\\4765_sidhistory_add_t1178.evtx",
+      "status": "downloaded",
+      "sha256": "2e1aadc0097be6dc61803134c7fa8a4e0ddc33a2aa9c063f8a65cee3c14acade"
+    },
+    {
+      "tactic": "Privilege Escalation",
+      "filename": "CVE-2020-0796_SMBV3Ghost_LocalPrivEsc_Sysmon_3_1_10.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Privilege Escalation\\CVE-2020-0796_SMBV3Ghost_LocalPrivEsc_Sysmon_3_1_10.evtx",
+      "status": "downloaded",
+      "sha256": "58c0e61d14c25300c9473b842cec25cb5fb1dd517adf9259f3c3460031a97c9a"
+    },
+    {
+      "tactic": "Privilege Escalation",
+      "filename": "EfsPotato_sysmon_17_18_privesc_seimpersonate_to_system.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Privilege Escalation\\EfsPotato_sysmon_17_18_privesc_seimpersonate_to_system.evtx",
+      "status": "downloaded",
+      "sha256": "b90b44749a59f8b45827de083e3276d0635310077d51100f1110bf34e555bfc0"
+    },
+    {
+      "tactic": "Privilege Escalation",
+      "filename": "Invoke_TokenDuplication_UAC_Bypass4624.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Privilege Escalation\\Invoke_TokenDuplication_UAC_Bypass4624.evtx",
+      "status": "downloaded",
+      "sha256": "8e8a735ccfa261b60607d907fb825dc231d067b8bd3da5a32cdabc810ca8abfe"
+    },
+    {
+      "tactic": "AutomatedTestingTools",
+      "filename": "PanacheSysmon_vs_AtomicRedTeam01.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\AutomatedTestingTools\\PanacheSysmon_vs_AtomicRedTeam01.evtx",
+      "status": "downloaded",
+      "sha256": "6903dff9f218fa027c704c8c445b74e08b952c8d71be79bd0327f1e792d4aa01"
+    },
+    {
+      "tactic": "AutomatedTestingTools",
+      "filename": "WinDefender_Events_1117_1116_AtomicRedTeam.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\AutomatedTestingTools\\WinDefender_Events_1117_1116_AtomicRedTeam.evtx",
+      "status": "downloaded",
+      "sha256": "d7bebbe4a9bd6fdcfe53e019e7386a983f89c2fc7919fc51ecf249453ed60780"
+    },
+    {
+      "tactic": "AutomatedTestingTools",
+      "filename": "panache_sysmon_vs_EDRTestingScript.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\AutomatedTestingTools\\panache_sysmon_vs_EDRTestingScript.evtx",
+      "status": "downloaded",
+      "sha256": "9c1371a0632de15095b6ffe2e38991b764d4beaddb1722178e93aa476f83f52f"
+    },
+    {
+      "tactic": "Command and Control",
+      "filename": "DE_RDP_Tunnel_5156.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Command and Control\\DE_RDP_Tunnel_5156.evtx",
+      "status": "downloaded",
+      "sha256": "25853cab2d474dd52159d45e8c7b139c27b55767be558447ccbc6f494daec786"
+    },
+    {
+      "tactic": "Command and Control",
+      "filename": "DE_RDP_Tunneling_4624.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Command and Control\\DE_RDP_Tunneling_4624.evtx",
+      "status": "downloaded",
+      "sha256": "2668d3d7f0505ad453affcb9e2b7206617cf1ec1e5a212bd8f191eb8523c0ab1"
+    },
+    {
+      "tactic": "Command and Control",
+      "filename": "DE_RDP_Tunneling_TerminalServices-RemoteConnectionManagerOperational_1149.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Command and Control\\DE_RDP_Tunneling_TerminalServices-RemoteConnectionManagerOperational_1149.evtx",
+      "status": "downloaded",
+      "sha256": "b9d6d1a3af56501120d1d6b4dbe3d1fc600d88844f255208b4eff0f1e250b00f"
+    },
+    {
+      "tactic": "Command and Control",
+      "filename": "DE_sysmon-3-rdp-tun.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Command and Control\\DE_sysmon-3-rdp-tun.evtx",
+      "status": "downloaded",
+      "sha256": "1d1eb55d1b7c785db26e19b0d50b9eb4a7928671e4edeb82ea5182cb834c874a"
+    },
+    {
+      "tactic": "Command and Control",
+      "filename": "bits_openvpn.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Command and Control\\bits_openvpn.evtx",
+      "status": "downloaded",
+      "sha256": "9dc80ef8dd521d443016559ee5b0e55837a59bfcc9d790b20b72c38a9eddc40e"
+    },
+    {
+      "tactic": "Other",
+      "filename": "maldoc_mshta_via_shellbrowserwind_rundll32.evtx",
+      "size_bytes": 69632,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Other\\maldoc_mshta_via_shellbrowserwind_rundll32.evtx",
+      "status": "downloaded",
+      "sha256": "fd59102d39891a81ee0e002bec2a855998c57e6439a10608fd9f4b12861e34a5"
+    },
+    {
+      "tactic": "Other",
+      "filename": "rdpcorets_148_mst120_bluekeep_rpdscan_full.evtx",
+      "size_bytes": 1118208,
+      "dest_path": "C:\\Users\\Niva\\.gemini\\antigravity\\scratch\\Log-File-Anomaly-Detector\\data\\raw_logs\\Other\\rdpcorets_148_mst120_bluekeep_rpdscan_full.evtx",
+      "status": "downloaded",
+      "sha256": "fdd890565a1c0e5a8efd2a554c18acf32d43852f328abde89edda0031e999b61"
+    }
+  ]
+}
