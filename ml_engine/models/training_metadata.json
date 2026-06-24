@@ -1,0 +1,144 @@
+{
+  "training_timestamp": "2026-06-24T18:36:25.889631+00:00",
+  "phase": "Phase 5 \u2014 Model Training",
+  "hyperparameters": {
+    "algorithm": "IsolationForest",
+    "n_estimators": 200,
+    "contamination": 0.05,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "feature_columns": [
+    "total_events",
+    "failed_logins",
+    "successful_logins",
+    "admin_events",
+    "process_creation_events",
+    "new_user_events",
+    "service_install_events",
+    "group_membership_changes",
+    "audit_log_clears",
+    "unique_users",
+    "unique_processes",
+    "unique_ips",
+    "failure_rate",
+    "admin_ratio",
+    "process_ratio"
+  ],
+  "dataset": {
+    "source_file": "C:\\Users\\daspi\\Desktop\\log anomaly detection\\Log-File-Anomaly-Detector\\data\\processed\\features.csv",
+    "total_rows": 360,
+    "n_features": 15,
+    "feature_statistics": {
+      "total_events": {
+        "min": 4.0,
+        "max": 27.0,
+        "mean": 13.888889,
+        "std": 3.873902
+      },
+      "failed_logins": {
+        "min": 0.0,
+        "max": 8.0,
+        "mean": 2.141667,
+        "std": 1.498165
+      },
+      "successful_logins": {
+        "min": 0.0,
+        "max": 10.0,
+        "mean": 4.177778,
+        "std": 2.076948
+      },
+      "admin_events": {
+        "min": 0.0,
+        "max": 6.0,
+        "mean": 1.341667,
+        "std": 1.098207
+      },
+      "process_creation_events": {
+        "min": 0.0,
+        "max": 8.0,
+        "mean": 2.875,
+        "std": 1.617604
+      },
+      "new_user_events": {
+        "min": 0.0,
+        "max": 4.0,
+        "mean": 0.452778,
+        "std": 0.69056
+      },
+      "service_install_events": {
+        "min": 0.0,
+        "max": 5.0,
+        "mean": 1.302778,
+        "std": 1.127026
+      },
+      "group_membership_changes": {
+        "min": 0.0,
+        "max": 4.0,
+        "mean": 0.65,
+        "std": 0.771895
+      },
+      "audit_log_clears": {
+        "min": 0.0,
+        "max": 5.0,
+        "mean": 0.947222,
+        "std": 0.970307
+      },
+      "unique_users": {
+        "min": 3.0,
+        "max": 6.0,
+        "mean": 5.411111,
+        "std": 0.737298
+      },
+      "unique_processes": {
+        "min": 2.0,
+        "max": 5.0,
+        "mean": 4.730556,
+        "std": 0.5086
+      },
+      "unique_ips": {
+        "min": 2.0,
+        "max": 5.0,
+        "mean": 4.713889,
+        "std": 0.515851
+      },
+      "failure_rate": {
+        "min": 0.0,
+        "max": 0.5,
+        "mean": 0.154907,
+        "std": 0.101784
+      },
+      "admin_ratio": {
+        "min": 0.0,
+        "max": 0.307692,
+        "mean": 0.095922,
+        "std": 0.073029
+      },
+      "process_ratio": {
+        "min": 0.0,
+        "max": 0.538462,
+        "mean": 0.208382,
+        "std": 0.110333
+      }
+    }
+  },
+  "training_scores": {
+    "n_samples": 360,
+    "n_anomalies": 18,
+    "n_normal": 342,
+    "anomaly_rate": 0.05,
+    "score_min": -0.121264,
+    "score_max": 0.149887,
+    "score_mean": 0.077747,
+    "score_std": 0.040311,
+    "score_median": 0.084685
+  },
+  "artifacts": {
+    "model_file": "C:\\Users\\daspi\\Desktop\\log anomaly detection\\Log-File-Anomaly-Detector\\ml_engine\\models\\isolation_model.joblib",
+    "model_sha256": "8fc52ea2a42645280242ea141d0c317097e70fce0752642bfd5be85d4978268e",
+    "model_size_bytes": 2594073,
+    "scaler_file": "C:\\Users\\daspi\\Desktop\\log anomaly detection\\Log-File-Anomaly-Detector\\ml_engine\\models\\scaler.joblib",
+    "scaler_sha256": "97b4887b47d924ee2e11766f9c14bc18f0caa34075bc983e2698138f4f03ffb8",
+    "scaler_size_bytes": 1271
+  }
+}

@@ -98,7 +98,16 @@ class Config:
         1102,   # Audit log cleared
     ]
 
+    # Standard filenames for inter-phase data exchange
+    PARSED_EVENTS_FILENAME: str = "parsed_events.csv"
+    FEATURES_FILENAME: str = "features.csv"
+
+    # Behavioral window frequency for feature aggregation
+    # 'h' = hourly windows; can be changed to '30min', '2h', etc.
+    FEATURE_WINDOW_FREQ: str = "h"
+
     # Column names for the feature matrix (must match feature_engineering.py)
+    # Phase 4 — 15 features: 12 counts + 3 ratios
     FEATURE_COLUMNS: list = [
         "total_events",
         "failed_logins",
@@ -107,9 +116,14 @@ class Config:
         "process_creation_events",
         "new_user_events",
         "service_install_events",
+        "group_membership_changes",
+        "audit_log_clears",
         "unique_users",
         "unique_processes",
+        "unique_ips",
         "failure_rate",
+        "admin_ratio",
+        "process_ratio",
     ]
 
     # ------------------------------------------------------------------
