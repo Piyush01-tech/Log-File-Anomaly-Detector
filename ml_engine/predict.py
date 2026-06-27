@@ -45,13 +45,13 @@ OUTPUT:
     - metadata:        Model info and thresholds used
 
 USAGE (as a module):
-  from predict import AnomalyPredictor
+  from ml_engine.predict import AnomalyPredictor
   predictor = AnomalyPredictor()
   predictor.load_artifacts()
   result = predictor.predict(features_df)
 
 USAGE (as a script):
-  python ml_engine/predict.py
+  python -m ml_engine.predict
   → Scores data/processed/features.csv and prints results
 """
 
@@ -66,16 +66,9 @@ import joblib
 import numpy as np
 import pandas as pd
 
-# ---------------------------------------------------------------------------
-# Path Setup — allows running as both a module and a standalone script
-# ---------------------------------------------------------------------------
-
-_ML_ENGINE_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(_ML_ENGINE_DIR))
-
-from config import Config       # noqa: E402
-from logger import get_logger   # noqa: E402
-from train import FeatureScaler  # noqa: E402  — reuse, never re-fit
+from .config import Config
+from .logger import get_logger
+from .scaler import FeatureScaler  # decoupled from train.py — both import from scaler.py
 
 logger = get_logger(__name__)
 

@@ -39,12 +39,12 @@ OUTPUT:
   data/processed/features.csv        (Phase 4 output)
 
 USAGE (as a module):
-  from feature_engineering import FeatureEngineeringPipeline
+  from ml_engine.feature_engineering import FeatureEngineeringPipeline
   pipeline = FeatureEngineeringPipeline()
   features_df = pipeline.run()
 
 USAGE (as a script):
-  python ml_engine/feature_engineering.py
+  python -m ml_engine.feature_engineering
 """
 
 import sys
@@ -55,15 +55,8 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 
-# ---------------------------------------------------------------------------
-# Path Setup — allows running as both a module and a standalone script
-# ---------------------------------------------------------------------------
-
-_ML_ENGINE_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(_ML_ENGINE_DIR))
-
-from config import Config       # noqa: E402
-from logger import get_logger   # noqa: E402
+from .config import Config
+from .logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -797,8 +790,8 @@ def main() -> None:
             logger.error(
                 f"Input file not found: {input_path}\n"
                 f"Options:\n"
-                f"  1. Run Phase 3 first:  python ml_engine/parser.py\n"
-                f"  2. Generate test data: python ml_engine/feature_engineering.py --synthetic"
+                f"  1. Run Phase 3 first:  python -m ml_engine.parser\n"
+                f"  2. Generate test data: python -m ml_engine.feature_engineering --synthetic"
             )
             sys.exit(1)
 

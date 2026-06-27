@@ -50,7 +50,7 @@ def get_logger(
     """
     # Resolve log level
     try:
-        from config import Config
+        from .config import Config
         default_level = Config.LOG_LEVEL
     except ImportError:
         default_level = "INFO"

@@ -33,7 +33,7 @@ USAGE (as a module):
   df = parser.parse_all(Config.RAW_LOGS_DIR)
 
 USAGE (as a script):
-  python ml_engine/parser.py
+  python -m ml_engine.parser
   → writes data/processed/parsed_events.csv
 """
 
@@ -44,15 +44,8 @@ from pathlib import Path
 from typing import Optional
 import pandas as pd
 
-# ---------------------------------------------------------------------------
-# Path Setup — allows running as both a module and a standalone script
-# ---------------------------------------------------------------------------
-
-_ML_ENGINE_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(_ML_ENGINE_DIR))
-
-from config import Config       # noqa: E402
-from logger import get_logger   # noqa: E402
+from .config import Config
+from .logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -575,7 +568,7 @@ def main() -> None:
     Run the batch parser as a standalone script.
 
     Usage:
-        python ml_engine/parser.py
+        python -m ml_engine.parser
 
     Output:
         data/processed/parsed_events.csv
