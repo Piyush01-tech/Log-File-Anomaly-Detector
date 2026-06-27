@@ -78,11 +78,11 @@ python app.py
 | Phase | Description | Status |
 |---|---|---|
 | 1 | Project Setup & Folder Structure | ✅ Complete |
-| 2 | Dataset Collection | ⏳ Pending |
-| 3 | EVTX Parser | ⏳ Pending |
-| 4 | Feature Engineering | ⏳ Pending |
-| 5 | Model Training | ⏳ Pending |
-| 6 | Prediction Engine | ⏳ Pending |
+| 2 | Dataset Collection |  ✅ Complete |
+| 3 | EVTX Parser |  ✅ Complete |
+| 4 | Feature Engineering |  ✅ Complete |
+| 5 | Model Training |  ✅ Complete |
+| 6 | Prediction Engine |  ✅ Complete |
 | 7 | Flask REST API | ⏳ Pending |
 | 8 | Django Dashboard | ⏳ Pending |
 | 9 | Database Integration | ⏳ Pending |
