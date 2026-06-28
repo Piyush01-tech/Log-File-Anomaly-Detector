@@ -12,9 +12,9 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 
 ## 📊 Current Status
 
-- **Current Version**: `v0.3.0` (Post Phase 7B Flask REST API)
-- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API).
-- **Stubbed Modules**: `web_dashboard` (Django models, views, API client).
+- **Current Version**: `v0.4.0` (Post Phase 8 Django Database Models)
+- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations).
+- **Stubbed Modules**: `web_dashboard` (views, API client — awaiting Phase 9+).
 
 ### Completed Phases
 - **Phase 1**: Project Setup & Repository Initialization
@@ -25,9 +25,9 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 - **Phase 6**: Prediction Engine
 - **Phase 7A**: ML Engine Refactoring (Packaged `ml_engine`, decoupled training/prediction, created `AnalysisPipeline`).
 - **Phase 7B**: Flask REST API (Application factory, `/health`, `/analyze`, `/stats` endpoints, JSON serialization, error handling).
+- **Phase 8**: Django Database Models (User, AnalysisJob, Anomaly, AuditLog models, custom managers, admin interface, SQLite migrations).
 
 ### Pending Phases (Immediate)
-- **Phase 8**: Django Database Models Design & Implementation
 - **Phase 9**: Django Authentication & Role-Based Access Control
 - **Phase 10**: Upload & Analysis Workflow UI
 
@@ -79,9 +79,17 @@ The project strictly follows a **Decoupled Hybrid Architecture**:
 - `AnalysisPipeline` loaded once at startup, reused across requests.
 
 ### Current Django Pipeline
-- Stubbed models, views, and API client in `web_dashboard/dashboard/`.
-- Configured to use SQLite temporarily.
-- Awaiting Phase 8 (Models) and Phase 9 (Auth).
+- **Models (Phase 8)**: Four production-grade ORM models implemented in `web_dashboard/dashboard/models.py`:
+  - `User` — Custom user extending `AbstractUser` with RBAC roles (ADMIN, ANALYST).
+  - `AnalysisJob` — Tracks `.evtx` file upload lifecycle (PENDING → RUNNING → COMPLETED/FAILED).
+  - `Anomaly` — Stores individual anomalous time windows with scores, severity, and feature snapshots (JSONField).
+  - `AuditLog` — Append-only compliance log for user actions.
+- **Managers**: Custom `UserManager` in `managers.py` enforces role assignment during user creation.
+- **Admin**: Full Django admin registrations in `admin.py` with read-only AuditLog enforcement.
+- **App Config**: `DashboardConfig` in `apps.py` with `BigAutoField` default.
+- **Settings**: `AUTH_USER_MODEL = 'dashboard.User'`, `MEDIA_ROOT` configured for `.evtx` uploads.
+- **Database**: SQLite with initial migration applied (all 4 tables + 5 composite indexes).
+- Awaiting Phase 9 (Auth) and Phase 10 (Upload Workflow).
 
 ---
 

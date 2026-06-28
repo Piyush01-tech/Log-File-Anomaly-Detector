@@ -20,25 +20,24 @@ The Log File Anomaly Detector is being built in distinct phases. This roadmap ou
   - Built `AnomalyPredictor` to score incoming data against the trained baseline.
 - **Phase 7A: ML Engine Refactoring** 
   - Packaged the `ml_engine`, decoupled `train.py` from `predict.py`, and introduced `AnalysisPipeline`.
+- **Phase 7B: Flask REST API** 
+  - Application factory, `/health`, `/analyze`, `/stats` endpoints, JSON serialization, error handling.
 
 ---
 
 ## 🚧 Current Phase: Completed — Awaiting Approval
 
-### Phase 7B: Flask REST API ✅
-- [x] Implement `/health` endpoint.
-- [x] Implement `/analyze` endpoint integrating `AnalysisPipeline`.
-- [x] Implement `/stats` endpoint for model metadata.
-- [x] Add basic request validation and error handling.
+### Phase 8: Django Database Models ✅
+- [x] Implement schema for `User`, `AnalysisJob`, `Anomaly`, and `AuditLog`.
+- [x] Implement custom `UserManager` with role enforcement.
+- [x] Implement Django admin registrations for all models.
+- [x] Configure `AUTH_USER_MODEL` and `DashboardConfig`.
+- [x] Generate and apply SQLite migrations.
 
 
 ---
 
 ## 🔜 Near-Term Milestones (Web UI)
-
-### Phase 8: Django Database Models
-- [ ] Implement schema for `User`, `AnalysisJob`, `Anomaly`, and `AuditLog`.
-- [ ] Generate and apply SQLite migrations.
 
 ### Phase 9: Django Authentication
 - [ ] Setup login, logout, and password management.
