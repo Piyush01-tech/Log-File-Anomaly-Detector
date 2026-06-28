@@ -12,9 +12,9 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 
 ## 📊 Current Status
 
-- **Current Version**: `v0.5.0` (Post Phase 9A Django Authentication)
-- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations, authentication system).
-- **Stubbed Modules**: `web_dashboard` (RBAC/permissions, upload workflow, API client — awaiting Phase 9B+).
+- **Current Version**: `v0.6.0` (Post Phase 9B Django RBAC)
+- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations, authentication, RBAC/permissions).
+- **Stubbed Modules**: `web_dashboard` (Upload workflow, API client — awaiting Phase 10+).
 
 ### Completed Phases
 - **Phase 1**: Project Setup & Repository Initialization
@@ -27,9 +27,9 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 - **Phase 7B**: Flask REST API (Application factory, `/health`, `/analyze`, `/stats` endpoints, JSON serialization, error handling).
 - **Phase 8**: Django Database Models (User, AnalysisJob, Anomaly, AuditLog models, custom managers, admin interface, SQLite migrations).
 - **Phase 9A**: Django Authentication (Login, Logout, Registration, Profile, Password Change, Session Security, Audit Logging).
+- **Phase 9B**: Django Role-Based Access Control (Groups, Permissions, User Isolation).
 
 ### Pending Phases (Immediate)
-- **Phase 9B**: Django Role-Based Access Control (RBAC, Permissions)
 - **Phase 10**: Upload & Analysis Workflow UI
 
 *(See [ROADMAP.md](ROADMAP.md) for full phase details)*
@@ -102,7 +102,13 @@ The project strictly follows a **Decoupled Hybrid Architecture**:
   - Dark SOC-themed templates with Bootstrap 5 and auth-aware navigation.
   - AuditLog integration for LOGIN/LOGOUT events with IP capture.
   - Session security: HttpOnly cookies, SameSite, configurable timeout.
-- Awaiting Phase 9B (RBAC) and Phase 10 (Upload Workflow).
+- **Authorization (Phase 9B)**: Production-grade RBAC system:
+  - Django Groups: `Super Admin` and `Analyst`.
+  - 14 Custom Permissions covering all capabilities.
+  - Signal-based automatic group assignment on user save.
+  - View-level mixins (`RBACPermissionRequiredMixin`, `OwnershipMixin`) and decorators (`@permission_required_with_audit`).
+  - Middleware-enforced block on `/admin/` routes for non-admins.
+- Awaiting Phase 10 (Upload Workflow).
 
 ---
 

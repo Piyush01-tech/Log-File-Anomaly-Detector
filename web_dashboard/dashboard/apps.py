@@ -1,6 +1,6 @@
 """
-dashboard/apps.py
-==================
+dashboard/apps.py — Phase 9B
+==============================
 Django application configuration for the dashboard app.
 
 WHY THIS EXISTS:
@@ -9,6 +9,7 @@ WHY THIS EXISTS:
   - Provides a human-readable verbose name for the admin interface.
   - Critical for AUTH_USER_MODEL resolution — Django needs the
     AppConfig to locate our custom User model.
+  - Registers signals in ready() for RBAC user-group sync (Phase 9B).
 """
 
 from django.apps import AppConfig
@@ -27,3 +28,13 @@ class DashboardConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "dashboard"
     verbose_name = "SOC Dashboard"
+
+    def ready(self):
+        """
+        Import signals when the app is ready.
+
+        This ensures the post_save signal for User-Group sync
+        (Phase 9B) is connected at Django startup. The import
+        triggers the @receiver decorator registration.
+        """
+        import dashboard.signals  # noqa: F401

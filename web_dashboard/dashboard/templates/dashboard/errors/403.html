@@ -1,0 +1,68 @@
+<!-- dashboard/templates/dashboard/errors/403.html — Phase 9B -->
+<!--
+  Custom 403 Forbidden / Access Denied page.
+
+  DESIGN:
+    - Matches SOC dark theme from base.html.
+    - Shows the user what permission they lack (without exposing internals).
+    - Provides a "Go Back" button and link to dashboard home.
+    - Consistent with the enterprise SOC aesthetic.
+
+  TRIGGERED BY:
+    - PermissionDenied exceptions from RBAC mixins/decorators.
+    - Django middleware denying access to /admin/ for non-admin users.
+-->
+{% extends "dashboard/base.html" %}
+
+{% block title %}Access Denied{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6 col-lg-5">
+    <div class="text-center mb-4">
+      <div class="mb-3">
+        <i class="bi bi-shield-exclamation text-danger" style="font-size: 4rem;"></i>
+      </div>
+      <h1 class="display-6 fw-bold text-danger mb-2">403</h1>
+      <h2 class="h4 text-light mb-3">Access Denied</h2>
+    </div>
+
+    <div class="card soc-card">
+      <div class="card-body text-center py-4">
+        <p class="text-muted mb-3">
+          You do not have the required permissions to access this resource.
+        </p>
+
+        {% if exception %}
+        <div class="alert alert-danger bg-dark border-danger mb-3 small">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+          {{ exception }}
+        </div>
+        {% endif %}
+
+        <p class="text-muted small mb-4">
+          If you believe this is an error, contact your system administrator.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3">
+          <a href="{% url 'dashboard:home' %}" class="btn btn-accent">
+            <i class="bi bi-house me-1"></i> Go to Dashboard
+          </a>
+          <button onclick="history.back()" class="btn btn-outline-light">
+            <i class="bi bi-arrow-left me-1"></i> Go Back
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {% if user.is_authenticated %}
+    <div class="text-center mt-3">
+      <small class="text-muted">
+        Signed in as <strong>{{ user.username }}</strong>
+        (<span class="text-uppercase">{{ user.get_role_display }}</span>)
+      </small>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

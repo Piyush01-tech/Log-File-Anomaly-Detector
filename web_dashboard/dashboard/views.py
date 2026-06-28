@@ -1,38 +1,39 @@
 """
-dashboard/views.py — Phase 9A
+dashboard/views.py — Phase 9B
 ================================
 Django view controllers for dashboard pages.
 
 VIEWS:
-  home         — Landing page / dashboard home (auth-aware).
+  home         — Landing page / dashboard home (auth-aware, RBAC-enforced).
   health_check — System health check endpoint (public).
 
-FUTURE VIEWS (Phase 10+):
-  alerts       — Paginated anomaly list.
-  upload       — EVTX file upload.
-  history      — Analysis history with search/filter.
-
-DESIGN DECISIONS:
-  - Home view renders different content for authenticated vs
-    unauthenticated users (via template logic in home.html).
-  - Health check remains public for infrastructure monitoring.
+PHASE 9B CHANGES:
+  - Added @login_required to home view to ensure only authenticated
+    users can access the dashboard.
+  - Added role-aware context to home view (Super Admins get system
+    stats, Analysts get personal stats).
 """
 
 import logging
 
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+
+from .models import AnalysisJob, User
+from .permissions import DashboardPermissions
 
 logger = logging.getLogger(__name__)
 
 
+@login_required
 def home(request: HttpRequest) -> HttpResponse:
     """
     Render the dashboard home page.
 
-    Displays different content based on authentication status:
-      - Authenticated: Dashboard with stats and quick actions.
-      - Unauthenticated: Landing page with sign-in/register CTAs.
+    Displays different content based on user role (Phase 9B):
+      - Super Admins: System-wide statistics and management actions.
+      - Analysts: Personal statistics and upload actions.
 
     Args:
         request: The HTTP request.
@@ -40,7 +41,28 @@ def home(request: HttpRequest) -> HttpResponse:
     Returns:
         Rendered home page.
     """
-    return render(request, "dashboard/home.html")
+    context = {}
+
+    # Super Admin context
+    if request.user.has_perm(DashboardPermissions.VIEW_SYSTEM_STATS):
+        context["total_users"] = User.objects.count()
+        context["total_jobs"] = AnalysisJob.objects.count()
+        context["failed_jobs"] = AnalysisJob.objects.filter(
+            status=AnalysisJob.Status.FAILED
+        ).count()
+        logger.debug("Admin context loaded for user '%s'.", request.user.username)
+
+    # Analyst context (personal stats)
+    else:
+        context["my_jobs_count"] = AnalysisJob.objects.filter(
+            user=request.user
+        ).count()
+        context["my_failed_jobs"] = AnalysisJob.objects.filter(
+            user=request.user, status=AnalysisJob.Status.FAILED
+        ).count()
+        logger.debug("Analyst context loaded for user '%s'.", request.user.username)
+
+    return render(request, "dashboard/home.html", context)
 
 
 def health_check(request: HttpRequest) -> HttpResponse:
@@ -57,6 +79,6 @@ def health_check(request: HttpRequest) -> HttpResponse:
         Plain text health status.
     """
     return HttpResponse(
-        "Django Dashboard is running. Phase 9A auth active.",
+        "Django Dashboard is running. Phase 9B RBAC active.",
         content_type="text/plain",
     )

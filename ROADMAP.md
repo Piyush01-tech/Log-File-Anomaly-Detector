@@ -46,14 +46,15 @@ The Log File Anomaly Detector is being built in distinct phases. This roadmap ou
 - [x] Implement password change with validation.
 - [x] Configure session security settings and CSRF protection.
 
+### Phase 9B: Django Role-Based Access Control ✅
+- [x] Implement Analyst and Super Admin permission enforcement (Django Groups).
+- [x] Add view-level permission decorators and mixins (`rbac_mixins.py`, `rbac_decorators.py`).
+- [x] Restrict admin panel access to ADMIN role (middleware + UserAdmin).
+- [x] Implement `setup_rbac` management command.
+
 ---
 
 ## 🔜 Near-Term Milestones (Web UI)
-
-### Phase 9B: Django Role-Based Access Control
-- [ ] Implement Analyst and Super Admin permission enforcement.
-- [ ] Add view-level permission decorators/mixins.
-- [ ] Restrict admin panel access to ADMIN role.
 
 ### Phase 10: Upload & Analysis Workflow
 - [ ] Create UI for uploading `.evtx` files.

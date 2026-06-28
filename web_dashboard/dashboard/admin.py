@@ -1,6 +1,6 @@
 """
-dashboard/admin.py — Phase 8
-==============================
+dashboard/admin.py — Phase 9B
+================================
 Django admin registrations for all dashboard models.
 
 WHY THIS EXISTS:
@@ -10,16 +10,28 @@ WHY THIS EXISTS:
     manage users, review jobs, and inspect anomalies.
 
 ADMIN CLASSES:
-  UserAdmin       — Custom user admin with role field integration.
+  UserAdmin       — Custom user admin with role field integration
+                    and RBAC-enforced bulk actions (Phase 9B).
   AnalysisJobAdmin — Job lifecycle tracking with status filters.
   AnomalyAdmin    — Anomaly browsing with severity-based filtering.
   AuditLogAdmin   — Read-only audit trail (append-only enforcement).
+
+PHASE 9B CHANGES:
+  - Added admin actions: promote_to_admin, demote_to_analyst,
+    disable_users, enable_users.
+  - Admin access restricted via has_module_permission checks.
+  - UserAdmin enforces permission checks for add/change/delete.
 """
+
+import logging
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .models import AnalysisJob, Anomaly, AuditLog, User
+from .permissions import DashboardPermissions
+
+logger = logging.getLogger(__name__)
 
 
 # ===========================================================================
@@ -34,6 +46,10 @@ class UserAdmin(BaseUserAdmin):
 
     Extends Django's built-in UserAdmin to include the 'role' field
     in the list display, filters, and edit forms.
+
+    Phase 9B Additions:
+      - Bulk actions for role promotion, demotion, and account toggling.
+      - Permission checks using Django's permission framework.
     """
 
     # List view
@@ -69,6 +85,157 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
+
+    # Phase 9B: Bulk actions
+    actions = [
+        "promote_to_admin",
+        "demote_to_analyst",
+        "disable_users",
+        "enable_users",
+    ]
+
+    # --- Permission Checks (Phase 9B) ---
+
+    def has_add_permission(self, request):
+        """Only users with manage_users permission can add users."""
+        return request.user.has_perm(DashboardPermissions.MANAGE_USERS)
+
+    def has_change_permission(self, request, obj=None):
+        """Only users with manage_users permission can edit users."""
+        return request.user.has_perm(DashboardPermissions.MANAGE_USERS)
+
+    def has_delete_permission(self, request, obj=None):
+        """Only users with delete_users permission can delete users."""
+        return request.user.has_perm(DashboardPermissions.DELETE_USERS)
+
+    # --- Bulk Actions (Phase 9B) ---
+
+    @admin.action(description="Promote selected users to Super Admin")
+    def promote_to_admin(self, request, queryset):
+        """
+        Promote selected users to the ADMIN role.
+
+        Requires the `promote_users` permission. The post_save signal
+        will automatically sync group membership.
+        """
+        if not request.user.has_perm(DashboardPermissions.PROMOTE_USERS):
+            self.message_user(
+                request,
+                "You do not have permission to promote users.",
+                level="error",
+            )
+            return
+
+        count = 0
+        for user in queryset.exclude(role=User.Role.ADMIN):
+            user.role = User.Role.ADMIN
+            user.is_staff = True
+            user.save(update_fields=["role", "is_staff"])
+            count += 1
+            logger.info(
+                "Admin '%s' promoted user '%s' to ADMIN.",
+                request.user.username,
+                user.username,
+            )
+
+        self.message_user(
+            request,
+            f"Successfully promoted {count} user(s) to Super Admin.",
+        )
+
+    @admin.action(description="Demote selected users to Analyst")
+    def demote_to_analyst(self, request, queryset):
+        """
+        Demote selected users to the ANALYST role.
+
+        Requires the `promote_users` permission. Prevents self-demotion
+        to avoid locking out the last admin.
+        """
+        if not request.user.has_perm(DashboardPermissions.PROMOTE_USERS):
+            self.message_user(
+                request,
+                "You do not have permission to demote users.",
+                level="error",
+            )
+            return
+
+        # Prevent self-demotion
+        safe_queryset = queryset.exclude(pk=request.user.pk)
+        skipped = queryset.filter(pk=request.user.pk).count()
+
+        count = 0
+        for user in safe_queryset.exclude(role=User.Role.ANALYST):
+            user.role = User.Role.ANALYST
+            user.is_staff = False
+            user.is_superuser = False
+            user.save(update_fields=["role", "is_staff", "is_superuser"])
+            count += 1
+            logger.info(
+                "Admin '%s' demoted user '%s' to ANALYST.",
+                request.user.username,
+                user.username,
+            )
+
+        msg = f"Successfully demoted {count} user(s) to Analyst."
+        if skipped:
+            msg += " (You cannot demote yourself.)"
+        self.message_user(request, msg)
+
+    @admin.action(description="Disable selected user accounts")
+    def disable_users(self, request, queryset):
+        """
+        Deactivate selected user accounts (set is_active=False).
+
+        Requires the `disable_users` permission. Prevents self-disabling.
+        """
+        if not request.user.has_perm(DashboardPermissions.DISABLE_USERS):
+            self.message_user(
+                request,
+                "You do not have permission to disable users.",
+                level="error",
+            )
+            return
+
+        # Prevent self-disabling
+        safe_queryset = queryset.exclude(pk=request.user.pk)
+        count = safe_queryset.filter(is_active=True).update(is_active=False)
+
+        logger.info(
+            "Admin '%s' disabled %d user account(s).",
+            request.user.username,
+            count,
+        )
+        self.message_user(
+            request,
+            f"Successfully disabled {count} user account(s).",
+        )
+
+    @admin.action(description="Enable selected user accounts")
+    def enable_users(self, request, queryset):
+        """
+        Re-activate selected user accounts (set is_active=True).
+
+        Requires the `disable_users` permission (enable is the inverse).
+        """
+        if not request.user.has_perm(DashboardPermissions.DISABLE_USERS):
+            self.message_user(
+                request,
+                "You do not have permission to enable users.",
+                level="error",
+            )
+            return
+
+        count = queryset.filter(is_active=False).update(is_active=True)
+
+        logger.info(
+            "Admin '%s' enabled %d user account(s).",
+            request.user.username,
+            count,
+        )
+        self.message_user(
+            request,
+            f"Successfully enabled {count} user account(s).",
+        )
 
 
 # ===========================================================================

@@ -32,21 +32,26 @@ This document outlines the security architecture and threat model for the SOC Da
 
 ---
 
-## 🛡️ Authorization & Role-Based Access Control (RBAC)
+## 🛡️ Authorization & Role-Based Access Control (Phase 9B — Implemented)
 
-Access to the system is strictly limited to authenticated personnel. Two primary roles are defined:
+Access to the system is strictly limited to authenticated personnel. Authorization is enforced using Django's built-in **Groups and Permissions** framework, decoupled from hardcoded checks to allow for enterprise extensibility.
+
+Two primary groups are configured via the `setup_rbac` management command:
 
 1. **Analyst (Standard User)**:
-   - Can upload `.evtx` files.
-   - Can view the dashboard, alerts, and incident history.
-   - Cannot delete historical records or access system settings.
-2. **Super Administrator**:
-   - Has all Analyst permissions.
-   - Has access to the Django Admin panel.
-   - Can manage (create/suspend) user accounts.
-   - Can purge old data manually.
+   - *Permissions*: `upload_evtx`, `view_own_uploads`, `view_own_incidents`, `edit_own_profile`.
+   - *Data Isolation*: The `AnalystOwnerQuerysetMixin` and `OwnershipMixin` enforce strict data isolation. Analysts can only view `AnalysisJob`, `Anomaly`, and `AuditLog` records where they are the owner. Any attempt to access another user's records via URL manipulation results in a 403 Forbidden.
+   - Cannot access the Django Admin panel.
 
-*Future Role*: **SOC Manager** (Read-only aggregate metrics, cannot view raw log contents).
+2. **Super Administrator**:
+   - *Permissions*: All Analyst permissions + `dashboard_full_access`, `view_all_logs`, `view_all_incidents`, `manage_users`, `disable_users`, `delete_users`, `promote_users`, `view_system_stats`, `manage_rag`, `manage_settings`.
+   - *Data Isolation*: Admins bypass owner checks and can view all data system-wide.
+   - *Admin Panel*: Access to `/admin/` is strictly gated by the `SessionSecurityMiddleware`, which requires the `dashboard_full_access` permission (providing defense-in-depth beyond Django's `is_staff` check).
+   - Can manage users (promote, demote, disable) via custom admin actions.
+
+**Group Syncronization**: The legacy `User.role` field is preserved for quick lookups, but group membership is what actually drives permissions. A `post_save` signal on the `User` model automatically syncs the `role` field to the correct Django Group to ensure integrity across all user creation paths (registration, createsuperuser, admin).
+
+*Future Role Extensibility*: New roles (e.g., SOC Manager) can be added simply by creating a new Group in the Django admin panel and assigning existing custom permissions—no code changes required.
 
 ---
 

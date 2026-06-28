@@ -1,16 +1,16 @@
-<!-- dashboard/templates/dashboard/home.html — Phase 9A -->
+<!-- dashboard/templates/dashboard/home.html — Phase 9B -->
 <!--
   Home page / dashboard landing page.
 
   FEATURES:
     - Welcome hero section
-    - Quick stats placeholder cards (for Phase 10+)
+    - Quick stats cards (Role-aware via Phase 9B RBAC)
     - Quick action links
     - Auth-aware: shows different content for authenticated users
 
-  NOTE: Full dashboard content (KPI cards, charts, alerts table)
-  will be implemented in Phase 11. This provides the landing page
-  structure and authenticated home experience.
+  PHASE 9B CHANGES:
+    - Added permission checks to display system-wide stats for
+      Super Admins and personal stats for Analysts.
 -->
 {% extends "dashboard/base.html" %}
 
@@ -30,11 +30,36 @@
 {% if user.is_authenticated %}
 <!-- Authenticated Dashboard -->
 <div class="row g-4 mb-4">
+  {% if perms.dashboard.view_system_stats %}
+  <!-- Super Admin Stats -->
+  <div class="col-md-4">
+    <div class="stat-card text-center border-accent border-bottom border-3">
+      <div class="stat-value">{{ total_users|default:"0" }}</div>
+      <div class="stat-label">Total Users</div>
+      <small class="text-muted">System Wide</small>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card text-center border-accent border-bottom border-3">
+      <div class="stat-value">{{ total_jobs|default:"0" }}</div>
+      <div class="stat-label">Total Analyses</div>
+      <small class="text-muted">System Wide</small>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card text-center border-danger border-bottom border-3">
+      <div class="stat-value text-danger">{{ failed_jobs|default:"0" }}</div>
+      <div class="stat-label">Failed Jobs</div>
+      <small class="text-muted">System Wide</small>
+    </div>
+  </div>
+  {% else %}
+  <!-- Analyst Stats -->
   <div class="col-md-4">
     <div class="stat-card text-center">
-      <div class="stat-value">—</div>
-      <div class="stat-label">Total Analyses</div>
-      <small class="text-muted">Phase 10</small>
+      <div class="stat-value">{{ my_jobs_count|default:"0" }}</div>
+      <div class="stat-label">My Analyses</div>
+      <small class="text-muted">Personal</small>
     </div>
   </div>
   <div class="col-md-4">
@@ -46,16 +71,17 @@
   </div>
   <div class="col-md-4">
     <div class="stat-card text-center">
-      <div class="stat-value">—</div>
-      <div class="stat-label">Critical Anomalies</div>
-      <small class="text-muted">Phase 11</small>
+      <div class="stat-value text-danger">{{ my_failed_jobs|default:"0" }}</div>
+      <div class="stat-label">My Failed Jobs</div>
+      <small class="text-muted">Personal</small>
     </div>
   </div>
+  {% endif %}
 </div>
 
 <div class="row g-4">
   <div class="col-md-6">
-    <div class="card soc-card">
+    <div class="card soc-card h-100">
       <div class="card-header">
         <i class="bi bi-cloud-upload me-2 text-accent"></i>
         <span class="fw-bold">Quick Actions</span>
@@ -64,15 +90,27 @@
         <p class="text-muted small">
           Upload and analyze Windows Event Log files for anomalies.
         </p>
-        <button class="btn btn-accent btn-sm" disabled>
+        {% if perms.dashboard.upload_evtx %}
+        <button class="btn btn-accent btn-sm mb-2" disabled>
           <i class="bi bi-upload me-1"></i> Upload .evtx File
           <span class="badge bg-dark ms-2">Phase 10</span>
         </button>
+        {% endif %}
+        
+        {% if perms.dashboard.manage_users %}
+        <hr class="border-secondary my-3">
+        <p class="text-muted small">
+          Administrative actions.
+        </p>
+        <a href="{% url 'admin:dashboard_user_changelist' %}" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-people me-1"></i> Manage Users
+        </a>
+        {% endif %}
       </div>
     </div>
   </div>
   <div class="col-md-6">
-    <div class="card soc-card">
+    <div class="card soc-card h-100">
       <div class="card-header">
         <i class="bi bi-person-gear me-2 text-accent"></i>
         <span class="fw-bold">Your Account</span>
@@ -85,9 +123,11 @@
           <strong>Role:</strong>
           <span class="badge bg-accent text-uppercase">{{ user.get_role_display }}</span>
         </p>
+        {% if perms.dashboard.edit_own_profile %}
         <a href="{% url 'auth:profile' %}" class="btn btn-outline-light btn-sm">
           <i class="bi bi-pencil-square me-1"></i> Manage Profile
         </a>
+        {% endif %}
       </div>
     </div>
   </div>

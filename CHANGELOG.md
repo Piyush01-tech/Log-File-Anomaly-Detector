@@ -6,6 +6,47 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.6.0] - 2026-06-29 — Phase 9B: Django Role-Based Access Control
+
+### Completed Phase
+- **Phase 9B**: Django Role-Based Access Control (RBAC)
+
+### Added
+- `web_dashboard/dashboard/permissions.py`: Central permission constants (`DashboardPermissions`) and reusable authorization utilities (`user_has_permission`, `get_user_objects`).
+- `web_dashboard/dashboard/rbac_mixins.py`: Reusable CBV mixins for Phase 10+ (`RBACPermissionRequiredMixin`, `SuperAdminRequiredMixin`, `OwnershipMixin`, `AnalystOwnerQuerysetMixin`).
+- `web_dashboard/dashboard/rbac_decorators.py`: FBV decorators (`permission_required_with_audit`, `superadmin_required`, `owner_required`).
+- `web_dashboard/dashboard/signals.py`: Auto-sync `User.role` changes to Django Groups via `post_save` signal.
+- `web_dashboard/dashboard/management/commands/setup_rbac.py`: Idempotent management command to create groups, permissions, and sync existing users.
+- `web_dashboard/dashboard/templates/dashboard/errors/403.html`: Custom 403 Forbidden page matching SOC dark theme.
+
+### Modified
+- `web_dashboard/dashboard/admin.py`: Added permission checks to `UserAdmin` and bulk actions (`promote_to_admin`, `demote_to_analyst`, `disable_users`, `enable_users`).
+- `web_dashboard/dashboard/apps.py`: Registered signals in `ready()`.
+- `web_dashboard/dashboard/views.py`: Added `@login_required` to `home` and injected role-aware context (admin stats vs analyst stats).
+- `web_dashboard/dashboard/middleware.py`: Added strict `/admin/` path restriction based on the `ADMIN` role.
+- `web_dashboard/dashboard/templates/dashboard/base.html`: Replaced `user.is_admin` with `perms.dashboard.dashboard_full_access` for admin panel link.
+- `web_dashboard/dashboard/templates/dashboard/home.html`: Added permission-based rendering for system-wide vs personal statistics.
+
+### Architecture Changes
+- Django's built-in Groups and Permissions framework adopted for RBAC instead of hardcoded role checks, enabling enterprise role extensibility.
+- 14 custom permissions defined covering all capabilities (e.g., `view_all_logs`, `manage_users`, `upload_evtx`).
+
+### Database Changes
+- No new models or schema changes. Permissions and group assignments live in Django's default `auth_*` tables.
+
+### Security Changes
+- Strict separation of Super Admin and Analyst privileges.
+- Admin panel routes `/admin/` blocked via middleware for non-admin users, providing defense-in-depth beyond Django's `is_staff` check.
+- `OwnershipMixin` and `AnalystOwnerQuerysetMixin` added for strict user data isolation (Analysts can only access their own uploads/incidents).
+
+### Documentation Updated
+- `PROJECT_CONTEXT.md` — Version bump to v0.6.0, Phase 9B completed, RBAC added to current implementations.
+- `ROADMAP.md` — Phase 9B marked complete.
+- `SECURITY_MODEL.md` — Authorization & RBAC section rewritten with detailed group/permission rules.
+- `CHANGELOG.md` — This entry.
+
+---
+
 ## [0.5.0] - 2026-06-29 — Phase 9A: Django Authentication
 
 ### Completed Phase
