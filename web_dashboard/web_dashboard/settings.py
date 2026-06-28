@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
 
     # Our application (Phase 8)
-    "dashboard",
+    "dashboard.apps.DashboardConfig",
 ]
 
 MIDDLEWARE = [
@@ -166,6 +166,14 @@ MEDIA_ROOT = BASE_DIR / "mediafiles"
 # ---------------------------------------------------------------------------
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ---------------------------------------------------------------------------
+# Custom User Model
+# ---------------------------------------------------------------------------
+# Points Django's auth framework to our custom User model with RBAC roles.
+# MUST be set before the first migration is ever run.
+
+AUTH_USER_MODEL = "dashboard.User"
 
 # ---------------------------------------------------------------------------
 # Crispy Forms
