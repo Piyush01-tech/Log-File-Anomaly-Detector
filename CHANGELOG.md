@@ -6,6 +6,89 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.5.0] - 2026-06-29 — Phase 9A: Django Authentication
+
+### Completed Phase
+- **Phase 9A**: Django Authentication (Authentication ONLY — RBAC deferred to Phase 9B)
+
+### Added
+- `web_dashboard/dashboard/auth_views.py`: Production authentication views.
+  - `CustomLoginView` — Extends Django's `LoginView` with AuditLog integration, "Remember Me" session control, and messaging.
+  - `CustomLogoutView` — Extends Django's `LogoutView` with AuditLog integration (logs BEFORE session flush).
+  - `RegistrationView` — User self-registration with auto-login, ANALYST role assignment, and AuditLog entry.
+  - `ProfileView` — `LoginRequiredMixin` + `UpdateView` for profile management (first name, last name, email).
+  - `CustomPasswordChangeView` — Extends Django's `PasswordChangeView` with success messaging and session hash update.
+  - `_get_client_ip()` — Extracts client IP from `X-Forwarded-For` or `REMOTE_ADDR`.
+  - `_create_audit_log()` — Convenience wrapper for AuditLog creation with error suppression.
+- `web_dashboard/dashboard/auth_forms.py`: Authentication forms with Bootstrap 5 styling.
+  - `CustomLoginForm` — Extends `AuthenticationForm` with "Remember Me" checkbox.
+  - `UserRegistrationForm` — `ModelForm` with username, email, password1/password2, full Django password validation pipeline.
+  - `UserProfileForm` — `ModelForm` for User (first_name, last_name, email) with uniqueness validation.
+  - `CustomPasswordChangeForm` — Extends Django's `PasswordChangeForm` with Bootstrap-styled widgets.
+- `web_dashboard/dashboard/auth_urls.py`: Authentication URL configuration under `/auth/` prefix with `auth` namespace.
+  - Routes: `login/`, `logout/`, `register/`, `profile/`, `password-change/`.
+- `web_dashboard/dashboard/middleware.py`: `SessionSecurityMiddleware`.
+  - Idle session timeout with configurable `SESSION_IDLE_TIMEOUT` (default 30 minutes).
+  - Security response headers: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`.
+  - Public path exemptions for login, register, health, admin, static, and media.
+- `web_dashboard/dashboard/templates/dashboard/auth/login.html`: Login page with dark SOC theme.
+- `web_dashboard/dashboard/templates/dashboard/auth/register.html`: Registration page with password hints.
+- `web_dashboard/dashboard/templates/dashboard/auth/profile.html`: Profile management with account info cards.
+- `web_dashboard/dashboard/templates/dashboard/auth/password_change.html`: Password change form.
+- `web_dashboard/dashboard/templates/dashboard/home.html`: Dashboard landing page (auth-aware, placeholder stats for Phase 10+).
+
+### Files Modified
+- `web_dashboard/dashboard/templates/dashboard/base.html` — Replaced placeholder with production template: Bootstrap 5.3, Google Fonts (Inter), auth-aware navigation, user dropdown menu, Django messages integration, auto-dismiss alerts.
+- `web_dashboard/dashboard/static/dashboard/css/main.css` — Replaced placeholder with production SOC-themed stylesheet (350+ lines): CSS custom properties, dark navy/slate theme, auth card styling, form controls, buttons, alerts, responsive breakpoints.
+- `web_dashboard/dashboard/views.py` — Replaced placeholder with `home()` view (auth-aware landing) and updated `health_check()`.
+- `web_dashboard/dashboard/urls.py` — Added `home` route at `/`, updated comments.
+- `web_dashboard/web_dashboard/urls.py` — Added `path("auth/", include("dashboard.auth_urls"))` route, updated docstring.
+- `web_dashboard/web_dashboard/settings.py` — Added: `SessionSecurityMiddleware` to `MIDDLEWARE`, session security settings (`SESSION_COOKIE_AGE/HTTPONLY/SECURE/SAMESITE`, `SESSION_IDLE_TIMEOUT`, `SESSION_SAVE_EVERY_REQUEST`), `PASSWORD_HASHERS`, `MESSAGE_TAGS` for Bootstrap, `CSRF_COOKIE_HTTPONLY/SECURE`.
+
+### Architecture Changes
+- No architectural changes. Django authentication is the planned auth layer per `SECURITY_MODEL.md`.
+- Authentication routes under `/auth/` namespace, separate from dashboard feature routes.
+- Auth views are in a dedicated `auth_views.py` module (not in `views.py`) for clean separation.
+
+### Database Changes
+- **No new migrations.** All authentication uses existing `User` and `AuditLog` models from Phase 8.
+
+### API Changes
+- New user-facing routes: `/auth/login/`, `/auth/logout/`, `/auth/register/`, `/auth/profile/`, `/auth/password-change/`.
+- Home page at `/` now renders the dashboard landing page.
+- No Flask API changes.
+
+### ML Changes
+- None. Authentication is Django-only.
+
+### Security Changes
+- Session cookies: `HttpOnly`, `Secure` (production), `SameSite=Lax`.
+- Idle session timeout: 30 minutes (configurable via `SESSION_IDLE_TIMEOUT`).
+- Security headers on all responses: `nosniff`, `DENY` frame, strict referrer policy, permissions policy.
+- Password hashers explicitly listed: PBKDF2-SHA256 (primary), PBKDF2-SHA1, Argon2, BCrypt.
+- CSRF cookies: `Secure` in production.
+- AuditLog records LOGIN/LOGOUT with IP addresses.
+- All forms use `{% csrf_token %}`.
+
+### Documentation Updated
+- `PROJECT_CONTEXT.md` — Version bump to v0.5.0, Phase 9A moved to completed, auth pipeline documented.
+- `ROADMAP.md` — Phase 9A milestones marked complete, Phase 9B (RBAC) separated.
+- `SECURITY_MODEL.md` — Authentication section rewritten with full implementation details.
+- `CHANGELOG.md` — This entry.
+
+### Summary
+The Django authentication system is now fully operational. Users can register, login, logout, manage their profile, and change their password. All auth events are audit-logged. Sessions are secured with idle timeout, HttpOnly cookies, and security headers. The system uses Django's built-in auth framework extended with custom views and forms. RBAC enforcement is deferred to Phase 9B.
+
+### Known Issues
+- No email backend configured. Password reset via email is architecturally ready but not functional until an email backend is added.
+- No brute force protection. `django-axes` is planned for a future phase.
+- SQLite is used for development. Production deployments require PostgreSQL migration.
+
+### Future Work
+- Phase 9B: Role-Based Access Control (permission enforcement on views).
+
+---
+
 ## [0.4.0] - 2026-06-29 — Phase 8: Django Database Models
 
 ### Completed Phase

@@ -12,9 +12,9 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 
 ## 📊 Current Status
 
-- **Current Version**: `v0.4.0` (Post Phase 8 Django Database Models)
-- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations).
-- **Stubbed Modules**: `web_dashboard` (views, API client — awaiting Phase 9+).
+- **Current Version**: `v0.5.0` (Post Phase 9A Django Authentication)
+- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations, authentication system).
+- **Stubbed Modules**: `web_dashboard` (RBAC/permissions, upload workflow, API client — awaiting Phase 9B+).
 
 ### Completed Phases
 - **Phase 1**: Project Setup & Repository Initialization
@@ -26,9 +26,10 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 - **Phase 7A**: ML Engine Refactoring (Packaged `ml_engine`, decoupled training/prediction, created `AnalysisPipeline`).
 - **Phase 7B**: Flask REST API (Application factory, `/health`, `/analyze`, `/stats` endpoints, JSON serialization, error handling).
 - **Phase 8**: Django Database Models (User, AnalysisJob, Anomaly, AuditLog models, custom managers, admin interface, SQLite migrations).
+- **Phase 9A**: Django Authentication (Login, Logout, Registration, Profile, Password Change, Session Security, Audit Logging).
 
 ### Pending Phases (Immediate)
-- **Phase 9**: Django Authentication & Role-Based Access Control
+- **Phase 9B**: Django Role-Based Access Control (RBAC, Permissions)
 - **Phase 10**: Upload & Analysis Workflow UI
 
 *(See [ROADMAP.md](ROADMAP.md) for full phase details)*
@@ -89,7 +90,19 @@ The project strictly follows a **Decoupled Hybrid Architecture**:
 - **App Config**: `DashboardConfig` in `apps.py` with `BigAutoField` default.
 - **Settings**: `AUTH_USER_MODEL = 'dashboard.User'`, `MEDIA_ROOT` configured for `.evtx` uploads.
 - **Database**: SQLite with initial migration applied (all 4 tables + 5 composite indexes).
-- Awaiting Phase 9 (Auth) and Phase 10 (Upload Workflow).
+- **Authentication (Phase 9A)**: Production-grade authentication system:
+  - `CustomLoginView` — Login with audit logging and "Remember Me" session control.
+  - `CustomLogoutView` — Logout with audit logging.
+  - `RegistrationView` — User self-registration (auto-assigns ANALYST role).
+  - `ProfileView` — View/update user profile (name, email).
+  - `CustomPasswordChangeView` — Secure password change with validation.
+  - `SessionSecurityMiddleware` — Idle session timeout, security headers.
+  - `CustomLoginForm` — Extended login form with Remember Me checkbox.
+  - `UserRegistrationForm` — Registration with email and password validation.
+  - Dark SOC-themed templates with Bootstrap 5 and auth-aware navigation.
+  - AuditLog integration for LOGIN/LOGOUT events with IP capture.
+  - Session security: HttpOnly cookies, SameSite, configurable timeout.
+- Awaiting Phase 9B (RBAC) and Phase 10 (Upload Workflow).
 
 ---
 

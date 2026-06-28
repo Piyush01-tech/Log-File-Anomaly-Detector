@@ -4,11 +4,31 @@ This document outlines the security architecture and threat model for the SOC Da
 
 ---
 
-## 🔐 Authentication & Session Handling
+## 🔐 Authentication & Session Handling (Phase 9A — Implemented)
 
-- **Framework**: Handled entirely by Django's `contrib.auth` system.
-- **Passwords**: Hashed using Django's default PBKDF2 algorithm with a SHA256 hash. Passwords are never stored or logged in plaintext.
-- **Sessions**: Session IDs are stored in HTTP-only, secure cookies. Session hijacking is mitigated by expiring idle sessions and regenerating session keys on login/logout.
+- **Framework**: Handled entirely by Django's `contrib.auth` system via extended class-based views (`CustomLoginView`, `CustomLogoutView`, `RegistrationView`, `ProfileView`, `CustomPasswordChangeView`).
+- **Passwords**: Hashed using Django's default PBKDF2 algorithm with SHA256. Password hashers are explicitly configured in `settings.py` (`PBKDF2`, `PBKDF2SHA1`, `Argon2`, `BCryptSHA256` in order of preference). Passwords are never stored or logged in plaintext.
+- **Password Validation**: Four validators enforced on registration and password change:
+  - `UserAttributeSimilarityValidator` — Prevents passwords similar to username/email.
+  - `MinimumLengthValidator` — Enforces minimum 8 characters.
+  - `CommonPasswordValidator` — Rejects common passwords.
+  - `NumericPasswordValidator` — Rejects all-numeric passwords.
+- **Sessions**:
+  - Session IDs stored in HTTP-only cookies (`SESSION_COOKIE_HTTPONLY = True`).
+  - Secure cookies in production (`SESSION_COOKIE_SECURE = not DEBUG`).
+  - SameSite policy set to `Lax` for CSRF complement.
+  - Default session age: 24 hours (`SESSION_COOKIE_AGE`), configurable via env var.
+  - "Remember Me" checkbox: unchecked = browser session only; checked = full `SESSION_COOKIE_AGE`.
+  - `SESSION_SAVE_EVERY_REQUEST = True` refreshes expiry on each request.
+- **Idle Session Timeout**: `SessionSecurityMiddleware` tracks `_last_activity` timestamp per session. Sessions idle longer than `SESSION_IDLE_TIMEOUT` (default 30 minutes) are flushed and redirected to login.
+- **Security Headers**: `SessionSecurityMiddleware` adds to all responses:
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: DENY`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()`
+- **Audit Trail**: All LOGIN/LOGOUT events are recorded in the `AuditLog` model with user identity, IP address (via `X-Forwarded-For` or `REMOTE_ADDR`), and timestamp.
+- **Registration**: Users self-register with the ANALYST role (default from `UserManager`). Username and email uniqueness are validated at the form level.
+- **CSRF Protection**: All POST forms include `{% csrf_token %}`. `CSRF_COOKIE_SECURE = not DEBUG` enforces HTTPS-only CSRF cookies in production.
 
 ---
 

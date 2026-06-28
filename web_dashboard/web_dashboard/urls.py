@@ -1,14 +1,17 @@
 """
-web_dashboard/web_dashboard/urls.py
-======================================
+web_dashboard/web_dashboard/urls.py — Phase 9A
+=================================================
 Root URL dispatcher for the Django frontend service.
 
-Routes:
+ROUTES:
   /          → dashboard app (home, alerts, upload, history)
   /admin/    → Django built-in admin panel
-  /auth/     → Authentication (Phase 11)
+  /auth/     → Authentication (login, logout, register, profile)
 
-Phase 8 will expand the dashboard URL patterns.
+URL NAMESPACES:
+  dashboard  → Dashboard feature routes (dashboard/urls.py)
+  auth       → Authentication routes (dashboard/auth_urls.py)
+  admin      → Django admin
 """
 
 from django.contrib import admin
@@ -19,6 +22,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     # Django admin — useful for direct DB inspection during development
     path("admin/", admin.site.urls),
+
+    # Authentication routes (Phase 9A)
+    path("auth/", include("dashboard.auth_urls")),
 
     # Main dashboard app (all user-facing pages)
     path("", include("dashboard.urls")),

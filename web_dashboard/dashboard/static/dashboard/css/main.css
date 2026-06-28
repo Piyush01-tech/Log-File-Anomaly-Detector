@@ -1,10 +1,465 @@
-/* dashboard/static/dashboard/css/main.css [PLACEHOLDER — Phase 8] */
 /*
- * Main stylesheet.
- * Phase 8 will implement:
- *   - CSS custom properties (design tokens)
- *   - Dark theme sidebar
- *   - Severity badge colors (critical/high/medium/low)
- *   - Card component styles
- *   - Responsive grid layout
+ * dashboard/static/dashboard/css/main.css — Phase 9A
+ * =====================================================
+ * Production SOC Dashboard stylesheet.
+ *
+ * DESIGN SYSTEM:
+ *   - Dark theme (deep navy/slate) for SOC tooling aesthetics
+ *   - Accent color: Teal (#0dcaf0 family) for CTAs and highlights
+ *   - Inter font for clean, modern typography
+ *   - Smooth transitions and micro-animations
+ *   - Responsive design for all viewport sizes
+ *
+ * SECTIONS:
+ *   1. CSS Custom Properties (Design Tokens)
+ *   2. Base & Typography
+ *   3. Navbar
+ *   4. Auth Cards (Login/Register/Password Change)
+ *   5. SOC Cards (Profile, Dashboard)
+ *   6. Form Styling
+ *   7. Buttons
+ *   8. Alerts & Messages
+ *   9. Footer
+ *  10. Utilities & Animations
+ *  11. Responsive Overrides
  */
+
+/* =================================================================
+   1. CSS Custom Properties (Design Tokens)
+   ================================================================= */
+
+:root {
+  /* Colors */
+  --soc-bg-primary: #0b1120;
+  --soc-bg-secondary: #111827;
+  --soc-bg-card: #1a2332;
+  --soc-bg-card-hover: #1f2b3d;
+  --soc-border: #2d3a4e;
+  --soc-border-light: #374357;
+
+  --soc-text-primary: #e2e8f0;
+  --soc-text-secondary: #94a3b8;
+  --soc-text-muted: #64748b;
+
+  --soc-accent: #22d3ee;
+  --soc-accent-hover: #06b6d4;
+  --soc-accent-muted: rgba(34, 211, 238, 0.15);
+
+  --soc-success: #34d399;
+  --soc-danger: #f87171;
+  --soc-warning: #fbbf24;
+  --soc-info: #60a5fa;
+
+  /* Typography */
+  --soc-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
+
+  /* Spacing */
+  --soc-radius: 0.75rem;
+  --soc-radius-sm: 0.5rem;
+
+  /* Transitions */
+  --soc-transition: all 0.2s ease-in-out;
+}
+
+/* =================================================================
+   2. Base & Typography
+   ================================================================= */
+
+body {
+  font-family: var(--soc-font-family);
+  background-color: var(--soc-bg-primary);
+  color: var(--soc-text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  flex: 1;
+}
+
+a {
+  color: var(--soc-accent);
+  transition: var(--soc-transition);
+}
+
+a:hover {
+  color: var(--soc-accent-hover);
+}
+
+::selection {
+  background-color: var(--soc-accent-muted);
+  color: var(--soc-accent);
+}
+
+/* =================================================================
+   3. Navbar
+   ================================================================= */
+
+.soc-navbar {
+  background-color: var(--soc-bg-secondary) !important;
+  border-bottom: 1px solid var(--soc-border);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 0;
+}
+
+.soc-navbar .navbar-brand {
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.soc-navbar .nav-link {
+  color: var(--soc-text-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--soc-radius-sm);
+  transition: var(--soc-transition);
+}
+
+.soc-navbar .nav-link:hover,
+.soc-navbar .nav-link:focus {
+  color: var(--soc-text-primary);
+  background-color: var(--soc-accent-muted);
+}
+
+.text-accent {
+  color: var(--soc-accent) !important;
+}
+
+.bg-accent {
+  background-color: var(--soc-accent) !important;
+  color: var(--soc-bg-primary) !important;
+}
+
+.btn-outline-accent {
+  color: var(--soc-accent);
+  border-color: var(--soc-accent);
+}
+
+.btn-outline-accent:hover {
+  background-color: var(--soc-accent);
+  color: var(--soc-bg-primary);
+}
+
+.dropdown-menu-dark {
+  background-color: var(--soc-bg-card);
+  border: 1px solid var(--soc-border);
+}
+
+.dropdown-menu-dark .dropdown-item {
+  color: var(--soc-text-secondary);
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  transition: var(--soc-transition);
+}
+
+.dropdown-menu-dark .dropdown-item:hover {
+  background-color: var(--soc-accent-muted);
+  color: var(--soc-text-primary);
+}
+
+.dropdown-menu-dark .dropdown-divider {
+  border-color: var(--soc-border);
+}
+
+/* =================================================================
+   4. Auth Cards (Login / Register / Password Change)
+   ================================================================= */
+
+.auth-card {
+  background-color: var(--soc-bg-card);
+  border: 1px solid var(--soc-border);
+  border-radius: var(--soc-radius);
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.auth-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--soc-accent-muted),
+    rgba(6, 182, 212, 0.1)
+  );
+  border-radius: 50%;
+  border: 2px solid var(--soc-accent);
+}
+
+.auth-icon {
+  font-size: 1.75rem;
+  color: var(--soc-accent);
+}
+
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+/* =================================================================
+   5. SOC Cards (Profile, Dashboard, etc.)
+   ================================================================= */
+
+.soc-card {
+  background-color: var(--soc-bg-card);
+  border: 1px solid var(--soc-border);
+  border-radius: var(--soc-radius);
+  transition: var(--soc-transition);
+}
+
+.soc-card:hover {
+  border-color: var(--soc-border-light);
+}
+
+.soc-card .card-header {
+  background-color: transparent;
+  border-bottom: 1px solid var(--soc-border);
+  padding: 1rem 1.25rem;
+}
+
+.soc-card .card-body {
+  padding: 1.25rem;
+}
+
+/* =================================================================
+   6. Form Styling
+   ================================================================= */
+
+.form-control,
+.form-select {
+  background-color: var(--soc-bg-secondary);
+  border: 1px solid var(--soc-border);
+  color: var(--soc-text-primary);
+  border-radius: var(--soc-radius-sm);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9rem;
+  transition: var(--soc-transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--soc-bg-secondary);
+  border-color: var(--soc-accent);
+  color: var(--soc-text-primary);
+  box-shadow: 0 0 0 0.2rem var(--soc-accent-muted);
+}
+
+.form-control::placeholder {
+  color: var(--soc-text-muted);
+}
+
+.form-label {
+  color: var(--soc-text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 0.375rem;
+}
+
+.form-text {
+  color: var(--soc-text-muted);
+  font-size: 0.78rem;
+}
+
+.form-check-input {
+  background-color: var(--soc-bg-secondary);
+  border-color: var(--soc-border);
+}
+
+.form-check-input:checked {
+  background-color: var(--soc-accent);
+  border-color: var(--soc-accent);
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem var(--soc-accent-muted);
+  border-color: var(--soc-accent);
+}
+
+.form-check-label {
+  color: var(--soc-text-secondary);
+}
+
+.invalid-feedback {
+  font-size: 0.8rem;
+  color: var(--soc-danger);
+}
+
+/* =================================================================
+   7. Buttons
+   ================================================================= */
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--soc-accent), var(--soc-accent-hover));
+  color: var(--soc-bg-primary);
+  border: none;
+  border-radius: var(--soc-radius-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: var(--soc-transition);
+}
+
+.btn-accent:hover {
+  background: linear-gradient(135deg, var(--soc-accent-hover), #0891b2);
+  color: var(--soc-bg-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
+}
+
+.btn-accent:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-outline-light {
+  border-color: var(--soc-border);
+  color: var(--soc-text-secondary);
+}
+
+.btn-outline-light:hover {
+  background-color: var(--soc-accent-muted);
+  border-color: var(--soc-accent);
+  color: var(--soc-accent);
+}
+
+/* =================================================================
+   8. Alerts & Messages
+   ================================================================= */
+
+.alert {
+  border-radius: var(--soc-radius-sm);
+  border: 1px solid;
+  font-size: 0.9rem;
+}
+
+.alert-success {
+  background-color: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.3);
+  color: var(--soc-success);
+}
+
+.alert-danger,
+.alert-error {
+  background-color: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--soc-danger);
+}
+
+.alert-warning {
+  background-color: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: var(--soc-warning);
+}
+
+.alert-info {
+  background-color: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.3);
+  color: var(--soc-info);
+}
+
+.alert .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* =================================================================
+   9. Footer
+   ================================================================= */
+
+.soc-footer {
+  background-color: var(--soc-bg-secondary);
+  border-top: 1px solid var(--soc-border);
+}
+
+/* =================================================================
+   10. Utilities & Animations
+   ================================================================= */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.badge {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Home page hero */
+.soc-hero {
+  padding: 3rem 0;
+}
+
+.soc-hero h1 {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.stat-card {
+  background-color: var(--soc-bg-card);
+  border: 1px solid var(--soc-border);
+  border-radius: var(--soc-radius);
+  padding: 1.5rem;
+  transition: var(--soc-transition);
+}
+
+.stat-card:hover {
+  border-color: var(--soc-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--soc-accent);
+}
+
+.stat-card .stat-label {
+  font-size: 0.8rem;
+  color: var(--soc-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* =================================================================
+   11. Responsive Overrides
+   ================================================================= */
+
+@media (max-width: 768px) {
+  .auth-card .card-body {
+    padding: 1.5rem !important;
+  }
+
+  .auth-icon-wrapper {
+    width: 52px;
+    height: 52px;
+  }
+
+  .auth-icon {
+    font-size: 1.4rem;
+  }
+
+  .soc-hero h1 {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .soc-navbar .navbar-brand span {
+    font-size: 0.95rem;
+  }
+
+  .stat-card .stat-value {
+    font-size: 1.5rem;
+  }
+}

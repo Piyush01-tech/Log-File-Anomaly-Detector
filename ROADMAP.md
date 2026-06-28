@@ -34,14 +34,26 @@ The Log File Anomaly Detector is being built in distinct phases. This roadmap ou
 - [x] Configure `AUTH_USER_MODEL` and `DashboardConfig`.
 - [x] Generate and apply SQLite migrations.
 
+### Phase 9A: Django Authentication ✅
+- [x] Implement login, logout, and registration views.
+- [x] Create authentication forms with crispy-bootstrap5.
+- [x] Add "Remember Me" session control.
+- [x] Integrate AuditLog for LOGIN/LOGOUT events.
+- [x] Create dark SOC-themed templates with Bootstrap 5.
+- [x] Implement auth-aware navigation (navbar).
+- [x] Add SessionSecurityMiddleware (idle timeout, security headers).
+- [x] Implement profile management (name, email).
+- [x] Implement password change with validation.
+- [x] Configure session security settings and CSRF protection.
 
 ---
 
 ## 🔜 Near-Term Milestones (Web UI)
 
-### Phase 9: Django Authentication
-- [ ] Setup login, logout, and password management.
-- [ ] Implement Analyst and Super Admin roles.
+### Phase 9B: Django Role-Based Access Control
+- [ ] Implement Analyst and Super Admin permission enforcement.
+- [ ] Add view-level permission decorators/mixins.
+- [ ] Restrict admin panel access to ADMIN role.
 
 ### Phase 10: Upload & Analysis Workflow
 - [ ] Create UI for uploading `.evtx` files.

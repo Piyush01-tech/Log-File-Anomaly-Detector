@@ -1,10 +1,18 @@
 """
-dashboard/urls.py
-==================
+dashboard/urls.py — Phase 9A
+===============================
 URL patterns for the dashboard Django application.
 
-Phase 8 will expand this with all dashboard routes.
-Currently includes only a health check for Phase 1 verification.
+ROUTES:
+  /          → home (dashboard landing page)
+  /health/   → health_check (infrastructure monitoring)
+
+FUTURE ROUTES (Phase 10+):
+  /alerts/   → alerts (paginated anomaly list)
+  /upload/   → upload (EVTX file upload)
+  /history/  → history (analysis history)
+
+NOTE: Authentication routes are in auth_urls.py under /auth/ prefix.
 """
 
 from django.urls import path
@@ -13,11 +21,13 @@ from . import views
 app_name = "dashboard"
 
 urlpatterns = [
-    # Phase 1 verification endpoint
+    # Dashboard home page
+    path("", views.home, name="home"),
+
+    # Infrastructure health check (public)
     path("health/", views.health_check, name="health_check"),
 
-    # Phase 8 will add:
-    # path("", views.home, name="home"),
+    # Phase 10+ will add:
     # path("alerts/", views.alerts, name="alerts"),
     # path("upload/", views.upload, name="upload"),
     # path("history/", views.history, name="history"),

@@ -1,0 +1,102 @@
+<!-- dashboard/templates/dashboard/auth/login.html — Phase 9A -->
+<!--
+  Login page for the SOC Anomaly Detection Dashboard.
+
+  FEATURES:
+    - Username/password authentication
+    - "Remember Me" checkbox for session persistence
+    - Link to registration page
+    - CSRF-protected form
+    - Error message display for invalid credentials
+-->
+{% extends "dashboard/base.html" %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75">
+  <div class="col-md-5 col-lg-4">
+    <div class="auth-card card shadow-lg">
+      <div class="card-body p-4 p-md-5">
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <div class="auth-icon-wrapper mb-3">
+            <i class="bi bi-shield-lock-fill auth-icon"></i>
+          </div>
+          <h1 class="h3 fw-bold">Welcome Back</h1>
+          <p class="text-muted small">Sign in to the SOC Dashboard</p>
+        </div>
+
+        <!-- Login Form -->
+        <form method="post" action="{% url 'auth:login' %}" id="login-form" novalidate>
+          {% csrf_token %}
+
+          <!-- Hidden 'next' field for redirect after login -->
+          {% if next %}
+          <input type="hidden" name="next" value="{{ next }}">
+          {% endif %}
+
+          <!-- Non-field errors -->
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger alert-sm py-2 px-3" role="alert">
+            {% for error in form.non_field_errors %}
+            <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Username -->
+          <div class="mb-3">
+            <label for="id_login_username" class="form-label small fw-semibold">
+              <i class="bi bi-person me-1"></i> Username
+            </label>
+            {{ form.username }}
+            {% if form.username.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.username.errors %}{{ error }}{% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label for="id_login_password" class="form-label small fw-semibold">
+              <i class="bi bi-lock me-1"></i> Password
+            </label>
+            {{ form.password }}
+            {% if form.password.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.password.errors %}{{ error }}{% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Remember Me -->
+          <div class="mb-4 form-check">
+            {{ form.remember_me }}
+            <label class="form-check-label small" for="id_remember_me">
+              Remember me on this device
+            </label>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn btn-accent w-100 py-2 fw-semibold"
+                  id="btn-login">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+          </button>
+        </form>
+
+        <!-- Registration Link -->
+        <div class="text-center mt-4 pt-3 border-top border-secondary">
+          <small class="text-muted">
+            Don't have an account?
+            <a href="{% url 'auth:register' %}" class="text-accent text-decoration-none fw-semibold">
+              Create one
+            </a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

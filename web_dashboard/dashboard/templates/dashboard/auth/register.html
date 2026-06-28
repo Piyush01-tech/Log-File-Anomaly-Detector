@@ -1,0 +1,121 @@
+<!-- dashboard/templates/dashboard/auth/register.html — Phase 9A -->
+<!--
+  Registration page for the SOC Anomaly Detection Dashboard.
+
+  FEATURES:
+    - Username, email, password, confirm password fields
+    - Password strength hints
+    - Server-side validation error display
+    - CSRF-protected form
+    - Link to login page
+-->
+{% extends "dashboard/base.html" %}
+
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75">
+  <div class="col-md-6 col-lg-5">
+    <div class="auth-card card shadow-lg">
+      <div class="card-body p-4 p-md-5">
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <div class="auth-icon-wrapper mb-3">
+            <i class="bi bi-person-plus-fill auth-icon"></i>
+          </div>
+          <h1 class="h3 fw-bold">Create Account</h1>
+          <p class="text-muted small">Register for SOC Dashboard access</p>
+        </div>
+
+        <!-- Registration Form -->
+        <form method="post" action="{% url 'auth:register' %}" id="register-form" novalidate>
+          {% csrf_token %}
+
+          <!-- Non-field errors -->
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger alert-sm py-2 px-3" role="alert">
+            {% for error in form.non_field_errors %}
+            <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Username -->
+          <div class="mb-3">
+            <label for="id_register_username" class="form-label small fw-semibold">
+              <i class="bi bi-person me-1"></i> Username
+            </label>
+            {{ form.username }}
+            {% if form.username.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.username.errors %}{{ error }}{% endfor %}
+            </div>
+            {% endif %}
+            {% if form.username.help_text %}
+            <div class="form-text small">{{ form.username.help_text }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label for="id_register_email" class="form-label small fw-semibold">
+              <i class="bi bi-envelope me-1"></i> Email Address
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.email.errors %}{{ error }}{% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label for="id_register_password1" class="form-label small fw-semibold">
+              <i class="bi bi-lock me-1"></i> Password
+            </label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.password1.errors %}{{ error }}{% endfor %}
+            </div>
+            {% endif %}
+            {% if form.password1.help_text %}
+            <div class="form-text small">{{ form.password1.help_text }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="mb-4">
+            <label for="id_register_password2" class="form-label small fw-semibold">
+              <i class="bi bi-lock-fill me-1"></i> Confirm Password
+            </label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.password2.errors %}{{ error }}{% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn btn-accent w-100 py-2 fw-semibold"
+                  id="btn-register">
+            <i class="bi bi-person-plus me-1"></i> Create Account
+          </button>
+        </form>
+
+        <!-- Login Link -->
+        <div class="text-center mt-4 pt-3 border-top border-secondary">
+          <small class="text-muted">
+            Already have an account?
+            <a href="{% url 'auth:login' %}" class="text-accent text-decoration-none fw-semibold">
+              Sign in
+            </a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

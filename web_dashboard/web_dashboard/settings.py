@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
 
-    # Our application (Phase 8)
+    # Our application
     "dashboard.apps.DashboardConfig",
 ]
 
@@ -77,6 +77,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
+    # Phase 9A: Session security (idle timeout, security headers)
+    "dashboard.middleware.SessionSecurityMiddleware",
 ]
 
 ROOT_URLCONF = "web_dashboard.urls"
@@ -196,3 +199,61 @@ FLASK_API_BASE_URL = os.getenv("FLASK_API_BASE_URL", "http://127.0.0.1:5000")
 LOGIN_URL = "/auth/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/auth/login/"
+
+# ---------------------------------------------------------------------------
+# Session Security (Phase 9A)
+# ---------------------------------------------------------------------------
+# Session cookie settings for secure authentication.
+# In production, SESSION_COOKIE_SECURE should be True (requires HTTPS).
+
+SESSION_COOKIE_AGE = int(
+    os.getenv("SESSION_COOKIE_AGE", "86400")  # 24 hours (seconds)
+)
+SESSION_COOKIE_HTTPONLY = True          # Prevent JavaScript access to cookies
+SESSION_COOKIE_SECURE = not DEBUG       # HTTPS-only in production
+SESSION_COOKIE_SAMESITE = "Lax"         # CSRF protection complement
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False # Controlled by "Remember Me"
+SESSION_SAVE_EVERY_REQUEST = True       # Refresh expiry on each request
+
+# Idle session timeout (in seconds). After this period of inactivity,
+# the session is flushed and the user must re-authenticate.
+SESSION_IDLE_TIMEOUT = int(
+    os.getenv("SESSION_IDLE_TIMEOUT", "1800")  # 30 minutes
+)
+
+# ---------------------------------------------------------------------------
+# Password Hashers (Phase 9A)
+# ---------------------------------------------------------------------------
+# Explicitly list password hashers to match SECURITY_MODEL.md.
+# PBKDF2 with SHA256 is Django's default and recommended hasher.
+# Argon2 and bcrypt are listed as upgrade paths if needed.
+
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+]
+
+# ---------------------------------------------------------------------------
+# Django Messages Tags (Phase 9A)
+# ---------------------------------------------------------------------------
+# Map Django message levels to Bootstrap alert CSS classes.
+
+from django.contrib.messages import constants as message_constants  # noqa: E402
+
+MESSAGE_TAGS = {
+    message_constants.DEBUG: "secondary",
+    message_constants.INFO: "info",
+    message_constants.SUCCESS: "success",
+    message_constants.WARNING: "warning",
+    message_constants.ERROR: "danger",
+}
+
+# ---------------------------------------------------------------------------
+# CSRF Security (Phase 9A)
+# ---------------------------------------------------------------------------
+# CSRF cookie settings for secure form submissions.
+
+CSRF_COOKIE_HTTPONLY = False   # Must be False for AJAX to read the token
+CSRF_COOKIE_SECURE = not DEBUG # HTTPS-only in production
