@@ -39,12 +39,18 @@ Because of the decoupled architecture, you must run both services to test full f
 
 ### Starting the Flask ML Engine
 ```bash
-# Set Flask app environment variable
-export FLASK_APP=ml_engine/app.py
-# Run the development server on port 5000
+# Option 1: Flask CLI
+set FLASK_APP=ml_engine/app.py       # Windows
+export FLASK_APP=ml_engine/app.py    # Linux/Mac
 flask run --port=5000
+
+# Option 2: Direct execution
+python -m ml_engine.app
 ```
-*(Note: Flask API is stubbed until Phase 7B is complete. Currently, test ML via `python -m ml_engine.pipeline`).*
+The Flask API will be available at `http://127.0.0.1:5000/api/v1/`.
+
+> [!NOTE]
+> The model and scaler must be trained before the `/analyze` endpoint is functional. Run `python -m ml_engine.train` first. The `/health` endpoint will report `models_loaded: false` if training has not been completed.
 
 ### Starting the Django Dashboard
 ```bash

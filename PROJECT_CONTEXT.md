@@ -12,9 +12,9 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 
 ## 📊 Current Status
 
-- **Current Version**: `v0.2.0` (Post Phase 7A Refactoring)
-- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator).
-- **Stubbed Modules**: `ml_engine/app.py` (Flask API), `web_dashboard` (Django models, views, API client).
+- **Current Version**: `v0.3.0` (Post Phase 7B Flask REST API)
+- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API).
+- **Stubbed Modules**: `web_dashboard` (Django models, views, API client).
 
 ### Completed Phases
 - **Phase 1**: Project Setup & Repository Initialization
@@ -24,9 +24,9 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 - **Phase 5**: Model Training (Isolation Forest)
 - **Phase 6**: Prediction Engine
 - **Phase 7A**: ML Engine Refactoring (Packaged `ml_engine`, decoupled training/prediction, created `AnalysisPipeline`).
+- **Phase 7B**: Flask REST API (Application factory, `/health`, `/analyze`, `/stats` endpoints, JSON serialization, error handling).
 
 ### Pending Phases (Immediate)
-- **Phase 7B**: Flask REST API Implementation
 - **Phase 8**: Django Database Models Design & Implementation
 - **Phase 9**: Django Authentication & Role-Based Access Control
 - **Phase 10**: Upload & Analysis Workflow UI
@@ -71,7 +71,12 @@ The project strictly follows a **Decoupled Hybrid Architecture**:
 *(See [ML_PIPELINE.md](ML_PIPELINE.md))*
 
 ### Current Flask Pipeline
-- Stubbed in `ml_engine/app.py`. Awaiting Phase 7B implementation.
+- **Implemented** in `ml_engine/app.py` (Phase 7B).
+- Application factory pattern (`create_app()`) with Blueprint architecture (`/api/v1`).
+- Endpoints: `GET /health`, `POST /analyze`, `GET /stats`.
+- Custom `SafeJSONEncoder` for numpy/NaN-safe JSON serialization.
+- Global error handlers for structured JSON error responses.
+- `AnalysisPipeline` loaded once at startup, reused across requests.
 
 ### Current Django Pipeline
 - Stubbed models, views, and API client in `web_dashboard/dashboard/`.
