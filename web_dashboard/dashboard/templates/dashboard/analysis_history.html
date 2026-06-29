@@ -1,0 +1,192 @@
+<!-- dashboard/templates/dashboard/analysis_history.html — Phase 10 -->
+<!--
+  Analysis history page — paginated list of user's analysis jobs.
+
+  FEATURES:
+    - Sortable table of analysis jobs
+    - Status badges (COMPLETED, FAILED, RUNNING, PENDING)
+    - Anomaly count and rate display
+    - Clickable rows linking to detail pages
+    - Pagination controls
+    - Empty state with upload CTA
+    - User isolation (analysts see only their jobs)
+-->
+{% extends "dashboard/base.html" %}
+
+{% block title %}Analysis History{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">
+      <i class="bi bi-clock-history text-accent me-2"></i>
+      Analysis History
+    </h2>
+    <p class="text-muted mb-0">
+      {% if perms.dashboard.view_all_logs %}
+        All analysis jobs across the system.
+      {% else %}
+        Your uploaded log files and their analysis results.
+      {% endif %}
+    </p>
+  </div>
+  <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm">
+    <i class="bi bi-upload me-1"></i> New Upload
+  </a>
+</div>
+
+{% if jobs %}
+<!-- Jobs Table -->
+<div class="card soc-card mb-4">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover analysis-table mb-0" id="history-table">
+        <thead>
+          <tr>
+            <th class="ps-3">#</th>
+            <th>File</th>
+            <th>Status</th>
+            <th>Anomalies</th>
+            <th>Rate</th>
+            <th>Uploaded</th>
+            {% if perms.dashboard.view_all_logs %}
+            <th>Analyst</th>
+            {% endif %}
+            <th class="text-end pe-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for job in jobs %}
+          <tr class="history-row">
+            <td class="ps-3 text-muted">{{ job.pk }}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <i class="bi bi-file-earmark-binary text-accent me-2"></i>
+                <span class="fw-semibold small text-truncate" style="max-width: 250px;"
+                      title="{{ job.original_filename }}">
+                  {{ job.original_filename }}
+                </span>
+              </div>
+            </td>
+            <td>
+              {% if job.status == 'COMPLETED' %}
+                <span class="badge severity-badge severity-completed">
+                  <i class="bi bi-check-circle-fill me-1"></i>Completed
+                </span>
+              {% elif job.status == 'FAILED' %}
+                <span class="badge severity-badge severity-critical">
+                  <i class="bi bi-x-circle-fill me-1"></i>Failed
+                </span>
+              {% elif job.status == 'RUNNING' %}
+                <span class="badge severity-badge severity-medium">
+                  <i class="bi bi-arrow-repeat me-1"></i>Running
+                </span>
+              {% else %}
+                <span class="badge severity-badge severity-low">
+                  <i class="bi bi-hourglass me-1"></i>Pending
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              {% if job.status == 'COMPLETED' %}
+                <span class="{% if job.total_anomalies > 0 %}text-warning fw-bold{% else %}text-muted{% endif %}">
+                  {{ job.total_anomalies }}
+                </span>
+                <span class="text-muted small">/ {{ job.total_samples }}</span>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if job.status == 'COMPLETED' and job.anomaly_rate is not None %}
+                <span class="small">{{ job.anomaly_rate|floatformat:1 }}%</span>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="small text-muted">{{ job.uploaded_at|date:"M d, Y H:i" }}</span>
+            </td>
+            {% if perms.dashboard.view_all_logs %}
+            <td>
+              <span class="small">{{ job.user.username }}</span>
+            </td>
+            {% endif %}
+            <td class="text-end pe-3">
+              <a href="{% url 'dashboard:analysis_detail' pk=job.pk %}"
+                 class="btn btn-sm btn-outline-light py-0 px-2">
+                <i class="bi bi-eye me-1"></i>View
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav aria-label="Analysis history pagination" class="d-flex justify-content-center">
+  <ul class="pagination pagination-sm">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page=1" aria-label="First">
+        <i class="bi bi-chevron-double-left"></i>
+      </a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+    </li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+      <li class="page-item active">
+        <span class="page-link">{{ num }}</span>
+      </li>
+      {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+      </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+        <i class="bi bi-chevron-double-right"></i>
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<!-- Empty State -->
+<div class="card soc-card">
+  <div class="card-body text-center py-5">
+    <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+    <h4 class="mt-3 fw-bold">No Analyses Yet</h4>
+    <p class="text-muted mb-4">
+      Upload your first Windows Event Log file to get started.
+    </p>
+    <a href="{% url 'dashboard:upload' %}" class="btn btn-accent">
+      <i class="bi bi-upload me-1"></i> Upload .evtx File
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

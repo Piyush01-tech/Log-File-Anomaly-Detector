@@ -54,12 +54,14 @@ The Log File Anomaly Detector is being built in distinct phases. This roadmap ou
 
 ---
 
-## 🔜 Near-Term Milestones (Web UI)
+### Phase 10: Upload & Analysis Workflow ✅
+- [x] Create UI for uploading `.evtx` files.
+- [x] Implement `FlaskAPIClient` in Django to trigger analysis.
+- [x] Save results to the database upon API completion.
 
-### Phase 10: Upload & Analysis Workflow
-- [ ] Create UI for uploading `.evtx` files.
-- [ ] Implement `FlaskAPIClient` in Django to trigger analysis.
-- [ ] Save results to the database upon API completion.
+---
+
+## 🔜 Near-Term Milestones (Web UI)
 
 ### Phase 11: Dashboard UI
 - [ ] Build the main SOC view (Alerts table, KPI cards).

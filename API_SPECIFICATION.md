@@ -154,6 +154,19 @@ Returns metadata about the currently loaded Isolation Forest model.
 
 ---
 
+## 💻 Django API Client (`FlaskAPIClient`)
+
+In Phase 10, the `FlaskAPIClient` was implemented in `web_dashboard/dashboard/services.py` to serve as an **Anti-Corruption Layer (ACL)** isolating Django from the specific HTTP mechanics of communicating with the Flask engine.
+
+### Design Principles:
+1. **Single Responsibility**: All HTTP communication with Flask lives in this class. Views never use `requests` directly.
+2. **Stateless Methods**: All methods (`health`, `analyze`, `stats`) are class methods; no instance state or connection pooling is maintained.
+3. **Structured Responses**: Methods return Python dataclasses (`HealthStatus`, `AnalysisResult`, `ModelStats`), never raw HTTP Response objects.
+4. **Resilient Error Handling**: Connection errors, timeouts, and HTTP 4xx/5xx responses are caught and raised as a custom `FlaskAPIError`, which includes the underlying message and status code.
+5. **Configuration**: Uses `FLASK_API_BASE_URL` and `FLASK_API_TIMEOUT` (default: 120s) from Django settings.
+
+---
+
 ## 🔒 Authentication Strategy
 
 Currently, the ML microservice is designed to run behind a firewall on an internal Docker network, accessible only by the Django application. No authentication is enforced in this phase.

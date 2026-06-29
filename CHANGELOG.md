@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.7.0] - 2026-06-29 — Phase 10: Upload & Analysis Workflow
+
+### Completed Phase
+- **Phase 10**: Upload & Analysis Workflow UI
+
+### Added
+- `web_dashboard/dashboard/services.py`: Implemented `FlaskAPIClient` as an Anti-Corruption Layer to interface with the ML Engine (`/health`, `/analyze`, `/stats`), handling timeouts and connection errors via `FlaskAPIError`.
+- `web_dashboard/dashboard/forms.py`: Created `EVTXUploadForm` with client/server validation for `.evtx` extension, empty files, and a 50MB configurable file size limit.
+- `web_dashboard/dashboard/views.py`: Added `upload_view` (orchestrates upload, API call, and persistence), `AnalysisDetailView` (shows job and anomalies), and `AnalysisHistoryView` (paginated user history).
+- `web_dashboard/dashboard/urls.py`: Added routes for `/upload/`, `/analysis/<int:pk>/`, and `/history/`.
+- `web_dashboard/dashboard/templates/dashboard/upload.html`: Drag-and-drop file upload UI with real-time validation and double-submit prevention.
+- `web_dashboard/dashboard/templates/dashboard/analysis_detail.html`: Results UI with KPI summary, severity breakdown, and feature grid.
+- `web_dashboard/dashboard/templates/dashboard/analysis_history.html`: Paginated historical list of analyses with user isolation.
+
+### Modified
+- `web_dashboard/dashboard/templates/dashboard/base.html`: Wired up Upload and History navigation links.
+- `web_dashboard/dashboard/templates/dashboard/home.html`: Linked "Quick Actions" to the upload form and populated the completed job count placeholder.
+- `web_dashboard/dashboard/static/dashboard/css/main.css`: Added styles for `upload-dropzone`, `severity-badge`, `analysis-table`, and `feature-grid`.
+- `web_dashboard/web_dashboard/settings.py`: Added `EVTX_MAX_UPLOAD_SIZE` (default 50MB) and `FLASK_API_TIMEOUT` (default 120s).
+
+---
+
 ## [0.6.0] - 2026-06-29 — Phase 9B: Django Role-Based Access Control
 
 ### Completed Phase

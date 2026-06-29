@@ -1,0 +1,292 @@
+<!-- dashboard/templates/dashboard/upload.html — Phase 10 -->
+<!--
+  EVTX file upload page.
+
+  FEATURES:
+    - Clean upload card with file input
+    - Drag-and-drop visual zone
+    - Client-side file validation (extension, size)
+    - Upload progress feedback
+    - Double-submit prevention
+    - Server-side error display via Django messages
+    - Dark SOC theme consistent with auth pages
+-->
+{% extends "dashboard/base.html" %}
+
+{% block title %}Upload EVTX File{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8 col-xl-7">
+
+    <!-- Page Header -->
+    <div class="text-center mb-4">
+      <div class="auth-icon-wrapper mb-3 mx-auto">
+        <i class="bi bi-cloud-arrow-up auth-icon"></i>
+      </div>
+      <h2 class="fw-bold mb-1">Upload Event Log</h2>
+      <p class="text-muted">
+        Upload a Windows Event Log (.evtx) file for anomaly analysis.
+      </p>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="card soc-card">
+      <div class="card-body p-4">
+        <form method="post"
+              enctype="multipart/form-data"
+              id="upload-form"
+              novalidate>
+          {% csrf_token %}
+
+          <!-- Drop Zone -->
+          <div class="upload-dropzone" id="upload-dropzone">
+            <div class="upload-dropzone-content">
+              <i class="bi bi-file-earmark-binary upload-dropzone-icon"></i>
+              <p class="upload-dropzone-text mb-1">
+                Drag and drop your .evtx file here
+              </p>
+              <p class="text-muted small mb-3">or click to browse</p>
+
+              <!-- Actual file input -->
+              <div class="mb-0">
+                {{ form.evtx_file }}
+              </div>
+            </div>
+          </div>
+
+          <!-- File Info (shown after selection) -->
+          <div class="file-info-panel mt-3" id="file-info-panel" style="display: none;">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-file-earmark-check text-accent me-2 fs-5"></i>
+                <div>
+                  <div class="fw-semibold small" id="selected-filename">—</div>
+                  <div class="text-muted" style="font-size: 0.78rem;" id="selected-filesize">—</div>
+                </div>
+              </div>
+              <button type="button"
+                      class="btn btn-sm btn-outline-danger"
+                      id="clear-file-btn"
+                      title="Remove file">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Validation errors from Django -->
+          {% if form.evtx_file.errors %}
+          <div class="alert alert-danger mt-3 mb-0 py-2">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {% for error in form.evtx_file.errors %}
+              {{ error }}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Upload Guidelines -->
+          <div class="upload-guidelines mt-3">
+            <div class="row g-2">
+              <div class="col-sm-4">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-check-circle text-accent me-2 small"></i>
+                  <span class="text-muted small">.evtx files only</span>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-check-circle text-accent me-2 small"></i>
+                  <span class="text-muted small">Max 50 MB</span>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-check-circle text-accent me-2 small"></i>
+                  <span class="text-muted small">Secure upload</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid mt-4">
+            <button type="submit"
+                    class="btn btn-accent btn-lg"
+                    id="upload-submit-btn"
+                    disabled>
+              <span id="upload-btn-text">
+                <i class="bi bi-shield-check me-2"></i>
+                Analyze for Anomalies
+              </span>
+              <span id="upload-btn-loading" style="display: none;">
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Analyzing — this may take a moment...
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="card soc-card mt-4">
+      <div class="card-header">
+        <i class="bi bi-info-circle me-2 text-accent"></i>
+        <span class="fw-bold">How It Works</span>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4 text-center">
+            <div class="mb-2">
+              <span class="badge bg-accent rounded-pill px-3 py-2">1</span>
+            </div>
+            <p class="small text-muted mb-0">
+              Upload your .evtx file from Windows Event Viewer
+            </p>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="mb-2">
+              <span class="badge bg-accent rounded-pill px-3 py-2">2</span>
+            </div>
+            <p class="small text-muted mb-0">
+              AI analyzes events using Isolation Forest anomaly detection
+            </p>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="mb-2">
+              <span class="badge bg-accent rounded-pill px-3 py-2">3</span>
+            </div>
+            <p class="small text-muted mb-0">
+              Review flagged anomalies with severity scores and details
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('upload-form');
+  const fileInput = document.getElementById('evtx-file-input');
+  const dropzone = document.getElementById('upload-dropzone');
+  const fileInfoPanel = document.getElementById('file-info-panel');
+  const filenameEl = document.getElementById('selected-filename');
+  const filesizeEl = document.getElementById('selected-filesize');
+  const clearBtn = document.getElementById('clear-file-btn');
+  const submitBtn = document.getElementById('upload-submit-btn');
+  const btnText = document.getElementById('upload-btn-text');
+  const btnLoading = document.getElementById('upload-btn-loading');
+
+  const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+
+  // --- Format file size ---
+  function formatSize(bytes) {
+    if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+    if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return bytes + ' bytes';
+  }
+
+  // --- Update UI after file selection ---
+  function onFileSelected() {
+    if (fileInput.files && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const name = file.name;
+      const size = file.size;
+
+      // Client-side validation
+      if (!name.toLowerCase().endsWith('.evtx')) {
+        filenameEl.textContent = name;
+        filesizeEl.textContent = 'Invalid file type — .evtx only';
+        filesizeEl.classList.add('text-danger');
+        fileInfoPanel.style.display = 'block';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      if (size > MAX_SIZE) {
+        filenameEl.textContent = name;
+        filesizeEl.textContent = formatSize(size) + ' — exceeds 50 MB limit';
+        filesizeEl.classList.add('text-danger');
+        fileInfoPanel.style.display = 'block';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      if (size === 0) {
+        filenameEl.textContent = name;
+        filesizeEl.textContent = 'File is empty';
+        filesizeEl.classList.add('text-danger');
+        fileInfoPanel.style.display = 'block';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      // Valid file
+      filenameEl.textContent = name;
+      filesizeEl.textContent = formatSize(size);
+      filesizeEl.classList.remove('text-danger');
+      fileInfoPanel.style.display = 'block';
+      submitBtn.disabled = false;
+      dropzone.classList.add('has-file');
+    } else {
+      clearFile();
+    }
+  }
+
+  // --- Clear file selection ---
+  function clearFile() {
+    fileInput.value = '';
+    fileInfoPanel.style.display = 'none';
+    submitBtn.disabled = true;
+    dropzone.classList.remove('has-file');
+    filesizeEl.classList.remove('text-danger');
+  }
+
+  // --- File input change ---
+  fileInput.addEventListener('change', onFileSelected);
+
+  // --- Clear button ---
+  clearBtn.addEventListener('click', clearFile);
+
+  // --- Drag and drop ---
+  dropzone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dropzone.classList.add('drag-over');
+  });
+
+  dropzone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dropzone.classList.remove('drag-over');
+  });
+
+  dropzone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dropzone.classList.remove('drag-over');
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      fileInput.files = e.dataTransfer.files;
+      onFileSelected();
+    }
+  });
+
+  // --- Form submit: prevent double-submit ---
+  form.addEventListener('submit', function(e) {
+    if (submitBtn.disabled) {
+      e.preventDefault();
+      return;
+    }
+    submitBtn.disabled = true;
+    btnText.style.display = 'none';
+    btnLoading.style.display = 'inline';
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,288 @@
+<!-- dashboard/templates/dashboard/analysis_detail.html — Phase 10 -->
+<!--
+  Analysis job detail page — shows results of a single analysis.
+
+  FEATURES:
+    - Job metadata card (filename, status, timestamps)
+    - Summary statistics with KPI cards
+    - Severity breakdown bar
+    - Anomaly table with severity badges, scores, and feature data
+    - Error display for failed jobs
+    - Back navigation to history
+-->
+{% extends "dashboard/base.html" %}
+
+{% block title %}Analysis #{{ job.pk }}{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">
+      <i class="bi bi-file-earmark-bar-graph text-accent me-2"></i>
+      Analysis Results
+    </h2>
+    <p class="text-muted mb-0">
+      Job #{{ job.pk }} — {{ job.original_filename }}
+    </p>
+  </div>
+  <div>
+    <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-outline-light btn-sm me-2">
+      <i class="bi bi-clock-history me-1"></i> History
+    </a>
+    <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm">
+      <i class="bi bi-upload me-1"></i> New Upload
+    </a>
+  </div>
+</div>
+
+<!-- Status Banner -->
+{% if job.status == 'FAILED' %}
+<div class="alert alert-danger d-flex align-items-start mb-4">
+  <i class="bi bi-exclamation-octagon-fill me-3 fs-4 mt-1"></i>
+  <div>
+    <strong>Analysis Failed</strong>
+    <p class="mb-0 mt-1 small">{{ job.error_message }}</p>
+  </div>
+</div>
+{% elif job.status == 'RUNNING' %}
+<div class="alert alert-info d-flex align-items-center mb-4">
+  <span class="spinner-border spinner-border-sm me-3" role="status"></span>
+  <div>
+    <strong>Analysis in Progress</strong>
+    <span class="text-muted small ms-2">— This page will show results once processing completes.</span>
+  </div>
+</div>
+{% elif job.status == 'PENDING' %}
+<div class="alert alert-warning d-flex align-items-center mb-4">
+  <i class="bi bi-hourglass-split me-3 fs-5"></i>
+  <div>
+    <strong>Pending</strong>
+    <span class="text-muted small ms-2">— Waiting for analysis to begin.</span>
+  </div>
+</div>
+{% endif %}
+
+<!-- Job Metadata + Summary Row -->
+<div class="row g-4 mb-4">
+  <!-- Job Info Card -->
+  <div class="col-lg-5">
+    <div class="card soc-card h-100">
+      <div class="card-header">
+        <i class="bi bi-info-circle me-2 text-accent"></i>
+        <span class="fw-bold">Job Details</span>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0 detail-table">
+          <tr>
+            <td class="text-muted">File</td>
+            <td class="fw-semibold">{{ job.original_filename }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Status</td>
+            <td>
+              {% if job.status == 'COMPLETED' %}
+                <span class="badge severity-badge severity-completed">
+                  <i class="bi bi-check-circle-fill me-1"></i>Completed
+                </span>
+              {% elif job.status == 'FAILED' %}
+                <span class="badge severity-badge severity-critical">
+                  <i class="bi bi-x-circle-fill me-1"></i>Failed
+                </span>
+              {% elif job.status == 'RUNNING' %}
+                <span class="badge severity-badge severity-medium">
+                  <i class="bi bi-arrow-repeat me-1"></i>Running
+                </span>
+              {% else %}
+                <span class="badge severity-badge severity-low">
+                  <i class="bi bi-hourglass me-1"></i>Pending
+                </span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td class="text-muted">Uploaded</td>
+            <td>{{ job.uploaded_at|date:"M d, Y H:i" }}</td>
+          </tr>
+          {% if job.completed_at %}
+          <tr>
+            <td class="text-muted">Completed</td>
+            <td>{{ job.completed_at|date:"M d, Y H:i" }}</td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td class="text-muted">Analyst</td>
+            <td>{{ job.user.username }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  {% if job.status == 'COMPLETED' %}
+  <div class="col-lg-7">
+    <div class="row g-3 h-100">
+      <div class="col-sm-4">
+        <div class="stat-card text-center h-100 d-flex flex-column justify-content-center">
+          <div class="stat-value">{{ job.total_samples }}</div>
+          <div class="stat-label">Time Windows</div>
+          <small class="text-muted">Analyzed</small>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="stat-card text-center h-100 d-flex flex-column justify-content-center
+                    {% if job.total_anomalies > 0 %}border-warning border-bottom border-3{% endif %}">
+          <div class="stat-value {% if job.total_anomalies > 0 %}text-warning{% endif %}">
+            {{ job.total_anomalies }}
+          </div>
+          <div class="stat-label">Anomalies</div>
+          <small class="text-muted">Detected</small>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="stat-card text-center h-100 d-flex flex-column justify-content-center">
+          <div class="stat-value">
+            {% if job.anomaly_rate is not None %}
+              {% widthratio job.anomaly_rate 1 100 %}%
+            {% else %}
+              —
+            {% endif %}
+          </div>
+          <div class="stat-label">Anomaly Rate</div>
+          <small class="text-muted">Ratio</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Severity Breakdown -->
+{% if job.status == 'COMPLETED' and anomaly_count > 0 %}
+<div class="card soc-card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div>
+      <i class="bi bi-bar-chart me-2 text-accent"></i>
+      <span class="fw-bold">Severity Breakdown</span>
+    </div>
+    <span class="text-muted small">{{ anomaly_count }} total anomalies</span>
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-sm-3">
+        <div class="d-flex align-items-center">
+          <span class="badge severity-badge severity-critical me-2">CRITICAL</span>
+          <span class="fw-bold">{{ critical_count }}</span>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="d-flex align-items-center">
+          <span class="badge severity-badge severity-high me-2">HIGH</span>
+          <span class="fw-bold">{{ high_count }}</span>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="d-flex align-items-center">
+          <span class="badge severity-badge severity-medium me-2">MEDIUM</span>
+          <span class="fw-bold">{{ medium_count }}</span>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="d-flex align-items-center">
+          <span class="badge severity-badge severity-low me-2">LOW</span>
+          <span class="fw-bold">{{ low_count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Anomaly Table -->
+<div class="card soc-card mb-4">
+  <div class="card-header">
+    <i class="bi bi-exclamation-triangle me-2 text-accent"></i>
+    <span class="fw-bold">Detected Anomalies</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover analysis-table mb-0" id="anomaly-table">
+        <thead>
+          <tr>
+            <th class="ps-3">Severity</th>
+            <th>Score</th>
+            <th>Time Window</th>
+            <th>Computer</th>
+            <th>Key Indicators</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for anomaly in anomalies %}
+          <tr class="anomaly-row severity-row-{{ anomaly.severity|lower }}">
+            <td class="ps-3">
+              <span class="badge severity-badge severity-{{ anomaly.severity|lower }}">
+                {{ anomaly.get_severity_display }}
+              </span>
+            </td>
+            <td>
+              <code class="anomaly-score">{{ anomaly.anomaly_score|floatformat:4 }}</code>
+            </td>
+            <td>
+              <span class="small">{{ anomaly.window_start|date:"M d, Y H:i" }}</span>
+            </td>
+            <td>
+              <span class="small">{{ anomaly.computer_name|default:"—" }}</span>
+            </td>
+            <td>
+              {% if anomaly.feature_data %}
+              <button class="btn btn-sm btn-outline-light py-0 px-2"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#features-{{ anomaly.pk }}"
+                      aria-expanded="false">
+                <i class="bi bi-chevron-down me-1"></i>
+                <span class="small">Details</span>
+              </button>
+              {% else %}
+              <span class="text-muted small">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% if anomaly.feature_data %}
+          <tr class="collapse feature-collapse" id="features-{{ anomaly.pk }}">
+            <td colspan="5" class="ps-4 pe-3 py-3 border-0">
+              <div class="feature-grid">
+                {% for key, value in anomaly.feature_data.items %}
+                <div class="feature-item">
+                  <span class="feature-label">{{ key }}</span>
+                  <span class="feature-value">
+                    {% if value is None %}—{% else %}{{ value|floatformat:2 }}{% endif %}
+                  </span>
+                </div>
+                {% endfor %}
+              </div>
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% elif job.status == 'COMPLETED' and anomaly_count == 0 %}
+<!-- No Anomalies Found -->
+<div class="card soc-card mb-4">
+  <div class="card-body text-center py-5">
+    <i class="bi bi-shield-check text-accent" style="font-size: 3rem;"></i>
+    <h4 class="mt-3 fw-bold">No Anomalies Detected</h4>
+    <p class="text-muted">
+      The analysis found {{ job.total_samples }} time windows and
+      none were flagged as anomalous. Your logs appear normal.
+    </p>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

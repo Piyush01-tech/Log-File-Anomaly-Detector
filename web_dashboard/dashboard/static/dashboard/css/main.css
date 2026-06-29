@@ -432,7 +432,248 @@ a:hover {
 }
 
 /* =================================================================
-   11. Responsive Overrides
+   11. Upload Dropzone (Phase 10)
+   ================================================================= */
+
+.upload-dropzone {
+  border: 2px dashed var(--soc-border);
+  border-radius: var(--soc-radius);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--soc-transition);
+  background-color: var(--soc-bg-secondary);
+  position: relative;
+}
+
+.upload-dropzone:hover {
+  border-color: var(--soc-accent);
+  background-color: var(--soc-accent-muted);
+}
+
+.upload-dropzone.drag-over {
+  border-color: var(--soc-accent);
+  background-color: var(--soc-accent-muted);
+  transform: scale(1.01);
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+}
+
+.upload-dropzone.has-file {
+  border-color: var(--soc-accent);
+  border-style: solid;
+}
+
+.upload-dropzone-icon {
+  font-size: 3rem;
+  color: var(--soc-text-muted);
+  display: block;
+  margin-bottom: 0.75rem;
+  transition: var(--soc-transition);
+}
+
+.upload-dropzone:hover .upload-dropzone-icon,
+.upload-dropzone.drag-over .upload-dropzone-icon {
+  color: var(--soc-accent);
+  transform: translateY(-3px);
+}
+
+.upload-dropzone-text {
+  color: var(--soc-text-secondary);
+  font-weight: 500;
+}
+
+.file-info-panel {
+  background-color: var(--soc-bg-secondary);
+  border: 1px solid var(--soc-border);
+  border-radius: var(--soc-radius-sm);
+  padding: 0.75rem 1rem;
+}
+
+.upload-guidelines {
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--soc-border);
+}
+
+/* =================================================================
+   12. Severity Badges (Phase 10)
+   ================================================================= */
+
+.severity-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 0.3em 0.65em;
+  border-radius: 0.25rem;
+}
+
+.severity-critical {
+  background-color: rgba(248, 113, 113, 0.15);
+  color: var(--soc-danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.severity-high {
+  background-color: rgba(251, 146, 60, 0.15);
+  color: #fb923c;
+  border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+.severity-medium {
+  background-color: rgba(251, 191, 36, 0.15);
+  color: var(--soc-warning);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.severity-low {
+  background-color: rgba(96, 165, 250, 0.15);
+  color: var(--soc-info);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.severity-completed {
+  background-color: rgba(52, 211, 153, 0.15);
+  color: var(--soc-success);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+/* =================================================================
+   13. Analysis Tables (Phase 10)
+   ================================================================= */
+
+.analysis-table {
+  --bs-table-bg: transparent;
+  --bs-table-hover-bg: var(--soc-bg-card-hover);
+  margin-bottom: 0;
+}
+
+.analysis-table thead th {
+  background-color: var(--soc-bg-secondary);
+  border-bottom: 1px solid var(--soc-border);
+  color: var(--soc-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.75rem 0.625rem;
+  white-space: nowrap;
+}
+
+.analysis-table tbody td {
+  border-bottom: 1px solid var(--soc-border);
+  padding: 0.65rem 0.625rem;
+  vertical-align: middle;
+  color: var(--soc-text-primary);
+  font-size: 0.875rem;
+}
+
+.analysis-table tbody tr:hover {
+  background-color: var(--soc-bg-card-hover);
+}
+
+.analysis-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.anomaly-score {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.8rem;
+  color: var(--soc-text-secondary);
+  background-color: var(--soc-bg-secondary);
+  padding: 0.15em 0.45em;
+  border-radius: 0.2rem;
+}
+
+/* Severity row accent */
+.severity-row-critical {
+  border-left: 3px solid var(--soc-danger);
+}
+
+.severity-row-high {
+  border-left: 3px solid #fb923c;
+}
+
+.severity-row-medium {
+  border-left: 3px solid var(--soc-warning);
+}
+
+.severity-row-low {
+  border-left: 3px solid var(--soc-info);
+}
+
+/* Detail table (job info) */
+.detail-table td {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.detail-table td:first-child {
+  width: 120px;
+  white-space: nowrap;
+}
+
+/* =================================================================
+   14. Feature Grid (Phase 10)
+   ================================================================= */
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.5rem;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--soc-bg-secondary);
+  border-radius: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--soc-border);
+}
+
+.feature-label {
+  font-size: 0.68rem;
+  color: var(--soc-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.feature-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--soc-text-primary);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.feature-collapse {
+  background-color: var(--soc-bg-secondary);
+}
+
+/* =================================================================
+   15. Pagination (Phase 10)
+   ================================================================= */
+
+.pagination .page-link {
+  background-color: var(--soc-bg-card);
+  border-color: var(--soc-border);
+  color: var(--soc-text-secondary);
+  font-size: 0.85rem;
+  transition: var(--soc-transition);
+}
+
+.pagination .page-link:hover {
+  background-color: var(--soc-accent-muted);
+  border-color: var(--soc-accent);
+  color: var(--soc-accent);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--soc-accent);
+  border-color: var(--soc-accent);
+  color: var(--soc-bg-primary);
+}
+
+/* =================================================================
+   16. Responsive Overrides
    ================================================================= */
 
 @media (max-width: 768px) {
@@ -452,6 +693,22 @@ a:hover {
   .soc-hero h1 {
     font-size: 1.75rem;
   }
+
+  .upload-dropzone {
+    padding: 1.5rem 1rem;
+  }
+
+  .upload-dropzone-icon {
+    font-size: 2rem;
+  }
+
+  .feature-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .analysis-table {
+    font-size: 0.8rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -461,5 +718,9 @@ a:hover {
 
   .stat-card .stat-value {
     font-size: 1.5rem;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }

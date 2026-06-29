@@ -186,11 +186,24 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # ---------------------------------------------------------------------------
-# External Services
+# External Services (Phase 10)
 # ---------------------------------------------------------------------------
 
 # URL of the Flask ML inference microservice
 FLASK_API_BASE_URL = os.getenv("FLASK_API_BASE_URL", "http://127.0.0.1:5000")
+
+# Timeout (in seconds) for synchronous Flask API calls.
+# Large .evtx files may require longer processing times.
+FLASK_API_TIMEOUT = int(os.getenv("FLASK_API_TIMEOUT", "120"))
+
+# ---------------------------------------------------------------------------
+# File Upload Limits (Phase 10)
+# ---------------------------------------------------------------------------
+
+# Maximum .evtx file size in bytes (default: 50 MB).
+EVTX_MAX_UPLOAD_SIZE = int(
+    os.getenv("EVTX_MAX_UPLOAD_SIZE", str(50 * 1024 * 1024))
+)
 
 # ---------------------------------------------------------------------------
 # Login / Logout Redirect

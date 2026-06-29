@@ -64,9 +64,9 @@
   </div>
   <div class="col-md-4">
     <div class="stat-card text-center">
-      <div class="stat-value">—</div>
-      <div class="stat-label">Active Alerts</div>
-      <small class="text-muted">Phase 11</small>
+      <div class="stat-value text-accent">{{ my_completed_jobs|default:"0" }}</div>
+      <div class="stat-label">Completed</div>
+      <small class="text-muted">Personal</small>
     </div>
   </div>
   <div class="col-md-4">
@@ -91,10 +91,9 @@
           Upload and analyze Windows Event Log files for anomalies.
         </p>
         {% if perms.dashboard.upload_evtx %}
-        <button class="btn btn-accent btn-sm mb-2" disabled>
+        <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm mb-2">
           <i class="bi bi-upload me-1"></i> Upload .evtx File
-          <span class="badge bg-dark ms-2">Phase 10</span>
-        </button>
+        </a>
         {% endif %}
         
         {% if perms.dashboard.manage_users %}
