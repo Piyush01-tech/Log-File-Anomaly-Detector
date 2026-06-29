@@ -12,8 +12,8 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 
 ## 📊 Current Status
 
-- **Current Version**: `v0.7.0` (Post Phase 10 Upload & Analysis Workflow)
-- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations, authentication, RBAC/permissions, Upload workflow, API client).
+- **Current Version**: `v0.8.0` (Post Phase 11A Dashboard Foundation)
+- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations, authentication, RBAC/permissions, Upload workflow, API client, Dashboard Foundation with Sidebar layout and reusable templates).
 
 ### Completed Phases
 - **Phase 1**: Project Setup & Repository Initialization
@@ -28,9 +28,11 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 - **Phase 9A**: Django Authentication (Login, Logout, Registration, Profile, Password Change, Session Security, Audit Logging).
 - **Phase 9B**: Django Role-Based Access Control (Groups, Permissions, User Isolation).
 - **Phase 10**: Upload & Analysis Workflow UI
+- **Phase 11A**: Dashboard Foundation (Sidebar navigation, Breadcrumbs, Reusable UI Components, User Profile, Enhanced Home Page).
 
 ### Pending Phases (Immediate)
-- **Phase 11**: Real-time Logging (Celery Integration)
+- **Phase 11B**: Alerts and Incidents Tables
+- **Phase 12**: Charts & Visualization
 
 *(See [ROADMAP.md](ROADMAP.md) for full phase details)*
 

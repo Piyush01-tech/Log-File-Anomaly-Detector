@@ -59,12 +59,18 @@ The Log File Anomaly Detector is being built in distinct phases. This roadmap ou
 - [x] Implement `FlaskAPIClient` in Django to trigger analysis.
 - [x] Save results to the database upon API completion.
 
+### Phase 11A: Dashboard Foundation ✅
+- [x] Implement reusable layout with Sidebar and Breadcrumbs.
+- [x] Enhance Home page with stats and recent activity tables.
+- [x] Create reusable UI components (empty states, loading states, stats cards).
+- [x] Create dedicated user profile page.
+
 ---
 
 ## 🔜 Near-Term Milestones (Web UI)
 
-### Phase 11: Dashboard UI
-- [ ] Build the main SOC view (Alerts table, KPI cards).
+### Phase 11B: Dashboard Data
+- [ ] Build the main SOC view (Alerts table).
 - [ ] Build incident detail pages.
 
 ### Phase 12: Charts & Visualization

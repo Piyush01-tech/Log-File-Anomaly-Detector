@@ -1,4 +1,4 @@
-<!-- dashboard/templates/dashboard/base.html — Phase 9B -->
+<!-- dashboard/templates/dashboard/base.html — Phase 11A -->
 <!--
   Production base template for the SOC Anomaly Detection Dashboard.
 
@@ -7,13 +7,19 @@
     - Bootstrap 5.3 for responsive layout and components.
     - Google Fonts (Inter) for clean, modern typography.
     - Auth-aware navigation (Login/Register vs Profile/Logout).
+    - Sidebar layout for authenticated users.
     - Django messages framework integration with Bootstrap alerts.
 
+  LAYOUT:
+    - Authenticated: Navbar + Sidebar + Content area with breadcrumbs.
+    - Unauthenticated: Navbar + Full-width content (no sidebar).
+
   BLOCKS:
-    - title:     Page title suffix (prepended with "SOC Dashboard —").
-    - extra_css: Additional page-specific stylesheets.
-    - content:   Main page content.
-    - extra_js:  Additional page-specific scripts.
+    - title:            Page title suffix (prepended with "SOC Dashboard —").
+    - extra_css:        Additional page-specific stylesheets.
+    - breadcrumb_items: Breadcrumb navigation items.
+    - content:          Main page content.
+    - extra_js:         Additional page-specific scripts.
 -->
 {% load static %}
 <!DOCTYPE html>
@@ -52,7 +58,19 @@
   <!-- Navigation Bar                                                -->
   <!-- ============================================================ -->
   <nav class="navbar navbar-expand-lg navbar-dark soc-navbar" id="main-navbar">
-    <div class="container">
+    <div class="container-fluid px-3">
+      <!-- Mobile Sidebar Toggle (visible < lg, authenticated only) -->
+      {% if user.is_authenticated %}
+      <button class="btn btn-link text-light me-2 d-lg-none sidebar-toggle-btn p-0"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#sidebar-mobile"
+              aria-controls="sidebar-mobile"
+              aria-label="Toggle sidebar">
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      {% endif %}
+
       <!-- Brand -->
       <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard:home' %}">
         <i class="bi bi-shield-lock-fill me-2 text-accent"></i>
@@ -72,25 +90,9 @@
       <!-- Navigation Links -->
       <div class="collapse navbar-collapse" id="navbarMain">
         {% if user.is_authenticated %}
-        <!-- Authenticated Navigation -->
+        <!-- Authenticated Navigation (minimal — sidebar has primary nav) -->
         <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'dashboard:home' %}">
-              <i class="bi bi-speedometer2 me-1"></i> Dashboard
-            </a>
-          </li>
-          {% if perms.dashboard.upload_evtx %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'dashboard:upload' %}">
-              <i class="bi bi-cloud-arrow-up me-1"></i> Upload
-            </a>
-          </li>
-          {% endif %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'dashboard:analysis_history' %}">
-              <i class="bi bi-clock-history me-1"></i> History
-            </a>
-          </li>
+          <!-- Navbar items kept minimal; primary nav is in sidebar -->
         </ul>
 
         <!-- User Menu (Right-aligned) -->
@@ -108,7 +110,7 @@
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark"
                 aria-labelledby="userDropdown">
               <li>
-                <a class="dropdown-item" href="{% url 'auth:profile' %}">
+                <a class="dropdown-item" href="{% url 'dashboard:profile' %}">
                   <i class="bi bi-person-gear me-2"></i> Profile
                 </a>
               </li>
@@ -161,7 +163,7 @@
   <!-- Django Messages                                               -->
   <!-- ============================================================ -->
   {% if messages %}
-  <div class="container mt-3" id="messages-container">
+  <div class="{% if user.is_authenticated %}dashboard-messages{% else %}container{% endif %} mt-3" id="messages-container">
     {% for message in messages %}
     <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
          role="alert" id="message-{{ forloop.counter }}">
@@ -183,17 +185,45 @@
   {% endif %}
 
   <!-- ============================================================ -->
-  <!-- Main Content                                                  -->
+  <!-- Main Layout                                                   -->
   <!-- ============================================================ -->
+  {% if user.is_authenticated %}
+  <!-- Authenticated Layout: Sidebar + Content -->
+  <div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    {% include "dashboard/includes/_sidebar.html" %}
+
+    <!-- Content Area -->
+    <main class="dashboard-content" id="main-content">
+      <!-- Breadcrumbs -->
+      <nav aria-label="breadcrumb" class="soc-breadcrumbs mb-3">
+        <ol class="breadcrumb mb-0">
+          {% block breadcrumb_items %}
+          <li class="breadcrumb-item active" aria-current="page">
+            <i class="bi bi-house-door me-1"></i> Dashboard
+          </li>
+          {% endblock %}
+        </ol>
+      </nav>
+
+      <!-- Page Content -->
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% else %}
+  <!-- Unauthenticated Layout: Full-width -->
   <main class="container py-4" id="main-content">
-    {% block content %}{% endblock %}
+    {% block content_unauth %}
+      {% block content %}{% endblock %}
+    {% endblock %}
   </main>
+  {% endif %}
 
   <!-- ============================================================ -->
   <!-- Footer                                                        -->
   <!-- ============================================================ -->
   <footer class="soc-footer mt-auto py-3">
-    <div class="container text-center">
+    <div class="container-fluid text-center">
       <small class="text-muted">
         SOC Anomaly Detector &copy; 2026 &mdash;
         AI-Based Windows Event Log Analysis

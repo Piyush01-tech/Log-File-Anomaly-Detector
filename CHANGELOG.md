@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.8.0] - 2026-06-29 — Phase 11A: Dashboard Foundation
+
+### Completed Phase
+- **Phase 11A**: Dashboard Foundation
+
+### Added
+- `web_dashboard/dashboard/context_processors.py`: Added `dashboard_context` for navigation metadata injection across all templates.
+- `web_dashboard/dashboard/templates/dashboard/includes/`: Added reusable template components (`_sidebar.html`, `_breadcrumbs.html`, `_stats_card.html`, `_empty_state.html`, `_loading_state.html`).
+- `web_dashboard/dashboard/templates/dashboard/profile.html`: Dedicated dashboard profile page with activity stats.
+- `web_dashboard/dashboard/views.py`: Added `profile_view` and enhanced `home` view with aggregate statistics and recent jobs data.
+- `web_dashboard/dashboard/urls.py`: Registered `/profile/` route.
+
+### Modified
+- `web_dashboard/dashboard/templates/dashboard/base.html`: Complete overhaul to implement a two-column sidebar layout for authenticated users, responsive offcanvas mobile sidebar, and breadcrumbs block.
+- `web_dashboard/dashboard/templates/dashboard/home.html`: Complete overhaul replacing placeholder stat cards with dynamic `_stats_card.html` includes, adding a welcome section, and tables for recent uploads and recent analyses with empty states.
+- `web_dashboard/dashboard/static/dashboard/css/main.css`: Appended Phase 11A styles (sidebar layout, navigation active states, breadcrumb overrides, empty/loading states) just before media queries.
+- `web_dashboard/dashboard/templates/dashboard/upload.html`: Added breadcrumbs block.
+- `web_dashboard/dashboard/templates/dashboard/analysis_history.html`: Added breadcrumbs block.
+- `web_dashboard/dashboard/templates/dashboard/analysis_detail.html`: Added breadcrumbs block.
+- `web_dashboard/web_dashboard/settings.py`: Registered `dashboard.context_processors.dashboard_context` in `TEMPLATES`.
+
+### Architecture Changes
+- Switched to a robust template-include architecture for common UI components.
+- Transitioned layout from single-container navbar to a full dashboard layout with persistent sidebar.
+
+---
+
 ## [0.7.0] - 2026-06-29 — Phase 10: Upload & Analysis Workflow
 
 ### Completed Phase

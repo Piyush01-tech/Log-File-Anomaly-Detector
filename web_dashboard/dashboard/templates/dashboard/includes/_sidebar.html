@@ -1,0 +1,161 @@
+<!-- dashboard/templates/dashboard/includes/_sidebar.html — Phase 11A -->
+<!--
+  Collapsible sidebar navigation for authenticated users.
+
+  FEATURES:
+    - Active state highlighting via `active_nav` context variable
+    - Role-aware links (Admin Panel visible only to Super Admins)
+    - Responsive: offcanvas on mobile (<992px), fixed on desktop
+    - Bootstrap Icons for each navigation item
+    - SOC dark theme styling
+
+  CONTEXT VARIABLES:
+    - active_nav: Current navigation item identifier (from context_processors.py)
+    - perms: Django permission object (from auth context processor)
+    - user: Current authenticated user
+
+  USAGE:
+    {% include "dashboard/includes/_sidebar.html" %}
+-->
+
+<!-- Desktop Sidebar (visible >= lg) -->
+<aside class="soc-sidebar d-none d-lg-flex flex-column" id="sidebar-desktop">
+  <nav class="sidebar-nav flex-grow-1">
+    <ul class="nav flex-column">
+      <!-- Dashboard Home -->
+      <li class="nav-item">
+        <a class="nav-link sidebar-link{% if active_nav == 'dashboard' %} active{% endif %}"
+           href="{% url 'dashboard:home' %}">
+          <i class="bi bi-grid-1x2-fill"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+
+      <!-- Upload -->
+      {% if perms.dashboard.upload_evtx %}
+      <li class="nav-item">
+        <a class="nav-link sidebar-link{% if active_nav == 'upload' %} active{% endif %}"
+           href="{% url 'dashboard:upload' %}">
+          <i class="bi bi-cloud-arrow-up"></i>
+          <span>Upload File</span>
+        </a>
+      </li>
+      {% endif %}
+
+      <!-- Analysis History -->
+      <li class="nav-item">
+        <a class="nav-link sidebar-link{% if active_nav == 'history' %} active{% endif %}"
+           href="{% url 'dashboard:analysis_history' %}">
+          <i class="bi bi-clock-history"></i>
+          <span>History</span>
+        </a>
+      </li>
+
+      <!-- Divider -->
+      <li class="sidebar-divider"></li>
+
+      <!-- Profile -->
+      <li class="nav-item">
+        <a class="nav-link sidebar-link{% if active_nav == 'profile' %} active{% endif %}"
+           href="{% url 'dashboard:profile' %}">
+          <i class="bi bi-person-gear"></i>
+          <span>Profile</span>
+        </a>
+      </li>
+
+      <!-- Admin Panel (Super Admin only) -->
+      {% if perms.dashboard.dashboard_full_access %}
+      <li class="sidebar-divider"></li>
+      <li class="sidebar-section-label">Administration</li>
+      <li class="nav-item">
+        <a class="nav-link sidebar-link{% if active_nav == 'admin' %} active{% endif %}"
+           href="{% url 'admin:index' %}">
+          <i class="bi bi-gear-wide-connected"></i>
+          <span>Admin Panel</span>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- Sidebar Footer -->
+  <div class="sidebar-footer">
+    <div class="d-flex align-items-center px-3 py-2">
+      <div class="sidebar-user-avatar">
+        <i class="bi bi-person-circle"></i>
+      </div>
+      <div class="ms-2 overflow-hidden">
+        <div class="sidebar-user-name text-truncate">{{ user.username }}</div>
+        <div class="sidebar-user-role">
+          <span class="badge bg-accent text-uppercase">{{ user.get_role_display }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Mobile Offcanvas Sidebar (visible < lg) -->
+<div class="offcanvas offcanvas-start soc-offcanvas" tabindex="-1"
+     id="sidebar-mobile" aria-labelledby="sidebar-mobile-label">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="sidebar-mobile-label">
+      <i class="bi bi-shield-lock-fill me-2 text-accent"></i>
+      Navigation
+    </h5>
+    <button type="button" class="btn-close btn-close-white"
+            data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <nav class="sidebar-nav">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link sidebar-link{% if active_nav == 'dashboard' %} active{% endif %}"
+             href="{% url 'dashboard:home' %}" data-bs-dismiss="offcanvas">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+
+        {% if perms.dashboard.upload_evtx %}
+        <li class="nav-item">
+          <a class="nav-link sidebar-link{% if active_nav == 'upload' %} active{% endif %}"
+             href="{% url 'dashboard:upload' %}" data-bs-dismiss="offcanvas">
+            <i class="bi bi-cloud-arrow-up"></i>
+            <span>Upload File</span>
+          </a>
+        </li>
+        {% endif %}
+
+        <li class="nav-item">
+          <a class="nav-link sidebar-link{% if active_nav == 'history' %} active{% endif %}"
+             href="{% url 'dashboard:analysis_history' %}" data-bs-dismiss="offcanvas">
+            <i class="bi bi-clock-history"></i>
+            <span>History</span>
+          </a>
+        </li>
+
+        <li class="sidebar-divider"></li>
+
+        <li class="nav-item">
+          <a class="nav-link sidebar-link{% if active_nav == 'profile' %} active{% endif %}"
+             href="{% url 'dashboard:profile' %}" data-bs-dismiss="offcanvas">
+            <i class="bi bi-person-gear"></i>
+            <span>Profile</span>
+          </a>
+        </li>
+
+        {% if perms.dashboard.dashboard_full_access %}
+        <li class="sidebar-divider"></li>
+        <li class="sidebar-section-label">Administration</li>
+        <li class="nav-item">
+          <a class="nav-link sidebar-link{% if active_nav == 'admin' %} active{% endif %}"
+             href="{% url 'admin:index' %}" data-bs-dismiss="offcanvas">
+            <i class="bi bi-gear-wide-connected"></i>
+            <span>Admin Panel</span>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>

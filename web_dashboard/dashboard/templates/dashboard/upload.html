@@ -13,7 +13,12 @@
 -->
 {% extends "dashboard/base.html" %}
 
-{% block title %}Upload EVTX File{% endblock %}
+{% block title %}Upload .evtx File{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}"><i class="bi bi-house-door me-1"></i> Dashboard</a></li>
+<li class="breadcrumb-item active" aria-current="page">Upload</li>
+{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">

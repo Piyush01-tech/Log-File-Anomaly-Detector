@@ -1,89 +1,244 @@
-<!-- dashboard/templates/dashboard/home.html — Phase 9B -->
+<!-- dashboard/templates/dashboard/home.html — Phase 11A -->
 <!--
-  Home page / dashboard landing page.
+  Dashboard home page with statistics, recent uploads, and recent analyses.
 
   FEATURES:
-    - Welcome hero section
-    - Quick stats cards (Role-aware via Phase 9B RBAC)
-    - Quick action links
-    - Auth-aware: shows different content for authenticated users
+    - Welcome section with user greeting and role badge
+    - Statistics cards (role-aware: system-wide for admins, personal for analysts)
+    - Recent Uploads section (latest 5 jobs)
+    - Recent Analyses section (latest 5 completed analyses)
+    - Empty states when no data exists
+    - Reusable template components
 
-  PHASE 9B CHANGES:
-    - Added permission checks to display system-wide stats for
-      Super Admins and personal stats for Analysts.
+  CONTEXT VARIABLES:
+    Admin:
+      - total_users, total_jobs, completed_jobs, failed_jobs
+      - total_anomalies_count
+    Analyst:
+      - my_jobs_count, my_completed_jobs, my_failed_jobs
+      - my_anomalies_count
+    Shared:
+      - recent_uploads (QuerySet of latest 5 AnalysisJob)
+      - recent_analyses (QuerySet of latest 5 completed AnalysisJob)
 -->
 {% extends "dashboard/base.html" %}
 
 {% block title %}Dashboard{% endblock %}
 
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active" aria-current="page">
+  <i class="bi bi-house-door me-1"></i> Dashboard
+</li>
+{% endblock %}
+
 {% block content %}
-<div class="soc-hero text-center mb-4">
-  <h1 class="display-6 mb-2">
-    <i class="bi bi-shield-check text-accent me-2"></i>
-    SOC Anomaly Detector
-  </h1>
-  <p class="text-muted lead">
-    AI-Based Windows Event Log Analysis Dashboard
-  </p>
+<!-- ============================================================ -->
+<!-- Welcome Section                                               -->
+<!-- ============================================================ -->
+<div class="welcome-section mb-4">
+  <div class="d-flex align-items-center justify-content-between flex-wrap">
+    <div>
+      <h1 class="h3 fw-bold mb-1">
+        Welcome back, {{ user.first_name|default:user.username }}
+      </h1>
+      <p class="text-muted mb-0">
+        <span class="badge bg-accent text-uppercase me-2">{{ user.get_role_display }}</span>
+        AI-Based Windows Event Log Analysis Dashboard
+      </p>
+    </div>
+    <div class="mt-2 mt-md-0">
+      {% if perms.dashboard.upload_evtx %}
+      <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm">
+        <i class="bi bi-cloud-arrow-up me-1"></i> Upload .evtx File
+      </a>
+      {% endif %}
+    </div>
+  </div>
 </div>
 
-{% if user.is_authenticated %}
-<!-- Authenticated Dashboard -->
-<div class="row g-4 mb-4">
+<!-- ============================================================ -->
+<!-- Statistics Cards                                               -->
+<!-- ============================================================ -->
+<div class="row g-3 mb-4">
   {% if perms.dashboard.view_system_stats %}
   <!-- Super Admin Stats -->
-  <div class="col-md-4">
-    <div class="stat-card text-center border-accent border-bottom border-3">
-      <div class="stat-value">{{ total_users|default:"0" }}</div>
-      <div class="stat-label">Total Users</div>
-      <small class="text-muted">System Wide</small>
-    </div>
+  <div class="col-sm-6 col-xl-3">
+    {% include "dashboard/includes/_stats_card.html" with icon="bi-people-fill" value=total_users label="Total Users" subtitle="System Wide" color="text-accent" border="border-accent" %}
   </div>
-  <div class="col-md-4">
-    <div class="stat-card text-center border-accent border-bottom border-3">
-      <div class="stat-value">{{ total_jobs|default:"0" }}</div>
-      <div class="stat-label">Total Analyses</div>
-      <small class="text-muted">System Wide</small>
-    </div>
+  <div class="col-sm-6 col-xl-3">
+    {% include "dashboard/includes/_stats_card.html" with icon="bi-file-earmark-bar-graph" value=total_jobs label="Total Analyses" subtitle="System Wide" color="text-info" border="border-info" %}
   </div>
-  <div class="col-md-4">
-    <div class="stat-card text-center border-danger border-bottom border-3">
-      <div class="stat-value text-danger">{{ failed_jobs|default:"0" }}</div>
-      <div class="stat-label">Failed Jobs</div>
-      <small class="text-muted">System Wide</small>
-    </div>
+  <div class="col-sm-6 col-xl-3">
+    {% include "dashboard/includes/_stats_card.html" with icon="bi-check-circle-fill" value=completed_jobs label="Completed" subtitle="System Wide" color="text-success" border="border-success" %}
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    {% include "dashboard/includes/_stats_card.html" with icon="bi-exclamation-triangle-fill" value=total_anomalies_count label="Anomalies" subtitle="Total Detected" color="text-warning" border="border-warning" %}
   </div>
   {% else %}
   <!-- Analyst Stats -->
-  <div class="col-md-4">
-    <div class="stat-card text-center">
-      <div class="stat-value">{{ my_jobs_count|default:"0" }}</div>
-      <div class="stat-label">My Analyses</div>
-      <small class="text-muted">Personal</small>
-    </div>
+  <div class="col-sm-6 col-xl-3">
+    {% include "dashboard/includes/_stats_card.html" with icon="bi-file-earmark-bar-graph" value=my_jobs_count label="My Analyses" subtitle="Personal" color="text-accent" border="border-accent" %}
   </div>
-  <div class="col-md-4">
-    <div class="stat-card text-center">
-      <div class="stat-value text-accent">{{ my_completed_jobs|default:"0" }}</div>
-      <div class="stat-label">Completed</div>
-      <small class="text-muted">Personal</small>
-    </div>
+  <div class="col-sm-6 col-xl-3">
+    {% include "dashboard/includes/_stats_card.html" with icon="bi-check-circle-fill" value=my_completed_jobs label="Completed" subtitle="Personal" color="text-success" border="border-success" %}
   </div>
-  <div class="col-md-4">
-    <div class="stat-card text-center">
-      <div class="stat-value text-danger">{{ my_failed_jobs|default:"0" }}</div>
-      <div class="stat-label">My Failed Jobs</div>
-      <small class="text-muted">Personal</small>
-    </div>
+  <div class="col-sm-6 col-xl-3">
+    {% include "dashboard/includes/_stats_card.html" with icon="bi-x-circle-fill" value=my_failed_jobs label="Failed" subtitle="Personal" color="text-danger" border="border-danger" %}
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    {% include "dashboard/includes/_stats_card.html" with icon="bi-exclamation-triangle-fill" value=my_anomalies_count label="Anomalies" subtitle="Detected" color="text-warning" border="border-warning" %}
   </div>
   {% endif %}
 </div>
 
+<!-- ============================================================ -->
+<!-- Recent Activity Row                                           -->
+<!-- ============================================================ -->
 <div class="row g-4">
+  <!-- Recent Uploads -->
+  <div class="col-lg-6">
+    <div class="card soc-card h-100">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+          <i class="bi bi-cloud-arrow-up me-2 text-accent"></i>
+          <span class="fw-bold">Recent Uploads</span>
+        </div>
+        <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-sm btn-outline-light">
+          View All
+        </a>
+      </div>
+      <div class="card-body p-0">
+        {% if recent_uploads %}
+        <div class="table-responsive">
+          <table class="table analysis-table mb-0">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Status</th>
+                <th>Uploaded</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for job in recent_uploads %}
+              <tr>
+                <td>
+                  <a href="{% url 'dashboard:analysis_detail' pk=job.pk %}"
+                     class="text-decoration-none">
+                    <i class="bi bi-file-earmark-binary me-1 text-muted"></i>
+                    <span class="text-truncate-name">{{ job.original_filename }}</span>
+                  </a>
+                </td>
+                <td>
+                  {% if job.status == 'COMPLETED' %}
+                    <span class="severity-badge severity-completed">
+                      <i class="bi bi-check-circle me-1"></i>Completed
+                    </span>
+                  {% elif job.status == 'RUNNING' %}
+                    <span class="severity-badge severity-medium">
+                      <i class="bi bi-hourglass-split me-1"></i>Running
+                    </span>
+                  {% elif job.status == 'FAILED' %}
+                    <span class="severity-badge severity-critical">
+                      <i class="bi bi-x-circle me-1"></i>Failed
+                    </span>
+                  {% else %}
+                    <span class="severity-badge severity-low">
+                      <i class="bi bi-clock me-1"></i>Pending
+                    </span>
+                  {% endif %}
+                </td>
+                <td>
+                  <small class="text-muted">{{ job.uploaded_at|timesince }} ago</small>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        {% include "dashboard/includes/_empty_state.html" with icon="bi-cloud-arrow-up" title="No uploads yet" message="Upload your first .evtx file to start detecting anomalies." action_url="/upload/" action_text="Upload File" %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Analyses -->
+  <div class="col-lg-6">
+    <div class="card soc-card h-100">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+          <i class="bi bi-shield-exclamation me-2 text-accent"></i>
+          <span class="fw-bold">Recent Analyses</span>
+        </div>
+        <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-sm btn-outline-light">
+          View All
+        </a>
+      </div>
+      <div class="card-body p-0">
+        {% if recent_analyses %}
+        <div class="table-responsive">
+          <table class="table analysis-table mb-0">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Anomalies</th>
+                <th>Rate</th>
+                <th>Completed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for job in recent_analyses %}
+              <tr>
+                <td>
+                  <a href="{% url 'dashboard:analysis_detail' pk=job.pk %}"
+                     class="text-decoration-none">
+                    <i class="bi bi-file-earmark-bar-graph me-1 text-muted"></i>
+                    <span class="text-truncate-name">{{ job.original_filename }}</span>
+                  </a>
+                </td>
+                <td>
+                  {% if job.total_anomalies > 0 %}
+                    <span class="fw-semibold text-warning">
+                      {{ job.total_anomalies }}
+                    </span>
+                    <small class="text-muted">/ {{ job.total_samples }}</small>
+                  {% else %}
+                    <span class="text-success">
+                      <i class="bi bi-check-circle me-1"></i>Clean
+                    </span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if job.anomaly_rate is not None %}
+                    <span class="anomaly-score">{{ job.anomaly_rate|floatformat:1 }}%</span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <small class="text-muted">{{ job.completed_at|timesince }} ago</small>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        {% include "dashboard/includes/_empty_state.html" with icon="bi-shield-check" title="No analyses completed" message="Completed analyses will appear here with their anomaly results." %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Quick Actions Row                                             -->
+<!-- ============================================================ -->
+<div class="row g-4 mt-2">
   <div class="col-md-6">
     <div class="card soc-card h-100">
       <div class="card-header">
-        <i class="bi bi-cloud-upload me-2 text-accent"></i>
+        <i class="bi bi-lightning-charge me-2 text-accent"></i>
         <span class="fw-bold">Quick Actions</span>
       </div>
       <div class="card-body">
@@ -91,11 +246,14 @@
           Upload and analyze Windows Event Log files for anomalies.
         </p>
         {% if perms.dashboard.upload_evtx %}
-        <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm mb-2">
+        <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm mb-2 me-2">
           <i class="bi bi-upload me-1"></i> Upload .evtx File
         </a>
         {% endif %}
-        
+        <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-outline-light btn-sm mb-2">
+          <i class="bi bi-clock-history me-1"></i> View History
+        </a>
+
         {% if perms.dashboard.manage_users %}
         <hr class="border-secondary my-3">
         <p class="text-muted small">
@@ -123,7 +281,7 @@
           <span class="badge bg-accent text-uppercase">{{ user.get_role_display }}</span>
         </p>
         {% if perms.dashboard.edit_own_profile %}
-        <a href="{% url 'auth:profile' %}" class="btn btn-outline-light btn-sm">
+        <a href="{% url 'dashboard:profile' %}" class="btn btn-outline-light btn-sm">
           <i class="bi bi-pencil-square me-1"></i> Manage Profile
         </a>
         {% endif %}
@@ -131,19 +289,4 @@
     </div>
   </div>
 </div>
-
-{% else %}
-<!-- Unauthenticated Landing -->
-<div class="text-center py-5">
-  <p class="text-muted mb-4">
-    Sign in to access the anomaly detection dashboard.
-  </p>
-  <a href="{% url 'auth:login' %}" class="btn btn-accent btn-lg me-2">
-    <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
-  </a>
-  <a href="{% url 'auth:register' %}" class="btn btn-outline-light btn-lg">
-    <i class="bi bi-person-plus me-1"></i> Create Account
-  </a>
-</div>
-{% endif %}
 {% endblock %}

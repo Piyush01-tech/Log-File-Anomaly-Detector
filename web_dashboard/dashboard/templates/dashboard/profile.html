@@ -1,0 +1,109 @@
+<!-- dashboard/templates/dashboard/profile.html — Phase 11A -->
+<!--
+  Dashboard Profile Page.
+
+  FEATURES:
+    - View current account information (username, role, member since)
+    - View personal stats (analyses count, anomalies detected)
+    - Link to edit profile and change password (in auth app)
+    - Follows dashboard sidebar + breadcrumb layout
+-->
+{% extends "dashboard/base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}"><i class="bi bi-house-door me-1"></i> Dashboard</a></li>
+<li class="breadcrumb-item active" aria-current="page">Profile</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8 col-lg-6">
+    <!-- Account Info Card -->
+    <div class="card shadow-sm mb-4 soc-card">
+      <div class="card-header d-flex align-items-center">
+        <i class="bi bi-person-badge me-2 text-accent"></i>
+        <h2 class="h5 mb-0 fw-bold">Account Information</h2>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <p class="text-muted small mb-1">Username</p>
+            <p class="fw-semibold fs-5 mb-0">{{ user.username }}</p>
+          </div>
+          <div class="col-sm-6">
+            <p class="text-muted small mb-1">Email</p>
+            <p class="fw-semibold mb-0">{{ user.email|default:"Not provided" }}</p>
+          </div>
+          <div class="col-sm-6">
+            <p class="text-muted small mb-1">First Name</p>
+            <p class="fw-semibold mb-0">{{ user.first_name|default:"Not provided" }}</p>
+          </div>
+          <div class="col-sm-6">
+            <p class="text-muted small mb-1">Last Name</p>
+            <p class="fw-semibold mb-0">{{ user.last_name|default:"Not provided" }}</p>
+          </div>
+          <div class="col-sm-6">
+            <p class="text-muted small mb-1">Role</p>
+            <p class="fw-semibold mb-0">
+              <span class="badge bg-accent text-uppercase">
+                {{ user.get_role_display }}
+              </span>
+            </p>
+          </div>
+          <div class="col-sm-6">
+            <p class="text-muted small mb-1">Member Since</p>
+            <p class="fw-semibold mb-0">{{ user.date_joined|date:"M d, Y" }}</p>
+          </div>
+        </div>
+
+        <hr class="border-secondary my-4">
+        
+        <div class="d-flex gap-2">
+          {% if perms.dashboard.edit_own_profile %}
+          <a href="{% url 'auth:profile' %}" class="btn btn-accent btn-sm">
+            <i class="bi bi-pencil-square me-1"></i> Edit Profile
+          </a>
+          {% endif %}
+          <a href="{% url 'auth:password_change' %}" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-key me-1"></i> Change Password
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4 col-lg-6">
+    <!-- Activity Stats Card -->
+    <div class="card shadow-sm mb-4 soc-card">
+      <div class="card-header d-flex align-items-center">
+        <i class="bi bi-activity me-2 text-accent"></i>
+        <h2 class="h5 mb-0 fw-bold">My Activity</h2>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <div class="p-3 border border-secondary rounded text-center">
+              <div class="text-accent fs-3 fw-bold">{{ my_jobs_count|default:"0" }}</div>
+              <div class="text-muted small text-uppercase">Total Analyses</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="p-3 border border-warning rounded text-center">
+              <div class="text-warning fs-3 fw-bold">{{ my_anomalies_count|default:"0" }}</div>
+              <div class="text-muted small text-uppercase">Anomalies Found</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-4 text-center">
+          <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-outline-light btn-sm w-100">
+            <i class="bi bi-clock-history me-1"></i> View Full History
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

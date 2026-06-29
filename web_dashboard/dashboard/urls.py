@@ -21,6 +21,9 @@ app_name = "dashboard"
 urlpatterns = [
     # Dashboard home page
     path("", views.home, name="home"),
+    
+    # Dashboard profile page (Phase 11A)
+    path("profile/", views.profile_view, name="profile"),
 
     # Infrastructure health check (public)
     path("health/", views.health_check, name="health_check"),

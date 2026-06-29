@@ -1,0 +1,21 @@
+<!-- dashboard/templates/dashboard/includes/_loading_state.html — Phase 11A -->
+<!--
+  Reusable loading state component with spinner.
+
+  CONTEXT VARIABLES (pass via {% include ... with %}):
+    - message: Loading message text (default: "Loading...")
+    - size:    Spinner size class (default: "" for normal, "spinner-border-sm" for small)
+
+  USAGE:
+    {% include "dashboard/includes/_loading_state.html" with
+       message="Analyzing log file..." %}
+-->
+
+<div class="loading-state text-center py-4">
+  <div class="spinner-border text-accent {{ size|default:'' }} mb-3" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p class="loading-state-message text-muted small">
+    {{ message|default:"Loading..." }}
+  </p>
+</div>

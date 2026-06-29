@@ -673,10 +673,179 @@ a:hover {
 }
 
 /* =================================================================
-   16. Responsive Overrides
+   16. Dashboard Layout & Sidebar (Phase 11A)
    ================================================================= */
 
-@media (max-width: 768px) {
+.dashboard-wrapper {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 56px); /* subtract navbar height approx */
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 1.5rem;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Desktop Sidebar */
+.soc-sidebar {
+  width: 250px;
+  background-color: var(--soc-bg-secondary);
+  border-right: 1px solid var(--soc-border);
+  flex-shrink: 0;
+  z-index: 1000;
+}
+
+/* Mobile Offcanvas Sidebar */
+.soc-offcanvas {
+  background-color: var(--soc-bg-secondary);
+  border-right: 1px solid var(--soc-border);
+  width: 280px;
+}
+
+.soc-offcanvas .offcanvas-header {
+  border-bottom: 1px solid var(--soc-border);
+  background-color: var(--soc-bg-card);
+}
+
+.sidebar-nav {
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+.sidebar-link {
+  color: var(--soc-text-secondary);
+  padding: 0.65rem 1.25rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: var(--soc-transition);
+  border-left: 3px solid transparent;
+}
+
+.sidebar-link i {
+  font-size: 1.1rem;
+  margin-right: 0.75rem;
+  width: 20px;
+  text-align: center;
+  transition: var(--soc-transition);
+}
+
+.sidebar-link:hover,
+.sidebar-link:focus {
+  color: var(--soc-text-primary);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.sidebar-link.active {
+  color: var(--soc-accent);
+  background-color: var(--soc-accent-muted);
+  border-left-color: var(--soc-accent);
+}
+
+.sidebar-divider {
+  height: 1px;
+  background-color: var(--soc-border);
+  margin: 1rem 0;
+}
+
+.sidebar-section-label {
+  padding: 0 1.25rem 0.5rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--soc-text-muted);
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  border-top: 1px solid var(--soc-border);
+  background-color: rgba(0, 0, 0, 0.15);
+  margin-top: auto;
+}
+
+.sidebar-user-avatar i {
+  font-size: 2rem;
+  color: var(--soc-text-secondary);
+}
+
+.sidebar-user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--soc-text-primary);
+}
+
+.sidebar-user-role .badge {
+  font-size: 0.6rem;
+  padding: 0.25em 0.5em;
+}
+
+/* =================================================================
+   17. Breadcrumbs (Phase 11A)
+   ================================================================= */
+
+.soc-breadcrumbs .breadcrumb {
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: transparent;
+  padding: 0;
+}
+
+.soc-breadcrumbs .breadcrumb-item a {
+  color: var(--soc-text-secondary);
+  text-decoration: none;
+}
+
+.soc-breadcrumbs .breadcrumb-item a:hover {
+  color: var(--soc-accent);
+}
+
+.soc-breadcrumbs .breadcrumb-item.active {
+  color: var(--soc-text-primary);
+}
+
+.soc-breadcrumbs .breadcrumb-item + .breadcrumb-item::before {
+  content: "›";
+  color: var(--soc-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* =================================================================
+   18. Empty & Loading States (Phase 11A)
+   ================================================================= */
+
+.empty-state {
+  padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  color: var(--soc-border-light);
+}
+
+.empty-state-title {
+  color: var(--soc-text-primary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.loading-state {
+  padding: 3rem 1rem;
+}
+
+/* =================================================================
+   19. Responsive Overrides
+   ================================================================= */
+
+@media (max-width: 991.98px) {
+  .dashboard-messages {
+    padding: 0 1rem;
+  }
+}
   .auth-card .card-body {
     padding: 1.5rem !important;
   }

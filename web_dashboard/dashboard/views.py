@@ -37,6 +37,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import DetailView, ListView
 
+from django.db.models import Sum
 from .auth_views import _create_audit_log, _get_client_ip
 from .forms import EVTXUploadForm
 from .models import AnalysisJob, Anomaly, AuditLog, User
@@ -81,6 +82,16 @@ def home(request: HttpRequest) -> HttpResponse:
         context["failed_jobs"] = AnalysisJob.objects.filter(
             status=AnalysisJob.Status.FAILED
         ).count()
+        context["total_anomalies_count"] = AnalysisJob.objects.aggregate(
+            total=Sum('total_anomalies')
+        )['total'] or 0
+        
+        # Recent data for admin (all users)
+        context["recent_uploads"] = AnalysisJob.objects.all()[:5]
+        context["recent_analyses"] = AnalysisJob.objects.filter(
+            status=AnalysisJob.Status.COMPLETED
+        )[:5]
+
         logger.debug("Admin context loaded for user '%s'.", request.user.username)
 
     # Analyst context (personal stats)
@@ -93,9 +104,43 @@ def home(request: HttpRequest) -> HttpResponse:
         context["my_failed_jobs"] = user_jobs.filter(
             status=AnalysisJob.Status.FAILED
         ).count()
+        context["my_anomalies_count"] = user_jobs.aggregate(
+            total=Sum('total_anomalies')
+        )['total'] or 0
+        
+        # Recent data for analyst (own data only)
+        context["recent_uploads"] = user_jobs[:5]
+        context["recent_analyses"] = user_jobs.filter(
+            status=AnalysisJob.Status.COMPLETED
+        )[:5]
+
         logger.debug("Analyst context loaded for user '%s'.", request.user.username)
 
     return render(request, "dashboard/home.html", context)
+
+
+# ===========================================================================
+# Dashboard Profile (Phase 11A)
+# ===========================================================================
+
+@login_required
+def profile_view(request: HttpRequest) -> HttpResponse:
+    """
+    Render the dashboard profile page.
+    
+    Displays user account information and personal activity statistics.
+    This is distinct from the auth/profile view which is for editing.
+    """
+    context = {}
+    
+    # Personal stats for the profile
+    user_jobs = AnalysisJob.objects.filter(user=request.user)
+    context["my_jobs_count"] = user_jobs.count()
+    context["my_anomalies_count"] = user_jobs.aggregate(
+        total=Sum('total_anomalies')
+    )['total'] or 0
+    
+    return render(request, "dashboard/profile.html", context)
 
 
 # ===========================================================================

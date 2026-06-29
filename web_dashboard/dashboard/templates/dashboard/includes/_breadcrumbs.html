@@ -1,0 +1,25 @@
+<!-- dashboard/templates/dashboard/includes/_breadcrumbs.html — Phase 11A -->
+<!--
+  Reusable breadcrumb navigation component.
+
+  USAGE:
+    In your template block, define breadcrumb_items:
+      {% block breadcrumb_items %}
+        <li class="breadcrumb-item">
+          <a href="{% url 'dashboard:home' %}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Current Page</li>
+      {% endblock %}
+
+  The parent template (base.html) wraps this in a <nav> element.
+-->
+
+<nav aria-label="breadcrumb" class="soc-breadcrumbs mb-3">
+  <ol class="breadcrumb mb-0">
+    {% block breadcrumb_items %}
+    <li class="breadcrumb-item active" aria-current="page">
+      <i class="bi bi-house-door me-1"></i> Dashboard
+    </li>
+    {% endblock %}
+  </ol>
+</nav>
