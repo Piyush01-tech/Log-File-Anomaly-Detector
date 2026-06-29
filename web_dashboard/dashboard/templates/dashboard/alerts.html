@@ -1,0 +1,204 @@
+<!-- dashboard/templates/dashboard/alerts.html — Phase 11B -->
+<!--
+  Alerts list page — paginated, searchable, filterable table of all anomalies.
+
+  FEATURES:
+    - Severity summary cards (Critical, High, Medium, Low counts)
+    - Search by computer name or job filename
+    - Filter by severity level
+    - Responsive table with severity badges, scores, time windows
+    - Links to individual alert detail and parent analysis job
+    - Reusable pagination include with query string preservation
+    - User isolation (analysts see only their alerts)
+    - Empty state with upload CTA
+
+  CONTEXT VARIABLES:
+    - alerts: Page of Anomaly objects (from AlertsListView)
+    - total_alerts, critical_count, high_count, medium_count, low_count
+    - current_search, current_severity, has_active_filters
+    - page_obj, is_paginated (from ListView pagination)
+-->
+{% extends "dashboard/base.html" %}
+{% load dashboard_filters %}
+
+{% block title %}Alerts{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}"><i class="bi bi-house-door me-1"></i> Dashboard</a></li>
+<li class="breadcrumb-item active" aria-current="page">Alerts</li>
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">
+      <i class="bi bi-shield-exclamation text-accent me-2"></i>
+      Security Alerts
+    </h2>
+    <p class="text-muted mb-0">
+      {% if perms.dashboard.view_all_incidents %}
+        All detected anomalies across the system.
+      {% else %}
+        Anomalies detected in your uploaded log files.
+      {% endif %}
+    </p>
+  </div>
+  <div>
+    <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm">
+      <i class="bi bi-upload me-1"></i> New Upload
+    </a>
+  </div>
+</div>
+
+<!-- Severity Summary Cards -->
+{% if total_alerts > 0 %}
+<div class="row g-3 mb-4" id="alerts-severity-summary">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card text-center h-100 d-flex flex-column justify-content-center
+                {% if critical_count > 0 %}border-danger border-bottom border-3{% endif %}">
+      <div class="stat-value {% if critical_count > 0 %}text-danger{% else %}text-muted{% endif %}">
+        {{ critical_count }}
+      </div>
+      <div class="stat-label">Critical</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card text-center h-100 d-flex flex-column justify-content-center
+                {% if high_count > 0 %}border-bottom border-3{% endif %}"
+         {% if high_count > 0 %}style="border-bottom-color: #fb923c !important;"{% endif %}>
+      <div class="stat-value" {% if high_count > 0 %}style="color: #fb923c;"{% endif %}>
+        {% if high_count > 0 %}{{ high_count }}{% else %}<span class="text-muted">{{ high_count }}</span>{% endif %}
+      </div>
+      <div class="stat-label">High</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card text-center h-100 d-flex flex-column justify-content-center
+                {% if medium_count > 0 %}border-warning border-bottom border-3{% endif %}">
+      <div class="stat-value {% if medium_count > 0 %}text-warning{% else %}text-muted{% endif %}">
+        {{ medium_count }}
+      </div>
+      <div class="stat-label">Medium</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card text-center h-100 d-flex flex-column justify-content-center">
+      <div class="stat-value text-muted">{{ low_count }}</div>
+      <div class="stat-label">Low</div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Search & Filter Bar -->
+{% include "dashboard/includes/_table_filter.html" with search_placeholder="Search by computer name or filename..." search_value=current_search show_severity_filter=True current_severity=current_severity has_active_filters=has_active_filters %}
+
+{% if alerts %}
+<!-- Alerts Table -->
+<div class="card soc-card mb-4" id="alerts-table-card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div>
+      <i class="bi bi-exclamation-triangle me-2 text-accent"></i>
+      <span class="fw-bold">Detected Anomalies</span>
+    </div>
+    <span class="text-muted small">
+      {{ total_alerts }} alert{{ total_alerts|pluralize }}
+      {% if has_active_filters %}(filtered){% endif %}
+    </span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover analysis-table mb-0" id="alerts-table">
+        <thead>
+          <tr>
+            <th class="ps-3">Severity</th>
+            <th>Score</th>
+            <th>Time Window</th>
+            <th>Computer</th>
+            <th>Source File</th>
+            {% if perms.dashboard.view_all_incidents %}
+            <th>Analyst</th>
+            {% endif %}
+            <th class="text-end pe-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for alert in alerts %}
+          <tr class="anomaly-row severity-row-{{ alert.severity|lower }}" id="alert-row-{{ alert.pk }}">
+            <td class="ps-3">
+              {% include "dashboard/includes/_severity_badge.html" with severity=alert.severity severity_display=alert.get_severity_display %}
+            </td>
+            <td>
+              <code class="anomaly-score">{{ alert.anomaly_score|floatformat:4 }}</code>
+            </td>
+            <td>
+              <span class="small">{{ alert.window_start|date:"M d, Y H:i" }}</span>
+            </td>
+            <td>
+              <span class="small">{{ alert.computer_name|default:"—" }}</span>
+            </td>
+            <td>
+              <a href="{% url 'dashboard:analysis_detail' pk=alert.job.pk %}"
+                 class="text-decoration-none small"
+                 title="View analysis job">
+                <i class="bi bi-file-earmark-binary me-1 text-muted"></i>
+                <span class="text-truncate-name">{{ alert.job.original_filename }}</span>
+              </a>
+            </td>
+            {% if perms.dashboard.view_all_incidents %}
+            <td>
+              <span class="small text-muted">{{ alert.job.user.username }}</span>
+            </td>
+            {% endif %}
+            <td class="text-end pe-3">
+              <a href="{% url 'dashboard:alert_detail' pk=alert.pk %}"
+                 class="btn btn-sm btn-outline-light py-0 px-2"
+                 title="View alert details">
+                <i class="bi bi-eye me-1"></i>Details
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Pagination -->
+{% include "dashboard/includes/_pagination.html" %}
+
+{% else %}
+<!-- Empty State -->
+{% if has_active_filters %}
+<div class="card soc-card">
+  <div class="card-body text-center py-5" id="alerts-empty-filtered">
+    <i class="bi bi-funnel text-muted" style="font-size: 3rem;"></i>
+    <h4 class="mt-3 fw-bold">No Matching Alerts</h4>
+    <p class="text-muted mb-4">
+      No alerts match your current search and filter criteria.
+    </p>
+    <a href="{% url 'dashboard:alerts' %}" class="btn btn-outline-light">
+      <i class="bi bi-x-lg me-1"></i> Clear Filters
+    </a>
+  </div>
+</div>
+{% else %}
+<div class="card soc-card">
+  <div class="card-body text-center py-5" id="alerts-empty-state">
+    <i class="bi bi-shield-check text-accent" style="font-size: 3rem;"></i>
+    <h4 class="mt-3 fw-bold">No Alerts</h4>
+    <p class="text-muted mb-4">
+      No anomalies have been detected yet. Upload a Windows Event Log file to start analyzing.
+    </p>
+    <a href="{% url 'dashboard:upload' %}" class="btn btn-accent">
+      <i class="bi bi-upload me-1"></i> Upload .evtx File
+    </a>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+
+{% endblock %}

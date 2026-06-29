@@ -1,0 +1,251 @@
+<!-- dashboard/templates/dashboard/alert_detail.html — Phase 11B -->
+<!--
+  Incident detail page — shows full details for a single anomaly.
+
+  FEATURES:
+    - Severity-aware visual header
+    - Full anomaly metadata (severity, score, time window, computer)
+    - Complete feature data grid (all 15 ML features)
+    - Parent job link and metadata
+    - Previous/Next anomaly navigation within the same job
+    - Back to alerts list navigation
+    - Analyst info (visible to admins)
+
+  CONTEXT VARIABLES:
+    - alert: Anomaly object
+    - job: Parent AnalysisJob
+    - analyst: User who uploaded the file
+    - feature_items: Sorted list of (key, value) tuples
+    - sibling_count: Total anomalies in the same job
+    - prev_alert_pk, next_alert_pk: PKs for navigation
+-->
+{% extends "dashboard/base.html" %}
+
+{% block title %}Alert #{{ alert.pk }} — {{ alert.get_severity_display }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}"><i class="bi bi-house-door me-1"></i> Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard:alerts' %}">Alerts</a></li>
+<li class="breadcrumb-item active" aria-current="page">Alert #{{ alert.pk }}</li>
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header with Severity Indicator -->
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+  <div>
+    <h2 class="fw-bold mb-1">
+      <i class="bi bi-shield-exclamation text-accent me-2"></i>
+      Incident Details
+    </h2>
+    <p class="text-muted mb-0">
+      Alert #{{ alert.pk }} — Detected in
+      <a href="{% url 'dashboard:analysis_detail' pk=job.pk %}" class="text-decoration-none">
+        Job #{{ job.pk }}
+      </a>
+    </p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <!-- Sibling Navigation -->
+    {% if prev_alert_pk %}
+    <a href="{% url 'dashboard:alert_detail' pk=prev_alert_pk %}"
+       class="btn btn-outline-light btn-sm" title="Previous alert">
+      <i class="bi bi-chevron-left me-1"></i>Prev
+    </a>
+    {% endif %}
+    {% if next_alert_pk %}
+    <a href="{% url 'dashboard:alert_detail' pk=next_alert_pk %}"
+       class="btn btn-outline-light btn-sm" title="Next alert">
+      Next<i class="bi bi-chevron-right ms-1"></i>
+    </a>
+    {% endif %}
+
+    <a href="{% url 'dashboard:alerts' %}" class="btn btn-outline-light btn-sm">
+      <i class="bi bi-shield-exclamation me-1"></i>All Alerts
+    </a>
+    <a href="{% url 'dashboard:analysis_detail' pk=job.pk %}" class="btn btn-accent btn-sm">
+      <i class="bi bi-file-earmark-bar-graph me-1"></i>View Job
+    </a>
+  </div>
+</div>
+
+<!-- Severity Banner -->
+<div class="alert alert-detail-severity severity-banner-{{ alert.severity|lower }} d-flex align-items-center mb-4"
+     id="severity-banner">
+  {% if alert.severity == 'CRITICAL' %}
+    <i class="bi bi-exclamation-octagon-fill me-3 fs-4"></i>
+    <div>
+      <strong>Critical Severity</strong>
+      <span class="ms-2 small">— Requires immediate investigation. Anomaly score: {{ alert.anomaly_score|floatformat:4 }}</span>
+    </div>
+  {% elif alert.severity == 'HIGH' %}
+    <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+    <div>
+      <strong>High Severity</strong>
+      <span class="ms-2 small">— Priority review recommended. Anomaly score: {{ alert.anomaly_score|floatformat:4 }}</span>
+    </div>
+  {% elif alert.severity == 'MEDIUM' %}
+    <i class="bi bi-exclamation-circle-fill me-3 fs-4"></i>
+    <div>
+      <strong>Medium Severity</strong>
+      <span class="ms-2 small">— Scheduled review. Anomaly score: {{ alert.anomaly_score|floatformat:4 }}</span>
+    </div>
+  {% else %}
+    <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+    <div>
+      <strong>Low Severity</strong>
+      <span class="ms-2 small">— Monitoring only. Anomaly score: {{ alert.anomaly_score|floatformat:4 }}</span>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Detail Cards Row -->
+<div class="row g-4 mb-4">
+  <!-- Alert Metadata Card -->
+  <div class="col-lg-6">
+    <div class="card soc-card h-100" id="alert-metadata-card">
+      <div class="card-header">
+        <i class="bi bi-info-circle me-2 text-accent"></i>
+        <span class="fw-bold">Alert Information</span>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0 detail-table">
+          <tr>
+            <td class="text-muted">Alert ID</td>
+            <td class="fw-semibold">#{{ alert.pk }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Severity</td>
+            <td>
+              {% include "dashboard/includes/_severity_badge.html" with severity=alert.severity severity_display=alert.get_severity_display %}
+            </td>
+          </tr>
+          <tr>
+            <td class="text-muted">Score</td>
+            <td>
+              <code class="anomaly-score">{{ alert.anomaly_score|floatformat:6 }}</code>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-muted">Time Window</td>
+            <td>{{ alert.window_start|date:"M d, Y H:i:s" }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Computer</td>
+            <td>{{ alert.computer_name|default:"Unknown" }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Sibling Alerts</td>
+            <td>
+              {{ sibling_count }} anomal{{ sibling_count|pluralize:"y,ies" }} in this job
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parent Job Card -->
+  <div class="col-lg-6">
+    <div class="card soc-card h-100" id="alert-job-card">
+      <div class="card-header">
+        <i class="bi bi-file-earmark-bar-graph me-2 text-accent"></i>
+        <span class="fw-bold">Source Analysis</span>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0 detail-table">
+          <tr>
+            <td class="text-muted">Job ID</td>
+            <td>
+              <a href="{% url 'dashboard:analysis_detail' pk=job.pk %}" class="text-decoration-none">
+                #{{ job.pk }}
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-muted">File</td>
+            <td class="fw-semibold">{{ job.original_filename }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Status</td>
+            <td>
+              {% include "dashboard/includes/_status_badge.html" with status=job.status %}
+            </td>
+          </tr>
+          <tr>
+            <td class="text-muted">Uploaded</td>
+            <td>{{ job.uploaded_at|date:"M d, Y H:i" }}</td>
+          </tr>
+          {% if job.completed_at %}
+          <tr>
+            <td class="text-muted">Completed</td>
+            <td>{{ job.completed_at|date:"M d, Y H:i" }}</td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td class="text-muted">Analyst</td>
+            <td>{{ analyst.username }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Results</td>
+            <td>
+              <span class="fw-semibold text-warning">{{ job.total_anomalies }}</span>
+              <span class="text-muted small">/ {{ job.total_samples }} windows</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Feature Data Grid -->
+{% if feature_items %}
+<div class="card soc-card mb-4" id="alert-features-card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div>
+      <i class="bi bi-cpu me-2 text-accent"></i>
+      <span class="fw-bold">ML Feature Snapshot</span>
+    </div>
+    <span class="text-muted small">{{ feature_items|length }} features</span>
+  </div>
+  <div class="card-body">
+    <p class="text-muted small mb-3">
+      Feature values from the anomalous time window. These are the aggregated event counts
+      that the Isolation Forest model used to flag this window as anomalous.
+    </p>
+    <div class="feature-grid">
+      {% for key, value in feature_items %}
+      <div class="feature-item {% if value > 0 %}feature-item-active{% endif %}" id="feature-{{ key }}">
+        <span class="feature-label">{{ key }}</span>
+        <span class="feature-value">
+          {% if value is None %}—{% else %}{{ value|floatformat:2 }}{% endif %}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="card soc-card mb-4">
+  <div class="card-body text-center py-4">
+    <i class="bi bi-cpu text-muted" style="font-size: 2rem;"></i>
+    <p class="text-muted mt-2 mb-0">No feature data available for this anomaly.</p>
+  </div>
+</div>
+{% endif %}
+
+<!-- RAG Explanation Placeholder (Phase 14) -->
+{% if alert.rag_explanation %}
+<div class="card soc-card mb-4" id="alert-rag-explanation">
+  <div class="card-header">
+    <i class="bi bi-robot me-2 text-accent"></i>
+    <span class="fw-bold">AI Explanation</span>
+  </div>
+  <div class="card-body">
+    <p class="mb-0">{{ alert.rag_explanation }}</p>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

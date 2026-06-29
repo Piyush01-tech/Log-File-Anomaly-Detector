@@ -1,4 +1,4 @@
-<!-- dashboard/templates/dashboard/analysis_detail.html — Phase 10 -->
+<!-- dashboard/templates/dashboard/analysis_detail.html — Phase 11B -->
 <!--
   Analysis job detail page — shows results of a single analysis.
 
@@ -6,9 +6,14 @@
     - Job metadata card (filename, status, timestamps)
     - Summary statistics with KPI cards
     - Severity breakdown bar
-    - Anomaly table with severity badges, scores, and feature data
+    - Anomaly table with reusable severity badges and alert links
     - Error display for failed jobs
-    - Back navigation to history
+    - Back navigation to history and alerts
+
+  Phase 11B CHANGES:
+    - Replaced inline status/severity badges with reusable includes
+    - Added "View Alert" links on each anomaly row
+    - Added link to Alerts page in header
 -->
 {% extends "dashboard/base.html" %}
 
@@ -33,8 +38,11 @@
       Job #{{ job.pk }} — {{ job.original_filename }}
     </p>
   </div>
-  <div>
-    <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-outline-light btn-sm me-2">
+  <div class="d-flex gap-2">
+    <a href="{% url 'dashboard:alerts' %}" class="btn btn-outline-light btn-sm">
+      <i class="bi bi-shield-exclamation me-1"></i> Alerts
+    </a>
+    <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-outline-light btn-sm">
       <i class="bi bi-clock-history me-1"></i> History
     </a>
     <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm">
@@ -88,23 +96,7 @@
           <tr>
             <td class="text-muted">Status</td>
             <td>
-              {% if job.status == 'COMPLETED' %}
-                <span class="badge severity-badge severity-completed">
-                  <i class="bi bi-check-circle-fill me-1"></i>Completed
-                </span>
-              {% elif job.status == 'FAILED' %}
-                <span class="badge severity-badge severity-critical">
-                  <i class="bi bi-x-circle-fill me-1"></i>Failed
-                </span>
-              {% elif job.status == 'RUNNING' %}
-                <span class="badge severity-badge severity-medium">
-                  <i class="bi bi-arrow-repeat me-1"></i>Running
-                </span>
-              {% else %}
-                <span class="badge severity-badge severity-low">
-                  <i class="bi bi-hourglass me-1"></i>Pending
-                </span>
-              {% endif %}
+              {% include "dashboard/includes/_status_badge.html" with status=job.status %}
             </td>
           </tr>
           <tr>
@@ -179,26 +171,26 @@
     <div class="row g-3">
       <div class="col-sm-3">
         <div class="d-flex align-items-center">
-          <span class="badge severity-badge severity-critical me-2">CRITICAL</span>
-          <span class="fw-bold">{{ critical_count }}</span>
+          {% include "dashboard/includes/_severity_badge.html" with severity="CRITICAL" severity_display="CRITICAL" %}
+          <span class="fw-bold ms-2">{{ critical_count }}</span>
         </div>
       </div>
       <div class="col-sm-3">
         <div class="d-flex align-items-center">
-          <span class="badge severity-badge severity-high me-2">HIGH</span>
-          <span class="fw-bold">{{ high_count }}</span>
+          {% include "dashboard/includes/_severity_badge.html" with severity="HIGH" severity_display="HIGH" %}
+          <span class="fw-bold ms-2">{{ high_count }}</span>
         </div>
       </div>
       <div class="col-sm-3">
         <div class="d-flex align-items-center">
-          <span class="badge severity-badge severity-medium me-2">MEDIUM</span>
-          <span class="fw-bold">{{ medium_count }}</span>
+          {% include "dashboard/includes/_severity_badge.html" with severity="MEDIUM" severity_display="MEDIUM" %}
+          <span class="fw-bold ms-2">{{ medium_count }}</span>
         </div>
       </div>
       <div class="col-sm-3">
         <div class="d-flex align-items-center">
-          <span class="badge severity-badge severity-low me-2">LOW</span>
-          <span class="fw-bold">{{ low_count }}</span>
+          {% include "dashboard/includes/_severity_badge.html" with severity="LOW" severity_display="LOW" %}
+          <span class="fw-bold ms-2">{{ low_count }}</span>
         </div>
       </div>
     </div>
@@ -221,15 +213,14 @@
             <th>Time Window</th>
             <th>Computer</th>
             <th>Key Indicators</th>
+            <th class="text-end pe-3">Action</th>
           </tr>
         </thead>
         <tbody>
           {% for anomaly in anomalies %}
-          <tr class="anomaly-row severity-row-{{ anomaly.severity|lower }}">
+          <tr class="anomaly-row severity-row-{{ anomaly.severity|lower }}" id="anomaly-row-{{ anomaly.pk }}">
             <td class="ps-3">
-              <span class="badge severity-badge severity-{{ anomaly.severity|lower }}">
-                {{ anomaly.get_severity_display }}
-              </span>
+              {% include "dashboard/includes/_severity_badge.html" with severity=anomaly.severity severity_display=anomaly.get_severity_display %}
             </td>
             <td>
               <code class="anomaly-score">{{ anomaly.anomaly_score|floatformat:4 }}</code>
@@ -248,16 +239,23 @@
                       data-bs-target="#features-{{ anomaly.pk }}"
                       aria-expanded="false">
                 <i class="bi bi-chevron-down me-1"></i>
-                <span class="small">Details</span>
+                <span class="small">Features</span>
               </button>
               {% else %}
               <span class="text-muted small">—</span>
               {% endif %}
             </td>
+            <td class="text-end pe-3">
+              <a href="{% url 'dashboard:alert_detail' pk=anomaly.pk %}"
+                 class="btn btn-sm btn-outline-light py-0 px-2"
+                 title="View alert details">
+                <i class="bi bi-eye me-1"></i>Details
+              </a>
+            </td>
           </tr>
           {% if anomaly.feature_data %}
           <tr class="collapse feature-collapse" id="features-{{ anomaly.pk }}">
-            <td colspan="5" class="ps-4 pe-3 py-3 border-0">
+            <td colspan="6" class="ps-4 pe-3 py-3 border-0">
               <div class="feature-grid">
                 {% for key, value in anomaly.feature_data.items %}
                 <div class="feature-item">

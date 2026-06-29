@@ -1,25 +1,27 @@
-<!-- dashboard/templates/dashboard/home.html — Phase 11A -->
+<!-- dashboard/templates/dashboard/home.html — Phase 11B -->
 <!--
-  Dashboard home page with statistics, recent uploads, and recent analyses.
+  Dashboard home page with statistics, recent uploads, recent analyses, and alerts.
 
   FEATURES:
     - Welcome section with user greeting and role badge
     - Statistics cards (role-aware: system-wide for admins, personal for analysts)
-    - Recent Uploads section (latest 5 jobs)
+    - Recent Uploads section (latest 5 jobs) with reusable status badges
     - Recent Analyses section (latest 5 completed analyses)
+    - Recent Critical/High Alerts section (Phase 11B)
     - Empty states when no data exists
     - Reusable template components
 
   CONTEXT VARIABLES:
     Admin:
       - total_users, total_jobs, completed_jobs, failed_jobs
-      - total_anomalies_count
+      - total_anomalies_count, critical_alerts, high_alerts
     Analyst:
       - my_jobs_count, my_completed_jobs, my_failed_jobs
-      - my_anomalies_count
+      - my_anomalies_count, critical_alerts, high_alerts
     Shared:
       - recent_uploads (QuerySet of latest 5 AnalysisJob)
       - recent_analyses (QuerySet of latest 5 completed AnalysisJob)
+      - recent_alerts (QuerySet of latest 5 critical/high Anomaly, Phase 11B)
 -->
 {% extends "dashboard/base.html" %}
 
@@ -92,6 +94,35 @@
 </div>
 
 <!-- ============================================================ -->
+<!-- Alert Summary Row (Phase 11B)                                 -->
+<!-- ============================================================ -->
+{% if critical_alerts > 0 or high_alerts > 0 %}
+<div class="alert alert-detail-severity severity-banner-{% if critical_alerts > 0 %}critical{% else %}high{% endif %} d-flex align-items-center mb-4"
+     id="home-alert-banner">
+  {% if critical_alerts > 0 %}
+  <i class="bi bi-exclamation-octagon-fill me-3 fs-4"></i>
+  <div>
+    <strong>{{ critical_alerts }} Critical Alert{{ critical_alerts|pluralize }}</strong>
+    {% if high_alerts > 0 %}
+    <span class="ms-2 small">and {{ high_alerts }} High alert{{ high_alerts|pluralize }}</span>
+    {% endif %}
+    <span class="ms-2 small">require{{ critical_alerts|pluralize:"s," }} attention.</span>
+  </div>
+  {% else %}
+  <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+  <div>
+    <strong>{{ high_alerts }} High Alert{{ high_alerts|pluralize }}</strong>
+    <span class="ms-2 small">require{{ high_alerts|pluralize:"s," }} review.</span>
+  </div>
+  {% endif %}
+  <a href="{% url 'dashboard:alerts' %}?severity={% if critical_alerts > 0 %}CRITICAL{% else %}HIGH{% endif %}"
+     class="btn btn-sm btn-outline-light ms-auto">
+    View Alerts
+  </a>
+</div>
+{% endif %}
+
+<!-- ============================================================ -->
 <!-- Recent Activity Row                                           -->
 <!-- ============================================================ -->
 <div class="row g-4">
@@ -129,23 +160,7 @@
                   </a>
                 </td>
                 <td>
-                  {% if job.status == 'COMPLETED' %}
-                    <span class="severity-badge severity-completed">
-                      <i class="bi bi-check-circle me-1"></i>Completed
-                    </span>
-                  {% elif job.status == 'RUNNING' %}
-                    <span class="severity-badge severity-medium">
-                      <i class="bi bi-hourglass-split me-1"></i>Running
-                    </span>
-                  {% elif job.status == 'FAILED' %}
-                    <span class="severity-badge severity-critical">
-                      <i class="bi bi-x-circle me-1"></i>Failed
-                    </span>
-                  {% else %}
-                    <span class="severity-badge severity-low">
-                      <i class="bi bi-clock me-1"></i>Pending
-                    </span>
-                  {% endif %}
+                  {% include "dashboard/includes/_status_badge.html" with status=job.status %}
                 </td>
                 <td>
                   <small class="text-muted">{{ job.uploaded_at|timesince }} ago</small>
@@ -232,10 +247,64 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- Quick Actions Row                                             -->
+<!-- Recent Alerts Row (Phase 11B)                                 -->
 <!-- ============================================================ -->
 <div class="row g-4 mt-2">
-  <div class="col-md-6">
+  <div class="col-lg-6">
+    <div class="card soc-card h-100">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+          <i class="bi bi-exclamation-triangle me-2 text-accent"></i>
+          <span class="fw-bold">Recent Critical Alerts</span>
+        </div>
+        <a href="{% url 'dashboard:alerts' %}" class="btn btn-sm btn-outline-light">
+          View All
+        </a>
+      </div>
+      <div class="card-body p-0">
+        {% if recent_alerts %}
+        <div class="table-responsive">
+          <table class="table analysis-table mb-0">
+            <thead>
+              <tr>
+                <th>Severity</th>
+                <th>Computer</th>
+                <th>Score</th>
+                <th class="text-end pe-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for alert in recent_alerts %}
+              <tr class="severity-row-{{ alert.severity|lower }}">
+                <td>
+                  {% include "dashboard/includes/_severity_badge.html" with severity=alert.severity severity_display=alert.get_severity_display %}
+                </td>
+                <td>
+                  <span class="small">{{ alert.computer_name|default:"—" }}</span>
+                </td>
+                <td>
+                  <code class="anomaly-score">{{ alert.anomaly_score|floatformat:4 }}</code>
+                </td>
+                <td class="text-end pe-3">
+                  <a href="{% url 'dashboard:alert_detail' pk=alert.pk %}"
+                     class="btn btn-sm btn-outline-light py-0 px-2">
+                    <i class="bi bi-eye me-1"></i>View
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        {% include "dashboard/includes/_empty_state.html" with icon="bi-shield-check" title="No critical alerts" message="No critical or high severity anomalies detected. Your systems look healthy." %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="col-lg-6">
     <div class="card soc-card h-100">
       <div class="card-header">
         <i class="bi bi-lightning-charge me-2 text-accent"></i>
@@ -250,6 +319,9 @@
           <i class="bi bi-upload me-1"></i> Upload .evtx File
         </a>
         {% endif %}
+        <a href="{% url 'dashboard:alerts' %}" class="btn btn-outline-light btn-sm mb-2 me-2">
+          <i class="bi bi-shield-exclamation me-1"></i> View Alerts
+        </a>
         <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-outline-light btn-sm mb-2">
           <i class="bi bi-clock-history me-1"></i> View History
         </a>
@@ -261,28 +333,6 @@
         </p>
         <a href="{% url 'admin:dashboard_user_changelist' %}" class="btn btn-outline-light btn-sm">
           <i class="bi bi-people me-1"></i> Manage Users
-        </a>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-  <div class="col-md-6">
-    <div class="card soc-card h-100">
-      <div class="card-header">
-        <i class="bi bi-person-gear me-2 text-accent"></i>
-        <span class="fw-bold">Your Account</span>
-      </div>
-      <div class="card-body">
-        <p class="text-muted small mb-1">
-          <strong>Username:</strong> {{ user.username }}
-        </p>
-        <p class="text-muted small mb-3">
-          <strong>Role:</strong>
-          <span class="badge bg-accent text-uppercase">{{ user.get_role_display }}</span>
-        </p>
-        {% if perms.dashboard.edit_own_profile %}
-        <a href="{% url 'dashboard:profile' %}" class="btn btn-outline-light btn-sm">
-          <i class="bi bi-pencil-square me-1"></i> Manage Profile
         </a>
         {% endif %}
       </div>

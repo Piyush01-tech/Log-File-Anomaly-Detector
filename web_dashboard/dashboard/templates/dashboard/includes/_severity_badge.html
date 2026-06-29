@@ -1,0 +1,29 @@
+<!-- dashboard/templates/dashboard/includes/_severity_badge.html — Phase 11B -->
+<!--
+  Reusable severity badge for Anomaly.Severity values.
+
+  CONTEXT VARIABLES:
+    - severity: The severity string (CRITICAL, HIGH, MEDIUM, LOW)
+    - severity_display: Human-readable severity label (optional, falls back to severity)
+
+  USAGE:
+    {% include "dashboard/includes/_severity_badge.html" with severity=anomaly.severity severity_display=anomaly.get_severity_display %}
+-->
+
+{% if severity == 'CRITICAL' %}
+  <span class="badge severity-badge severity-critical">
+    <i class="bi bi-exclamation-octagon-fill me-1"></i>{{ severity_display|default:"Critical" }}
+  </span>
+{% elif severity == 'HIGH' %}
+  <span class="badge severity-badge severity-high">
+    <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ severity_display|default:"High" }}
+  </span>
+{% elif severity == 'MEDIUM' %}
+  <span class="badge severity-badge severity-medium">
+    <i class="bi bi-exclamation-circle-fill me-1"></i>{{ severity_display|default:"Medium" }}
+  </span>
+{% else %}
+  <span class="badge severity-badge severity-low">
+    <i class="bi bi-info-circle-fill me-1"></i>{{ severity_display|default:"Low" }}
+  </span>
+{% endif %}

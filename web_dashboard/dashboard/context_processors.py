@@ -1,5 +1,5 @@
 """
-dashboard/context_processors.py — Phase 11A
+dashboard/context_processors.py — Phase 11B
 ===============================================
 Template context processors for the SOC Dashboard.
 
@@ -50,6 +50,7 @@ def dashboard_context(request: HttpRequest) -> dict[str, Any]:
     # Map URL prefixes to navigation item identifiers.
     # Order: most specific first to avoid false matches.
     nav_map = [
+        ("/alerts/", "alerts"),
         ("/upload/", "upload"),
         ("/analysis/", "analysis"),
         ("/history/", "history"),

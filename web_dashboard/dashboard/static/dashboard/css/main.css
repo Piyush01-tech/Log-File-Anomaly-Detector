@@ -838,14 +838,146 @@ a:hover {
 }
 
 /* =================================================================
-   19. Responsive Overrides
+   19. Filter Bar (Phase 11B)
+   ================================================================= */
+
+.soc-filter-form .input-group-text {
+  background-color: var(--soc-bg-secondary);
+  border-color: var(--soc-border);
+  color: var(--soc-text-muted);
+}
+
+.soc-filter-form .form-control,
+.soc-filter-form .form-select {
+  font-size: 0.85rem;
+  padding: 0.45rem 0.75rem;
+}
+
+.soc-filter-form .input-group .form-control {
+  border-left: none;
+}
+
+.soc-filter-form .input-group .form-control:focus {
+  border-left: none;
+  box-shadow: none;
+}
+
+.soc-filter-form .input-group:focus-within .input-group-text {
+  border-color: var(--soc-accent);
+}
+
+.soc-filter-form .input-group:focus-within .form-control {
+  border-color: var(--soc-accent);
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--soc-accent-muted);
+  color: var(--soc-accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2em 0.6em;
+  border-radius: 0.25rem;
+  margin-right: 0.35rem;
+  border: 1px solid rgba(34, 211, 238, 0.25);
+}
+
+.active-filters {
+  border-color: var(--soc-border) !important;
+}
+
+/* =================================================================
+   20. Severity Banners (Phase 11B)
+   ================================================================= */
+
+.alert-detail-severity {
+  border-radius: var(--soc-radius-sm);
+  border: 1px solid;
+}
+
+.severity-banner-critical {
+  background-color: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--soc-danger);
+}
+
+.severity-banner-high {
+  background-color: rgba(251, 146, 60, 0.1);
+  border-color: rgba(251, 146, 60, 0.3);
+  color: #fb923c;
+}
+
+.severity-banner-medium {
+  background-color: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: var(--soc-warning);
+}
+
+.severity-banner-low {
+  background-color: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.3);
+  color: var(--soc-info);
+}
+
+/* =================================================================
+   21. Feature Item Highlights (Phase 11B)
+   ================================================================= */
+
+.feature-item-active {
+  border-color: var(--soc-accent);
+  background-color: var(--soc-accent-muted);
+}
+
+.feature-item-active .feature-value {
+  color: var(--soc-accent);
+}
+
+/* =================================================================
+   22. Micro-Animations (Phase 11B)
+   ================================================================= */
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spin-slow {
+  animation: spin-slow 2s linear infinite;
+  display: inline-block;
+}
+
+/* =================================================================
+   23. Pagination Info (Phase 11B)
+   ================================================================= */
+
+.pagination-info {
+  font-size: 0.8rem;
+  color: var(--soc-text-muted);
+}
+
+/* =================================================================
+   24. Text Truncation Helpers (Phase 11B)
+   ================================================================= */
+
+.text-truncate-name {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* =================================================================
+   25. Responsive Overrides
    ================================================================= */
 
 @media (max-width: 991.98px) {
   .dashboard-messages {
     padding: 0 1rem;
   }
-}
+
   .auth-card .card-body {
     padding: 1.5rem !important;
   }
@@ -878,6 +1010,15 @@ a:hover {
   .analysis-table {
     font-size: 0.8rem;
   }
+
+  /* Phase 11B: Filter bar responsive */
+  .soc-filter-form .row > div {
+    flex: 1 1 100%;
+  }
+
+  .text-truncate-name {
+    max-width: 140px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -891,5 +1032,14 @@ a:hover {
 
   .feature-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .text-truncate-name {
+    max-width: 100px;
+  }
+
+  /* Phase 11B: Stack filter actions */
+  .soc-filter-form .d-flex.gap-2 {
+    flex-wrap: wrap;
   }
 }

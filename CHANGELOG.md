@@ -6,6 +6,63 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.9.0] - 2026-06-29 — Phase 11B: Dashboard Features
+
+### Completed Phase
+- **Phase 11B**: Dashboard Features
+
+### Added
+- `web_dashboard/dashboard/views.py`: Added `AlertsListView` (paginated anomaly list with search by computer name/filename, severity filter, user isolation via `job__user` relationship) and `AlertDetailView` (single anomaly incident detail with ownership check via parent job, prev/next navigation, audit logging).
+- `web_dashboard/dashboard/templates/dashboard/alerts.html`: Alerts list page with severity summary cards, search/filter bar, responsive table, reusable badge includes, pagination, and empty states (filtered vs no-data).
+- `web_dashboard/dashboard/templates/dashboard/alert_detail.html`: Incident detail page with severity-aware banner, metadata cards, full ML feature grid, parent job link, prev/next anomaly navigation, and RAG explanation placeholder.
+- `web_dashboard/dashboard/templates/dashboard/includes/_pagination.html`: Reusable pagination component with query string preservation, page info text, first/prev/next/last navigation, and ellipsis for large page ranges.
+- `web_dashboard/dashboard/templates/dashboard/includes/_status_badge.html`: Reusable status badge for `AnalysisJob.Status` values (COMPLETED, FAILED, RUNNING, PENDING). Replaces duplicated badge HTML across 4+ templates.
+- `web_dashboard/dashboard/templates/dashboard/includes/_severity_badge.html`: Reusable severity badge for `Anomaly.Severity` values (CRITICAL, HIGH, MEDIUM, LOW) with appropriate icons.
+- `web_dashboard/dashboard/templates/dashboard/includes/_table_filter.html`: Reusable search and filter bar component with text input, optional severity/status dropdowns, active filter tags, and clear button.
+- `web_dashboard/dashboard/templatetags/__init__.py`: Template tags package initializer.
+- `web_dashboard/dashboard/templatetags/dashboard_filters.py`: Custom `query_transform` template tag for preserving GET parameters during pagination with search/filter.
+- `web_dashboard/dashboard/urls.py`: Added `/alerts/` and `/alerts/<int:pk>/` routes.
+
+### Modified
+- `web_dashboard/dashboard/views.py`: Enhanced `AnalysisHistoryView` with search by filename (`q` param) and status filter (`status` param) support. Enhanced `home` view with critical/high alert counts and recent alerts context for both Admin and Analyst dashboards.
+- `web_dashboard/dashboard/templates/dashboard/home.html`: Added critical alert banner, recent critical alerts table, alerts link in quick actions. Replaced inline status badges with `_status_badge.html` include.
+- `web_dashboard/dashboard/templates/dashboard/analysis_history.html`: Added search/filter bar via `_table_filter.html` include. Replaced inline status badges with `_status_badge.html` include. Replaced inline pagination with `_pagination.html` include. Added filtered empty state.
+- `web_dashboard/dashboard/templates/dashboard/analysis_detail.html`: Replaced inline status/severity badges with reusable includes. Added "Details" link on each anomaly row to alert detail page. Added Alerts link in header navigation. Updated anomaly table to 6-column layout with action column.
+- `web_dashboard/dashboard/templates/dashboard/includes/_sidebar.html`: Added Alerts navigation link (`bi-shield-exclamation` icon) between Upload and History in both desktop and mobile sidebars.
+- `web_dashboard/dashboard/context_processors.py`: Added `/alerts/` to `nav_map` for sidebar active state tracking.
+- `web_dashboard/dashboard/static/dashboard/css/main.css`: Added Phase 11B styles (filter bar, severity banners, feature highlights, spin animation, pagination info, text truncation). Fixed pre-existing CSS bug where `@media` closing brace was misplaced. Added responsive overrides for filter bars and mobile text truncation.
+
+### Architecture Changes
+- Introduced a template-tag based approach (`query_transform`) for query string preservation — cleaner than JavaScript URL manipulation.
+- Established reusable badge component pattern: all status/severity badge rendering now flows through centralized includes, eliminating 4+ sources of duplicated badge HTML.
+- Alerts system uses `job__user` relationship for user isolation rather than a direct `user` field on `Anomaly`, maintaining the existing data model without adding redundant foreign keys.
+
+### Database Changes
+- None. No new models, fields, or migrations. Phase 11B uses existing `Anomaly` and `AnalysisJob` models exclusively.
+
+### API Changes
+- New user-facing routes: `/alerts/` (alerts list) and `/alerts/<int:pk>/` (alert detail).
+- No Flask API changes.
+
+### Security Changes
+- `AlertsListView` enforces user isolation: Analysts see only anomalies from their own jobs; Super Admins see all.
+- `AlertDetailView` performs ownership verification via parent job's user field before displaying anomaly data.
+- All alert views are behind `@login_required` (via `LoginRequiredMixin`).
+- Alert detail views are audit-logged via `AuditLog.Action.VIEW`.
+
+### Documentation Updated
+- `PROJECT_CONTEXT.md` — Version bump to v0.9.0, Phase 11B completed, dashboard features documented.
+- `ROADMAP.md` — Phase 11B marked complete with all tasks.
+- `CHANGELOG.md` — This entry.
+
+### Summary
+The SOC operational dashboard is now feature-complete for Phase 11B. Analysts and Super Admins can browse, search, filter, and drill into security alerts with full user isolation. All badge rendering is centralized via reusable template includes. Pagination preserves query parameters across page navigation. The home page surfaces critical alerts proactively.
+
+### Future Work
+- Phase 12: Charts & Visualization (Chart.js integration for anomaly distribution over time).
+
+---
+
 ## [0.8.0] - 2026-06-29 — Phase 11A: Dashboard Foundation
 
 ### Completed Phase

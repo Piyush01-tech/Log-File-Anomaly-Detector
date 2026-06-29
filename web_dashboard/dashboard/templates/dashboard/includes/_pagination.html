@@ -1,0 +1,94 @@
+<!-- dashboard/templates/dashboard/includes/_pagination.html — Phase 11B -->
+<!--
+  Reusable pagination component for paginated list views.
+
+  FEATURES:
+    - First/Previous/Next/Last navigation
+    - Page number display with window (±2 pages)
+    - Preserves existing query string parameters (search, filters)
+    - Page info text (e.g., "Showing page 1 of 5")
+    - SOC dark theme styling
+
+  CONTEXT VARIABLES:
+    - page_obj: Django Page object (from ListView pagination)
+    - is_paginated: Boolean indicating if pagination is active
+    - request: The current HTTP request (for query string preservation)
+
+  USAGE:
+    {% include "dashboard/includes/_pagination.html" %}
+-->
+
+{% if is_paginated %}
+<nav aria-label="Page navigation" class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 gap-3">
+  <!-- Page info -->
+  <div class="pagination-info text-muted small order-2 order-sm-1">
+    Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    <span class="d-none d-md-inline">
+      ({{ page_obj.paginator.count }} total record{{ page_obj.paginator.count|pluralize }})
+    </span>
+  </div>
+
+  <!-- Page controls -->
+  <ul class="pagination pagination-sm mb-0 order-1 order-sm-2">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?{% query_transform page=1 %}" aria-label="First" title="First page">
+        <i class="bi bi-chevron-double-left"></i>
+      </a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="?{% query_transform page=page_obj.previous_page_number %}" aria-label="Previous">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link"><i class="bi bi-chevron-double-left"></i></span>
+    </li>
+    <li class="page-item disabled">
+      <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+    </li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+      <li class="page-item active">
+        <span class="page-link">{{ num }}</span>
+      </li>
+      {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+      <li class="page-item">
+        <a class="page-link" href="?{% query_transform page=num %}">{{ num }}</a>
+      </li>
+      {% elif num == 1 or num == page_obj.paginator.num_pages %}
+      <li class="page-item">
+        <a class="page-link" href="?{% query_transform page=num %}">{{ num }}</a>
+      </li>
+      {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+      <li class="page-item disabled">
+        <span class="page-link">…</span>
+      </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?{% query_transform page=page_obj.next_page_number %}" aria-label="Next">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    </li>
+    <li class="page-item">
+      <a class="page-link" href="?{% query_transform page=page_obj.paginator.num_pages %}" aria-label="Last" title="Last page">
+        <i class="bi bi-chevron-double-right"></i>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+    </li>
+    <li class="page-item disabled">
+      <span class="page-link"><i class="bi bi-chevron-double-right"></i></span>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

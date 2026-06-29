@@ -1,17 +1,25 @@
-<!-- dashboard/templates/dashboard/analysis_history.html — Phase 10 -->
+<!-- dashboard/templates/dashboard/analysis_history.html — Phase 11B -->
 <!--
   Analysis history page — paginated list of user's analysis jobs.
 
   FEATURES:
+    - Search by filename (Phase 11B)
+    - Filter by status (Phase 11B)
     - Sortable table of analysis jobs
-    - Status badges (COMPLETED, FAILED, RUNNING, PENDING)
+    - Reusable status badges via _status_badge.html include
     - Anomaly count and rate display
     - Clickable rows linking to detail pages
-    - Pagination controls
+    - Reusable pagination via _pagination.html include
     - Empty state with upload CTA
     - User isolation (analysts see only their jobs)
+
+  CONTEXT VARIABLES:
+    - jobs: Page of AnalysisJob objects
+    - current_search, current_status, has_active_filters (Phase 11B)
+    - page_obj, is_paginated (from ListView pagination)
 -->
 {% extends "dashboard/base.html" %}
+{% load dashboard_filters %}
 
 {% block title %}Analysis History{% endblock %}
 
@@ -42,6 +50,9 @@
   </a>
 </div>
 
+<!-- Search & Filter Bar (Phase 11B) -->
+{% include "dashboard/includes/_table_filter.html" with search_placeholder="Search by filename..." search_value=current_search show_status_filter=True current_status=current_status has_active_filters=has_active_filters %}
+
 {% if jobs %}
 <!-- Jobs Table -->
 <div class="card soc-card mb-4">
@@ -64,7 +75,7 @@
         </thead>
         <tbody>
           {% for job in jobs %}
-          <tr class="history-row">
+          <tr class="history-row" id="history-row-{{ job.pk }}">
             <td class="ps-3 text-muted">{{ job.pk }}</td>
             <td>
               <div class="d-flex align-items-center">
@@ -76,23 +87,7 @@
               </div>
             </td>
             <td>
-              {% if job.status == 'COMPLETED' %}
-                <span class="badge severity-badge severity-completed">
-                  <i class="bi bi-check-circle-fill me-1"></i>Completed
-                </span>
-              {% elif job.status == 'FAILED' %}
-                <span class="badge severity-badge severity-critical">
-                  <i class="bi bi-x-circle-fill me-1"></i>Failed
-                </span>
-              {% elif job.status == 'RUNNING' %}
-                <span class="badge severity-badge severity-medium">
-                  <i class="bi bi-arrow-repeat me-1"></i>Running
-                </span>
-              {% else %}
-                <span class="badge severity-badge severity-low">
-                  <i class="bi bi-hourglass me-1"></i>Pending
-                </span>
-              {% endif %}
+              {% include "dashboard/includes/_status_badge.html" with status=job.status %}
             </td>
             <td>
               {% if job.status == 'COMPLETED' %}
@@ -133,53 +128,25 @@
   </div>
 </div>
 
-<!-- Pagination -->
-{% if is_paginated %}
-<nav aria-label="Analysis history pagination" class="d-flex justify-content-center">
-  <ul class="pagination pagination-sm">
-    {% if page_obj.has_previous %}
-    <li class="page-item">
-      <a class="page-link" href="?page=1" aria-label="First">
-        <i class="bi bi-chevron-double-left"></i>
-      </a>
-    </li>
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-        <i class="bi bi-chevron-left"></i>
-      </a>
-    </li>
-    {% endif %}
-
-    {% for num in page_obj.paginator.page_range %}
-      {% if page_obj.number == num %}
-      <li class="page-item active">
-        <span class="page-link">{{ num }}</span>
-      </li>
-      {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-      </li>
-      {% endif %}
-    {% endfor %}
-
-    {% if page_obj.has_next %}
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-        <i class="bi bi-chevron-right"></i>
-      </a>
-    </li>
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
-        <i class="bi bi-chevron-double-right"></i>
-      </a>
-    </li>
-    {% endif %}
-  </ul>
-</nav>
-{% endif %}
+<!-- Pagination (reusable include, Phase 11B) -->
+{% include "dashboard/includes/_pagination.html" %}
 
 {% else %}
 <!-- Empty State -->
+{% if has_active_filters %}
+<div class="card soc-card">
+  <div class="card-body text-center py-5" id="history-empty-filtered">
+    <i class="bi bi-funnel text-muted" style="font-size: 3rem;"></i>
+    <h4 class="mt-3 fw-bold">No Matching Jobs</h4>
+    <p class="text-muted mb-4">
+      No analysis jobs match your current search and filter criteria.
+    </p>
+    <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-outline-light">
+      <i class="bi bi-x-lg me-1"></i> Clear Filters
+    </a>
+  </div>
+</div>
+{% else %}
 <div class="card soc-card">
   <div class="card-body text-center py-5">
     <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
@@ -192,6 +159,7 @@
     </a>
   </div>
 </div>
+{% endif %}
 {% endif %}
 
 {% endblock %}

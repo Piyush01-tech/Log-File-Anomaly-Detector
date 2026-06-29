@@ -1,22 +1,27 @@
 """
-dashboard/views.py — Phase 10
+dashboard/views.py — Phase 11B
 ================================
 Django view controllers for dashboard pages.
 
 VIEWS:
   home                — Landing page / dashboard home (auth-aware, RBAC).
   health_check        — System health check endpoint (public).
+  profile_view        — Dashboard profile page (Phase 11A).
   UploadView          — EVTX file upload and analysis trigger (Phase 10).
   AnalysisDetailView  — Analysis job results with anomaly listing (Phase 10).
   AnalysisHistoryView — Paginated list of user's analysis jobs (Phase 10).
+  AlertsListView      — Paginated, searchable, filterable anomaly list (Phase 11B).
+  AlertDetailView     — Single anomaly incident detail page (Phase 11B).
 
-PHASE 10 CHANGES:
-  - Added UploadView: handles file upload, validation, Flask API call,
-    result persistence, and redirect to detail page.
-  - Added AnalysisDetailView: displays job summary and anomaly table
-    with ownership enforcement.
-  - Added AnalysisHistoryView: paginated job list with user isolation.
-  - Updated home view context to include recent job counts.
+PHASE 11B CHANGES:
+  - Added AlertsListView: paginated anomaly list with search (q param),
+    severity filter, user isolation via job__user relationship.
+  - Added AlertDetailView: single anomaly detail with ownership check
+    via job.user, audit logging.
+  - Enhanced AnalysisHistoryView: added search (q param) and status
+    filter support with query string preservation.
+  - Enhanced home view: added critical/high alert counts and recent
+    alerts context for both Admin and Analyst dashboards.
 
 ARCHITECTURE:
   - Upload workflow uses FlaskAPIClient (services.py) as the ACL.
@@ -33,6 +38,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+from django.db.models import Q, Count
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import DetailView, ListView
@@ -41,7 +48,7 @@ from django.db.models import Sum
 from .auth_views import _create_audit_log, _get_client_ip
 from .forms import EVTXUploadForm
 from .models import AnalysisJob, Anomaly, AuditLog, User
-from .permissions import DashboardPermissions
+from .permissions import DashboardPermissions, is_object_owner
 from .rbac_mixins import AnalystOwnerQuerysetMixin, OwnershipMixin
 from .services import FlaskAPIClient, FlaskAPIError
 
@@ -59,10 +66,12 @@ def home(request: HttpRequest) -> HttpResponse:
     Render the dashboard home page.
 
     Displays different content based on user role (Phase 9B):
-      - Super Admins: System-wide statistics and management actions.
-      - Analysts: Personal statistics and upload actions.
+      - Super Admins: System-wide statistics, management actions,
+        critical alert counts, and recent alerts.
+      - Analysts: Personal statistics, upload actions, and own alerts.
 
     Phase 10: Added recent analysis counts and completed job stats.
+    Phase 11B: Added critical/high alert counts and recent alerts table.
 
     Args:
         request: The HTTP request.
@@ -85,11 +94,28 @@ def home(request: HttpRequest) -> HttpResponse:
         context["total_anomalies_count"] = AnalysisJob.objects.aggregate(
             total=Sum('total_anomalies')
         )['total'] or 0
-        
+
+        # Phase 11B: Alert severity counts (system-wide)
+        context["critical_alerts"] = Anomaly.objects.filter(
+            severity=Anomaly.Severity.CRITICAL
+        ).count()
+        context["high_alerts"] = Anomaly.objects.filter(
+            severity=Anomaly.Severity.HIGH
+        ).count()
+
         # Recent data for admin (all users)
-        context["recent_uploads"] = AnalysisJob.objects.all()[:5]
+        context["recent_uploads"] = AnalysisJob.objects.select_related(
+            'user'
+        )[:5]
         context["recent_analyses"] = AnalysisJob.objects.filter(
             status=AnalysisJob.Status.COMPLETED
+        ).select_related('user')[:5]
+
+        # Phase 11B: Recent critical/high alerts
+        context["recent_alerts"] = Anomaly.objects.filter(
+            severity__in=[Anomaly.Severity.CRITICAL, Anomaly.Severity.HIGH]
+        ).select_related('job', 'job__user').order_by(
+            'anomaly_score'
         )[:5]
 
         logger.debug("Admin context loaded for user '%s'.", request.user.username)
@@ -107,11 +133,27 @@ def home(request: HttpRequest) -> HttpResponse:
         context["my_anomalies_count"] = user_jobs.aggregate(
             total=Sum('total_anomalies')
         )['total'] or 0
-        
+
+        # Phase 11B: Alert severity counts (personal)
+        user_anomalies = Anomaly.objects.filter(job__user=request.user)
+        context["critical_alerts"] = user_anomalies.filter(
+            severity=Anomaly.Severity.CRITICAL
+        ).count()
+        context["high_alerts"] = user_anomalies.filter(
+            severity=Anomaly.Severity.HIGH
+        ).count()
+
         # Recent data for analyst (own data only)
         context["recent_uploads"] = user_jobs[:5]
         context["recent_analyses"] = user_jobs.filter(
             status=AnalysisJob.Status.COMPLETED
+        )[:5]
+
+        # Phase 11B: Recent critical/high alerts (own only)
+        context["recent_alerts"] = user_anomalies.filter(
+            severity__in=[Anomaly.Severity.CRITICAL, Anomaly.Severity.HIGH]
+        ).select_related('job').order_by(
+            'anomaly_score'
         )[:5]
 
         logger.debug("Analyst context loaded for user '%s'.", request.user.username)
@@ -127,19 +169,19 @@ def home(request: HttpRequest) -> HttpResponse:
 def profile_view(request: HttpRequest) -> HttpResponse:
     """
     Render the dashboard profile page.
-    
+
     Displays user account information and personal activity statistics.
     This is distinct from the auth/profile view which is for editing.
     """
     context = {}
-    
+
     # Personal stats for the profile
     user_jobs = AnalysisJob.objects.filter(user=request.user)
     context["my_jobs_count"] = user_jobs.count()
     context["my_anomalies_count"] = user_jobs.aggregate(
         total=Sum('total_anomalies')
     )['total'] or 0
-    
+
     return render(request, "dashboard/profile.html", context)
 
 
@@ -162,7 +204,7 @@ def health_check(request: HttpRequest) -> HttpResponse:
         Plain text health status.
     """
     return HttpResponse(
-        "Django Dashboard is running. Phase 10 Upload Workflow active.",
+        "Django Dashboard is running. Phase 11B Dashboard Features active.",
         content_type="text/plain",
     )
 
@@ -476,7 +518,7 @@ class AnalysisDetailView(
 
 
 # ===========================================================================
-# Analysis History View (Phase 10)
+# Analysis History View (Phase 10, Enhanced Phase 11B)
 # ===========================================================================
 
 
@@ -486,12 +528,14 @@ class AnalysisHistoryView(
     ListView,
 ):
     """
-    Display paginated list of analysis jobs.
+    Display paginated list of analysis jobs with search and filtering.
 
     Shows:
       - Job filename, status, upload time, anomaly count.
       - Status badges (PENDING, RUNNING, COMPLETED, FAILED).
       - Links to individual analysis detail pages.
+      - Search by filename (Phase 11B).
+      - Filter by status (Phase 11B).
 
     SECURITY:
       - LoginRequiredMixin: authenticated users only.
@@ -507,3 +551,243 @@ class AnalysisHistoryView(
     paginate_by = 15
     ordering = ["-uploaded_at"]
     owner_field = "user"
+
+    def get_queryset(self):
+        """
+        Override queryset to support search and status filter.
+
+        GET params:
+          - q: Search query (matches original_filename, case-insensitive).
+          - status: Filter by job status (COMPLETED, FAILED, RUNNING, PENDING).
+        """
+        queryset = super().get_queryset().select_related('user')
+
+        # Search filter
+        search_query = self.request.GET.get("q", "").strip()
+        if search_query:
+            queryset = queryset.filter(
+                original_filename__icontains=search_query
+            )
+
+        # Status filter
+        status_filter = self.request.GET.get("status", "").strip().upper()
+        if status_filter in dict(AnalysisJob.Status.choices):
+            queryset = queryset.filter(status=status_filter)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        """Add filter state to context for template rendering."""
+        context = super().get_context_data(**kwargs)
+
+        # Preserve filter state for the template
+        search_query = self.request.GET.get("q", "").strip()
+        status_filter = self.request.GET.get("status", "").strip().upper()
+
+        context["current_search"] = search_query
+        context["current_status"] = status_filter
+        context["has_active_filters"] = bool(search_query or status_filter)
+
+        return context
+
+
+# ===========================================================================
+# Alerts List View (Phase 11B)
+# ===========================================================================
+
+
+class AlertsListView(LoginRequiredMixin, ListView):
+    """
+    Display paginated list of anomalies (alerts) with search and filtering.
+
+    The main SOC operational view showing all detected anomalies across
+    analysis jobs with:
+      - Search by computer name or parent job filename.
+      - Filter by severity level.
+      - Severity badges, anomaly scores, and time window display.
+      - Links to individual alert detail pages and parent jobs.
+      - Responsive table with SOC dark theme styling.
+
+    SECURITY:
+      - LoginRequiredMixin: authenticated users only.
+      - Custom get_queryset: analysts see only their own alerts
+        (filtered via job__user). Super Admins see all alerts.
+
+    URL: /alerts/
+    """
+
+    model = Anomaly
+    template_name = "dashboard/alerts.html"
+    context_object_name = "alerts"
+    paginate_by = 20
+    ordering = ["anomaly_score"]  # Most anomalous first
+
+    def get_queryset(self):
+        """
+        Return anomalies filtered by user permissions and search/filter params.
+
+        User isolation:
+          - Analysts see only anomalies from their own jobs.
+          - Super Admins see all anomalies.
+
+        GET params:
+          - q: Search query (matches computer_name or job filename).
+          - severity: Filter by anomaly severity (CRITICAL, HIGH, MEDIUM, LOW).
+        """
+        queryset = Anomaly.objects.select_related(
+            'job', 'job__user'
+        ).order_by('anomaly_score')
+
+        # User isolation: analysts see only their own alerts
+        if not self.request.user.has_perm(DashboardPermissions.VIEW_ALL_INCIDENTS):
+            queryset = queryset.filter(job__user=self.request.user)
+
+        # Search filter
+        search_query = self.request.GET.get("q", "").strip()
+        if search_query:
+            queryset = queryset.filter(
+                Q(computer_name__icontains=search_query) |
+                Q(job__original_filename__icontains=search_query)
+            )
+
+        # Severity filter
+        severity_filter = self.request.GET.get("severity", "").strip().upper()
+        if severity_filter in dict(Anomaly.Severity.choices):
+            queryset = queryset.filter(severity=severity_filter)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        """Add filter state and summary counts to context."""
+        context = super().get_context_data(**kwargs)
+
+        # Preserve filter state
+        search_query = self.request.GET.get("q", "").strip()
+        severity_filter = self.request.GET.get("severity", "").strip().upper()
+
+        context["current_search"] = search_query
+        context["current_severity"] = severity_filter
+        context["has_active_filters"] = bool(search_query or severity_filter)
+
+        # Severity summary counts (from the full filtered queryset, not page)
+        full_queryset = self.get_queryset()
+        context["total_alerts"] = full_queryset.count()
+        context["critical_count"] = full_queryset.filter(
+            severity=Anomaly.Severity.CRITICAL
+        ).count()
+        context["high_count"] = full_queryset.filter(
+            severity=Anomaly.Severity.HIGH
+        ).count()
+        context["medium_count"] = full_queryset.filter(
+            severity=Anomaly.Severity.MEDIUM
+        ).count()
+        context["low_count"] = full_queryset.filter(
+            severity=Anomaly.Severity.LOW
+        ).count()
+
+        return context
+
+
+# ===========================================================================
+# Alert Detail View (Phase 11B)
+# ===========================================================================
+
+
+class AlertDetailView(LoginRequiredMixin, DetailView):
+    """
+    Display detailed information for a single anomaly (incident).
+
+    Shows:
+      - Full anomaly metadata (severity, score, time window, computer).
+      - Complete feature data grid (all 15 ML features).
+      - Parent job link and metadata.
+      - Analyst information (visible to admins).
+      - Severity-aware visual styling.
+
+    SECURITY:
+      - LoginRequiredMixin: authenticated users only.
+      - Custom get_object: ownership check via job.user relationship.
+        Analysts can only view their own alerts. Super Admins can view all.
+
+    URL: /alerts/<int:pk>/
+    """
+
+    model = Anomaly
+    template_name = "dashboard/alert_detail.html"
+    context_object_name = "alert"
+
+    def get_object(self, queryset=None):
+        """
+        Get the anomaly and verify ownership via the parent job.
+
+        Analysts can only view anomalies from their own jobs.
+        Super Admins bypass the ownership check.
+
+        Raises:
+            PermissionDenied: If the user doesn't own the parent job
+                              and lacks admin bypass.
+        """
+        obj = super().get_object(queryset)
+
+        # Ownership check via parent job
+        if not is_object_owner(
+            self.request.user, obj.job, "user"
+        ):
+            logger.warning(
+                "OWNERSHIP DENIED: user='%s' tried to access Anomaly #%s "
+                "from Job #%s owned by '%s'.",
+                self.request.user.username,
+                obj.pk,
+                obj.job.pk,
+                obj.job.user.username,
+            )
+            raise PermissionDenied(
+                "You do not have permission to access this alert."
+            )
+
+        return obj
+
+    def get_context_data(self, **kwargs):
+        """Add parent job and feature data to context."""
+        context = super().get_context_data(**kwargs)
+        alert = self.object
+
+        # Parent job with preloaded user
+        context["job"] = alert.job
+        context["analyst"] = alert.job.user
+
+        # Feature data as sorted items for consistent display
+        if alert.feature_data:
+            context["feature_items"] = sorted(
+                alert.feature_data.items(),
+                key=lambda x: x[0],
+            )
+        else:
+            context["feature_items"] = []
+
+        # Sibling anomalies from the same job for navigation
+        siblings = alert.job.anomalies.all().order_by('anomaly_score')
+        context["sibling_count"] = siblings.count()
+
+        # Previous/Next navigation
+        sibling_list = list(siblings.values_list('pk', flat=True))
+        if alert.pk in sibling_list:
+            current_idx = sibling_list.index(alert.pk)
+            context["prev_alert_pk"] = (
+                sibling_list[current_idx - 1] if current_idx > 0 else None
+            )
+            context["next_alert_pk"] = (
+                sibling_list[current_idx + 1]
+                if current_idx < len(sibling_list) - 1
+                else None
+            )
+
+        # Audit log
+        _create_audit_log(
+            user=self.request.user,
+            action=AuditLog.Action.VIEW,
+            request=self.request,
+            job=alert.job,
+        )
+
+        return context

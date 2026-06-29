@@ -1,0 +1,28 @@
+<!-- dashboard/templates/dashboard/includes/_status_badge.html — Phase 11B -->
+<!--
+  Reusable status badge for AnalysisJob.Status values.
+
+  CONTEXT VARIABLES:
+    - status: The status string (COMPLETED, FAILED, RUNNING, PENDING)
+
+  USAGE:
+    {% include "dashboard/includes/_status_badge.html" with status=job.status %}
+-->
+
+{% if status == 'COMPLETED' %}
+  <span class="badge severity-badge severity-completed" id="status-badge-completed">
+    <i class="bi bi-check-circle-fill me-1"></i>Completed
+  </span>
+{% elif status == 'FAILED' %}
+  <span class="badge severity-badge severity-critical" id="status-badge-failed">
+    <i class="bi bi-x-circle-fill me-1"></i>Failed
+  </span>
+{% elif status == 'RUNNING' %}
+  <span class="badge severity-badge severity-medium" id="status-badge-running">
+    <i class="bi bi-arrow-repeat me-1 spin-slow"></i>Running
+  </span>
+{% else %}
+  <span class="badge severity-badge severity-low" id="status-badge-pending">
+    <i class="bi bi-hourglass me-1"></i>Pending
+  </span>
+{% endif %}

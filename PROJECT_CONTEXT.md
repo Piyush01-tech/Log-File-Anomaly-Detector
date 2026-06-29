@@ -12,8 +12,8 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 
 ## 📊 Current Status
 
-- **Current Version**: `v0.8.0` (Post Phase 11A Dashboard Foundation)
-- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations, authentication, RBAC/permissions, Upload workflow, API client, Dashboard Foundation with Sidebar layout and reusable templates).
+- **Current Version**: `v0.9.0` (Post Phase 11B Dashboard Features)
+- **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations, authentication, RBAC/permissions, Upload workflow, API client, Dashboard Foundation with Sidebar layout, reusable templates, Alerts system with search/filter/pagination, Incident detail pages).
 
 ### Completed Phases
 - **Phase 1**: Project Setup & Repository Initialization
@@ -29,9 +29,9 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 - **Phase 9B**: Django Role-Based Access Control (Groups, Permissions, User Isolation).
 - **Phase 10**: Upload & Analysis Workflow UI
 - **Phase 11A**: Dashboard Foundation (Sidebar navigation, Breadcrumbs, Reusable UI Components, User Profile, Enhanced Home Page).
+- **Phase 11B**: Dashboard Features (Alerts table, Incident detail, Search/Filter/Pagination, Status/Severity badges, Role-specific dashboards, Navigation improvements, Responsive tables).
 
 ### Pending Phases (Immediate)
-- **Phase 11B**: Alerts and Incidents Tables
 - **Phase 12**: Charts & Visualization
 
 *(See [ROADMAP.md](ROADMAP.md) for full phase details)*
@@ -110,7 +110,15 @@ The project strictly follows a **Decoupled Hybrid Architecture**:
   - Signal-based automatic group assignment on user save.
   - View-level mixins (`RBACPermissionRequiredMixin`, `OwnershipMixin`) and decorators (`@permission_required_with_audit`).
   - Middleware-enforced block on `/admin/` routes for non-admins.
-- Awaiting Phase 10 (Upload Workflow).
+- **Dashboard Features (Phase 11B)**: Complete operational dashboard:
+  - `AlertsListView` — Paginated, searchable, filterable list of all anomalies with user isolation.
+  - `AlertDetailView` — Incident detail page with full feature data, severity banner, prev/next navigation.
+  - Enhanced `AnalysisHistoryView` — Search by filename, filter by status.
+  - Enhanced `home` view — Role-specific dashboards with critical alert counts and recent alerts table.
+  - Reusable template components: `_pagination.html`, `_status_badge.html`, `_severity_badge.html`, `_table_filter.html`.
+  - Custom template tag `query_transform` for query string preservation during pagination.
+  - Sidebar navigation updated with Alerts link.
+  - Responsive tables with mobile-friendly filter bars.
 
 ---
 

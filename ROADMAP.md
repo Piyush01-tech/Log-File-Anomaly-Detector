@@ -65,13 +65,21 @@ The Log File Anomaly Detector is being built in distinct phases. This roadmap ou
 - [x] Create reusable UI components (empty states, loading states, stats cards).
 - [x] Create dedicated user profile page.
 
----
+### Phase 11B: Dashboard Features ✅
+- [x] Build the main SOC view (Alerts table with search, filter, pagination).
+- [x] Build incident detail pages (single anomaly drill-down).
+- [x] Add search and filter to Analysis History.
+- [x] Create reusable template components (pagination, status/severity badges, filter bar).
+- [x] Implement role-specific dashboards (Admin: system-wide, Analyst: personal).
+- [x] Add critical alert banner and recent alerts to home page.
+- [x] Update sidebar navigation with Alerts link.
+- [x] Implement responsive tables for mobile.
 
 ## 🔜 Near-Term Milestones (Web UI)
 
-### Phase 11B: Dashboard Data
-- [ ] Build the main SOC view (Alerts table).
-- [ ] Build incident detail pages.
+### Phase 11B: Dashboard Data ✅
+- [x] Build the main SOC view (Alerts table).
+- [x] Build incident detail pages.
 
 ### Phase 12: Charts & Visualization
 - [ ] Integrate Chart.js to visualize anomaly distributions over time.

@@ -1,4 +1,4 @@
-<!-- dashboard/templates/dashboard/includes/_sidebar.html — Phase 11A -->
+<!-- dashboard/templates/dashboard/includes/_sidebar.html — Phase 11B -->
 <!--
   Collapsible sidebar navigation for authenticated users.
 
@@ -8,6 +8,7 @@
     - Responsive: offcanvas on mobile (<992px), fixed on desktop
     - Bootstrap Icons for each navigation item
     - SOC dark theme styling
+    - Alerts link with severity indicator (Phase 11B)
 
   CONTEXT VARIABLES:
     - active_nav: Current navigation item identifier (from context_processors.py)
@@ -41,6 +42,15 @@
         </a>
       </li>
       {% endif %}
+
+      <!-- Alerts (Phase 11B) -->
+      <li class="nav-item">
+        <a class="nav-link sidebar-link{% if active_nav == 'alerts' %} active{% endif %}"
+           href="{% url 'dashboard:alerts' %}">
+          <i class="bi bi-shield-exclamation"></i>
+          <span>Alerts</span>
+        </a>
+      </li>
 
       <!-- Analysis History -->
       <li class="nav-item">
@@ -125,6 +135,15 @@
           </a>
         </li>
         {% endif %}
+
+        <!-- Alerts (Phase 11B) -->
+        <li class="nav-item">
+          <a class="nav-link sidebar-link{% if active_nav == 'alerts' %} active{% endif %}"
+             href="{% url 'dashboard:alerts' %}" data-bs-dismiss="offcanvas">
+            <i class="bi bi-shield-exclamation"></i>
+            <span>Alerts</span>
+          </a>
+        </li>
 
         <li class="nav-item">
           <a class="nav-link sidebar-link{% if active_nav == 'history' %} active{% endif %}"
