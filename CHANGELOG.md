@@ -6,6 +6,46 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.10.0] - 2026-07-01 — Phase 12: Analytics & Visualization Framework
+
+### Completed Phase
+- **Phase 12**: Analytics & Visualization Framework
+
+### Added
+- `web_dashboard/dashboard/analytics.py`: New backend API module with `analytics_api` endpoint aggregating all chart data via Django ORM (severity distribution, anomaly trends, login trends, top event IDs, top targeted hosts, analysis status, recent activity, system health). Data is scoped by user role.
+- `web_dashboard/dashboard/static/dashboard/js/theme.js`: New frontend module tracking the active CSS theme, extracting `--soc-*` CSS variables to a semantic palette for Chart.js. Uses `MutationObserver` to respond to theme toggles.
+- `web_dashboard/dashboard/static/dashboard/js/charts.js`: New Chart.js factory encapsulating SOC-styled `createDoughnut`, `createLine`, and `createBar` methods with custom tooltip and legend configurations.
+- `web_dashboard/dashboard/static/dashboard/js/dashboard.js`: Analytics page orchestrator. Fetches `/api/analytics/`, passes data to `SOCCharts`, manages skeleton loaders, handles empty states, and re-renders on theme changes.
+- `web_dashboard/dashboard/templates/dashboard/includes/_chart_card.html`: Reusable chart container template with built-in loading skeletons and empty states.
+
+### Modified
+- `web_dashboard/dashboard/urls.py`: Added `/api/analytics/` route.
+- `web_dashboard/dashboard/views.py`: Updated docstrings and exports.
+- `web_dashboard/dashboard/templates/dashboard/home.html`: Replaced placeholder sections with actual Chart.js visualizations, system health summary cards, and a recent activity timeline. Added Chart.js CDN and custom JS modules.
+- `web_dashboard/dashboard/templates/dashboard/base.html`: Bumped CSS cache version `?v=13`.
+- `web_dashboard/dashboard/static/dashboard/css/main.css`: Added styles for chart cards, skeleton shimmer animations, inline empty states, system health metrics, and the activity timeline. Adjusted responsive behavior for mobile.
+
+### Architecture Changes
+- The visualization backend serves a single, aggregated JSON payload rather than requiring multiple HTTP round-trips for each chart.
+- A decoupled, event-driven JS architecture was implemented. The chart factory (`charts.js`) relies on semantic colors provided by `theme.js`, ensuring charts perfectly match the existing CSS variable design system without hardcoding hex values.
+
+### Database Changes
+- None.
+
+### Security Changes
+- The `/api/analytics/` endpoint enforces the same user-isolation rules as standard dashboard views: analysts receive their own data only, while admins receive system-wide data.
+
+### Documentation Updated
+- `PROJECT_CONTEXT.md` — Version bump to v0.10.0, Phase 12 completed.
+- `ROADMAP.md` — Phase 12 marked complete.
+- `CHANGELOG.md` — This entry.
+
+### Summary
+The dashboard now features a comprehensive analytics layer. Eight dynamic visualizations provide insights into security trends, login failures, top event IDs, and targeted hosts. The implementation tightly integrates with the Phase 11C theming engine, ensuring dark/light mode transitions are seamless.
+
+### Future Work
+- Phase 13: RAG Knowledge Base Setup.
+
 ## [0.9.1] - 2026-06-29 — Phase 11C: UI/UX Redesign
 
 ### Completed Phase

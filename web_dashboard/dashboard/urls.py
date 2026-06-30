@@ -1,5 +1,5 @@
 """
-dashboard/urls.py — Phase 11B
+dashboard/urls.py — Phase 12
 ===============================
 URL patterns for the dashboard Django application.
 
@@ -12,12 +12,14 @@ ROUTES:
   /alerts/               → AlertsListView (anomaly alerts list) [Phase 11B]
   /alerts/<int:pk>/      → AlertDetailView (alert detail) [Phase 11B]
   /profile/              → profile_view (user profile) [Phase 11A]
+  /api/analytics/        → analytics_api (chart data JSON API) [Phase 12]
 
 NOTE: Authentication routes are in auth_urls.py under /auth/ prefix.
 """
 
 from django.urls import path
 from . import views
+from .analytics import analytics_api
 
 app_name = "dashboard"
 
@@ -55,4 +57,7 @@ urlpatterns = [
         views.AlertDetailView.as_view(),
         name="alert_detail",
     ),
+
+    # Phase 12: Analytics API
+    path("api/analytics/", analytics_api, name="analytics_api"),
 ]

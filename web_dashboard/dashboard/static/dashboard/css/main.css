@@ -1389,7 +1389,227 @@ p { font-size: 14px; line-height: 1.65; color: var(--soc-text-secondary); margin
 .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 
 /* ==========================================================================
-   9. RESPONSIVE
+   9. PHASE 12 — ANALYTICS & VISUALIZATION
+   ========================================================================== */
+
+/* ── Chart Cards ── */
+.chart-card {
+  background-color: var(--soc-bg-surface);
+  border: 1px solid var(--soc-border);
+  border-radius: var(--soc-radius-lg);
+  box-shadow: var(--soc-shadow-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: var(--soc-glass-blur);
+  -webkit-backdrop-filter: var(--soc-glass-blur);
+}
+.chart-card:hover {
+  border-color: var(--soc-border-glow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 0 10px var(--soc-border-glow);
+}
+
+.chart-body {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Chart Loading Skeleton ── */
+.chart-skeleton {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  padding: var(--sp-6) var(--sp-4);
+}
+
+.chart-skeleton-bar {
+  flex: 1;
+  max-width: 48px;
+  background: linear-gradient(
+    180deg,
+    var(--soc-bg-inset) 0%,
+    var(--soc-border) 50%,
+    var(--soc-bg-inset) 100%
+  );
+  background-size: 100% 200%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  border-radius: var(--soc-radius-sm) var(--soc-radius-sm) 0 0;
+  min-height: 20px;
+}
+
+.chart-skeleton-bar:nth-child(2) { animation-delay: 0.15s; }
+.chart-skeleton-bar:nth-child(3) { animation-delay: 0.3s; }
+.chart-skeleton-bar:nth-child(4) { animation-delay: 0.45s; }
+.chart-skeleton-bar:nth-child(5) { animation-delay: 0.6s; }
+.chart-skeleton-bar:nth-child(6) { animation-delay: 0.75s; }
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 100% 0; opacity: 0.4; }
+  50%  { background-position: 100% 100%; opacity: 0.7; }
+  100% { background-position: 100% 0; opacity: 0.4; }
+}
+
+/* ── Chart Empty State ── */
+.chart-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--sp-2);
+  color: var(--soc-text-muted);
+  height: 100%;
+  padding: var(--sp-6);
+}
+
+.chart-empty-state i {
+  font-size: 32px;
+  opacity: 0.4;
+  margin-bottom: var(--sp-2);
+}
+
+.chart-empty-state p {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--soc-text-muted);
+}
+
+/* ── Chart Canvas Wrapper ── */
+.chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.chart-canvas-wrap canvas {
+  max-width: 100%;
+}
+
+/* ── Health Metrics (System Health Card) ── */
+.health-metric {
+  text-align: center;
+  padding: var(--sp-4) var(--sp-3);
+  border-radius: var(--soc-radius);
+  background: var(--soc-bg-inset);
+  border: 1px solid var(--soc-border);
+  transition: var(--soc-transition);
+}
+
+.health-metric:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--soc-shadow-sm);
+  border-color: var(--soc-border-light);
+}
+
+.health-metric-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: var(--sp-3);
+}
+
+.health-metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--soc-text-primary);
+  line-height: 1;
+  margin-bottom: var(--sp-1);
+  font-family: var(--soc-font-mono);
+  letter-spacing: -0.02em;
+}
+
+.health-metric-value.metric-loaded {
+  animation: metric-pop 0.3s ease-out;
+}
+
+.health-metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--soc-text-muted);
+}
+
+@keyframes metric-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── Activity Timeline ── */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-2);
+  border-bottom: 1px solid var(--soc-border);
+  transition: var(--soc-transition);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item:hover {
+  background-color: var(--soc-bg-surface-hover);
+  border-radius: var(--soc-radius-sm);
+}
+
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--soc-bg-inset);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.activity-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-text {
+  font-size: 13px;
+  color: var(--soc-text-secondary);
+  line-height: 1.5;
+}
+
+.activity-text strong {
+  color: var(--soc-text-primary);
+  font-weight: 600;
+}
+
+.activity-detail {
+  color: var(--soc-accent);
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.activity-time {
+  font-size: 11px;
+  color: var(--soc-text-muted);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   10. RESPONSIVE
    ========================================================================== */
 
 @media (max-width: 991.98px) {
@@ -1410,6 +1630,10 @@ p { font-size: 14px; line-height: 1.65; color: var(--soc-text-secondary); margin
   .feature-grid { grid-template-columns: repeat(2, 1fr); }
   .search-container { display: none; }
   .soc-navbar { padding: 0 var(--sp-4); }
+
+  /* Phase 12: Chart responsive */
+  .chart-canvas-wrap { height: 240px !important; }
+  .health-metric-value { font-size: 20px; }
 }
 
 @media (max-width: 767.98px) {
@@ -1439,4 +1663,12 @@ p { font-size: 14px; line-height: 1.65; color: var(--soc-text-secondary); margin
   .filter-panel > * { width: 100%; min-width: unset !important; }
 
   .dropzone-container { padding: var(--sp-10) var(--sp-5); }
+
+  /* Phase 12: Chart responsive */
+  .chart-canvas-wrap { height: 200px !important; }
+  .chart-skeleton { height: 160px !important; gap: 8px; }
+  .health-metric { padding: var(--sp-3) var(--sp-2); }
+  .health-metric-value { font-size: 18px; }
+  .health-metric-label { font-size: 10px; }
+  .activity-item { padding: var(--sp-2) 0; }
 }

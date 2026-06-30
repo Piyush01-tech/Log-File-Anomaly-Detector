@@ -1,0 +1,49 @@
+<!-- dashboard/templates/dashboard/includes/_chart_card.html — Phase 12 -->
+<!--
+  Reusable chart card component for Chart.js visualizations.
+
+  CONTEXT VARIABLES:
+    - chart_id:    Unique canvas ID (e.g., "chart-severity")
+    - title:       Card header title
+    - icon:        Bootstrap Icon class (e.g., "bi-pie-chart")
+    - height:      Canvas height in px (default: "280")
+    - subtitle:    Optional subtitle/badge text
+    - full_height: If "true", card uses h-100 class
+-->
+
+<div class="chart-card {% if full_height %}h-100{% endif %} mb-0" id="card-{{ chart_id }}">
+  <!-- Header -->
+  <div class="soc-card-header">
+    <h2 class="soc-card-title">
+      <i class="bi {{ icon|default:'bi-bar-chart-line' }}"></i>
+      {{ title|default:"Chart" }}
+    </h2>
+    {% if subtitle %}
+    <span class="soc-badge badge-medium">{{ subtitle }}</span>
+    {% endif %}
+  </div>
+
+  <!-- Body -->
+  <div class="soc-card-body chart-body" style="padding: var(--sp-4) var(--sp-5);">
+    <!-- Loading Skeleton -->
+    <div class="chart-skeleton" style="height: {{ height|default:'280' }}px;">
+      <div class="chart-skeleton-bar" style="height: 60%;"></div>
+      <div class="chart-skeleton-bar" style="height: 80%;"></div>
+      <div class="chart-skeleton-bar" style="height: 45%;"></div>
+      <div class="chart-skeleton-bar" style="height: 90%;"></div>
+      <div class="chart-skeleton-bar" style="height: 55%;"></div>
+      <div class="chart-skeleton-bar" style="height: 70%;"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="chart-empty-state" style="display: none; height: {{ height|default:'280' }}px;">
+      <i class="bi bi-bar-chart-line"></i>
+      <p>No data available</p>
+    </div>
+
+    <!-- Canvas Container -->
+    <div class="chart-canvas-wrap" style="display: none; height: {{ height|default:'280' }}px; position: relative;">
+      <canvas id="{{ chart_id }}"></canvas>
+    </div>
+  </div>
+</div>

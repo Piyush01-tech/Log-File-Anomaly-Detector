@@ -1,4 +1,5 @@
 {% extends "dashboard/base.html" %}
+{% load static %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -105,33 +106,109 @@
 {% endif %}
 
 <!-- ============================================================ -->
-<!-- Chart Placeholders (Phase 12)                                 -->
+<!-- Analytics & Visualization Section (Phase 12)                 -->
 <!-- ============================================================ -->
-<div class="row g-3 mb-4">
-  <div class="col-lg-8">
-    <div class="soc-card h-100 mb-0">
-      <div class="soc-card-header">
-        <h2 class="soc-card-title"><i class="bi bi-graph-up-arrow"></i> Anomaly Trends</h2>
-        <span class="soc-badge badge-medium">Phase 12</span>
-      </div>
-      <div class="soc-card-body d-flex align-items-center justify-content-center" style="min-height: 280px;">
-        <div class="text-center" style="opacity: 0.5;">
-          <i class="bi bi-bar-chart-line fs-1 text-muted d-block mb-3"></i>
-          <p class="text-muted mb-0 fw-semibold small">Chart visualization coming in Phase 12</p>
+<div id="analytics-section">
+
+  <!-- Row 1: Anomaly Trends + Severity Distribution -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-8">
+      {% include "dashboard/includes/_chart_card.html" with chart_id="chart-anomalies-time" title="Anomalies Over Time" icon="bi-graph-up-arrow" height="300" full_height="true" %}
+    </div>
+    <div class="col-lg-4">
+      {% include "dashboard/includes/_chart_card.html" with chart_id="chart-severity" title="Severity Distribution" icon="bi-pie-chart-fill" height="300" full_height="true" %}
+    </div>
+  </div>
+
+  <!-- Row 2: Login Trend + Login Comparison -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-6">
+      {% include "dashboard/includes/_chart_card.html" with chart_id="chart-login-trend" title="Failed Login Trend" icon="bi-shield-lock" height="260" full_height="true" %}
+    </div>
+    <div class="col-lg-6">
+      {% include "dashboard/includes/_chart_card.html" with chart_id="chart-login-comparison" title="Successful vs Failed Logins" icon="bi-bar-chart-steps" height="260" full_height="true" %}
+    </div>
+  </div>
+
+  <!-- Row 3: Top Event IDs + Top Hosts -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-6">
+      {% include "dashboard/includes/_chart_card.html" with chart_id="chart-top-events" title="Top Event Categories" icon="bi-list-ol" height="280" full_height="true" %}
+    </div>
+    <div class="col-lg-6">
+      {% include "dashboard/includes/_chart_card.html" with chart_id="chart-top-hosts" title="Top Targeted Hosts" icon="bi-hdd-network" height="280" full_height="true" %}
+    </div>
+  </div>
+
+  <!-- Row 4: Analysis Status + System Health Metrics -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-4">
+      {% include "dashboard/includes/_chart_card.html" with chart_id="chart-analysis-status" title="Analysis Status" icon="bi-clipboard-data" height="260" full_height="true" %}
+    </div>
+    <div class="col-lg-8">
+      <div class="chart-card h-100 mb-0" id="card-system-health">
+        <div class="soc-card-header">
+          <h2 class="soc-card-title"><i class="bi bi-heart-pulse"></i> System Health</h2>
+        </div>
+        <div class="soc-card-body">
+          <div class="row g-3">
+            <div class="col-sm-6 col-xl-3">
+              <div class="health-metric">
+                <div class="health-metric-icon" style="color: var(--soc-success); background: rgba(var(--soc-success-rgb), 0.1);">
+                  <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="health-metric-value" id="health-success-rate">—</div>
+                <div class="health-metric-label">Success Rate</div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+              <div class="health-metric">
+                <div class="health-metric-icon" style="color: var(--soc-info); background: rgba(var(--soc-info-rgb), 0.1);">
+                  <i class="bi bi-stack"></i>
+                </div>
+                <div class="health-metric-value" id="health-total-samples">—</div>
+                <div class="health-metric-label">Samples Analyzed</div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+              <div class="health-metric">
+                <div class="health-metric-icon" style="color: var(--soc-danger); background: rgba(var(--soc-danger-rgb), 0.1);">
+                  <i class="bi bi-exclamation-diamond-fill"></i>
+                </div>
+                <div class="health-metric-value" id="health-critical">—</div>
+                <div class="health-metric-label">Critical Alerts</div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+              <div class="health-metric">
+                <div class="health-metric-icon" style="color: var(--soc-warning); background: rgba(var(--soc-warning-rgb), 0.1);">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="health-metric-value" id="health-high">—</div>
+                <div class="health-metric-label">High Alerts</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-4">
-    <div class="soc-card h-100 mb-0">
-      <div class="soc-card-header">
-        <h2 class="soc-card-title"><i class="bi bi-pie-chart"></i> Severity Distribution</h2>
-        <span class="soc-badge badge-medium">Phase 12</span>
-      </div>
-      <div class="soc-card-body d-flex align-items-center justify-content-center" style="min-height: 280px;">
-        <div class="text-center" style="opacity: 0.5;">
-          <i class="bi bi-pie-chart fs-1 text-muted d-block mb-3"></i>
-          <p class="text-muted mb-0 fw-semibold small">Chart coming in Phase 12</p>
+
+  <!-- Row 5: Recent Activity Timeline -->
+  <div class="row g-3 mb-4">
+    <div class="col-12">
+      <div class="chart-card mb-0">
+        <div class="soc-card-header">
+          <h2 class="soc-card-title"><i class="bi bi-clock-history"></i> Recent Activity</h2>
+        </div>
+        <div class="soc-card-body" id="activity-timeline">
+          <div class="chart-skeleton" style="height: 200px;">
+            <div class="chart-skeleton-bar" style="height: 40%;"></div>
+            <div class="chart-skeleton-bar" style="height: 60%;"></div>
+            <div class="chart-skeleton-bar" style="height: 35%;"></div>
+            <div class="chart-skeleton-bar" style="height: 75%;"></div>
+            <div class="chart-skeleton-bar" style="height: 50%;"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -235,4 +312,14 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js 4.x CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<!-- SOC Analytics Modules -->
+<script src="{% static 'dashboard/js/theme.js' %}?v=12"></script>
+<script src="{% static 'dashboard/js/charts.js' %}?v=12"></script>
+<script src="{% static 'dashboard/js/dashboard.js' %}?v=12"></script>
 {% endblock %}

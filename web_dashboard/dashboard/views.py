@@ -1,5 +1,5 @@
 """
-dashboard/views.py — Phase 11B
+dashboard/views.py — Phase 12
 ================================
 Django view controllers for dashboard pages.
 
@@ -13,15 +13,9 @@ VIEWS:
   AlertsListView      — Paginated, searchable, filterable anomaly list (Phase 11B).
   AlertDetailView     — Single anomaly incident detail page (Phase 11B).
 
-PHASE 11B CHANGES:
-  - Added AlertsListView: paginated anomaly list with search (q param),
-    severity filter, user isolation via job__user relationship.
-  - Added AlertDetailView: single anomaly detail with ownership check
-    via job.user, audit logging.
-  - Enhanced AnalysisHistoryView: added search (q param) and status
-    filter support with query string preservation.
-  - Enhanced home view: added critical/high alert counts and recent
-    alerts context for both Admin and Analyst dashboards.
+PHASE 12 CHANGES:
+  - Analytics API endpoint moved to analytics.py for separation of concerns.
+  - Home view unchanged — chart data is fetched client-side via /api/analytics/.
 
 ARCHITECTURE:
   - Upload workflow uses FlaskAPIClient (services.py) as the ACL.

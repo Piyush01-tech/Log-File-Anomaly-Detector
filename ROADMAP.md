@@ -81,13 +81,16 @@ The Log File Anomaly Detector is being built in distinct phases. This roadmap ou
 - [x] Build the main SOC view (Alerts table).
 - [x] Build incident detail pages.
 
-### Phase 12: Charts & Visualization
-- [ ] Integrate Chart.js to visualize anomaly distributions over time.
+### Phase 12: Charts & Visualization ✅
+- [x] Integrate Chart.js to visualize anomaly distributions over time.
+- [x] Create backend JSON API for aggregating stats from DB.
+- [x] Create modular JS framework for rendering charts with dynamic themes.
 
 ---
 
 ## 🧠 Mid-Term Milestones (AI Integration)
 
+### 🚧 Current Phase: Phase 13
 ### Phase 13: RAG Knowledge Base Setup
 - [ ] Set up Vector Database (e.g., ChromaDB).
 - [ ] Ingest MITRE ATT&CK patterns and Windows Event ID definitions.

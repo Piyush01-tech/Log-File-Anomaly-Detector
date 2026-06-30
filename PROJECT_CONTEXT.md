@@ -12,7 +12,7 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 
 ## 📊 Current Status
 
-- **Current Version**: `v0.9.0` (Post Phase 11B Dashboard Features)
+- **Current Version**: `v0.10.0` (Post Phase 12 Analytics & Visualization)
 - **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations, authentication, RBAC/permissions, Upload workflow, API client, Dashboard Foundation with Sidebar layout, reusable templates, Alerts system with search/filter/pagination, Incident detail pages).
 
 ### Completed Phases
@@ -31,9 +31,10 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 - `Phase 11A`: Dashboard Foundation (Sidebar navigation, Breadcrumbs, Reusable UI Components, User Profile, Enhanced Home Page).
 - `Phase 11B`: Dashboard Features (Alerts table, Incident detail, Search/Filter/Pagination, Status/Severity badges, Role-specific dashboards, Navigation improvements, Responsive tables).
 - `Phase 11C`: UI/UX Redesign (Enterprise cybersecurity aesthetics, CSS variables for theming, enhanced responsive sidebar, Bootstrap component refactoring, premium card layouts, interactive theme toggle).
+- `Phase 12`: Analytics & Visualization Framework (Chart.js integration, Django JSON API, role-aware scoped chart data, interactive themed charts, dynamic updates).
 
 ### Pending Phases (Immediate)
-- **Phase 12**: Charts & Visualization
+- **Phase 13**: RAG Knowledge Base Setup
 
 *(See [ROADMAP.md](ROADMAP.md) for full phase details)*
 
