@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.10.1] - 2026-07-01 — RC Stabilization
+
+### Fixed
+- Navbar search bar is now fully functional and wired to the alerts search page.
+- Notification bell is now functional, displaying a badge with the count of critical and high alerts.
+- Notification bell dropdown now shows a summary of critical and high alerts with links to filter them.
+- Fixed an issue where the analytics API fetch could fail if the dashboard was not mounted at the root URL (now uses `data-api-url` from the template).
+- Added `navbar_alert_count`, `navbar_critical_count`, and `navbar_high_count` to global context processors.
+- Added custom SOC branding (site header, title, index title) to the Django admin panel in `admin.py`.
+
 ## [0.10.0] - 2026-07-01 — Phase 12: Analytics & Visualization Framework
 
 ### Completed Phase

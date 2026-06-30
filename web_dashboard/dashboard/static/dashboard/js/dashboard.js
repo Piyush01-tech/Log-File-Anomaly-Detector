@@ -53,7 +53,9 @@ const DashboardAnalytics = (() => {
         _showAllLoading();
 
         try {
-            const response = await fetch('/api/analytics/', {
+            const analyticsSection = document.getElementById('analytics-section');
+            const apiUrl = analyticsSection?.dataset?.apiUrl || '/api/analytics/';
+            const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',

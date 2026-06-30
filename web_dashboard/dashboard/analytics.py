@@ -72,8 +72,13 @@ def analytics_api(request) -> JsonResponse:
             jobs_qs = jobs_qs.filter(user=request.user)
             anomalies_qs = anomalies_qs.filter(job__user=request.user)
 
-        # Time boundary for time-series data
-        time_cutoff = timezone.now() - timedelta(days=TIME_SERIES_DAYS)
+        # Time boundary for time-series data: 
+        # Calculate relative to the most recent data point so historical EVTX files display correctly.
+        latest_anomaly = anomalies_qs.order_by('-window_start').first()
+        if latest_anomaly:
+            time_cutoff = latest_anomaly.window_start - timedelta(days=TIME_SERIES_DAYS)
+        else:
+            time_cutoff = timezone.now() - timedelta(days=TIME_SERIES_DAYS)
 
         data = {
             "severity_distribution": _severity_distribution(anomalies_qs),

@@ -70,10 +70,10 @@
       <!-- Search Bar -->
       <div class="me-auto d-none d-md-block ms-4">
         {% if user.is_authenticated %}
-        <div class="search-container">
+        <form class="search-container" action="{% url 'dashboard:alerts' %}" method="get" id="navbar-search-form">
           <i class="bi bi-search search-icon"></i>
-          <input type="text" class="form-control" placeholder="Search alerts, hosts, indicators..." aria-label="Search">
-        </div>
+          <input type="text" name="q" class="form-control" placeholder="Search alerts, hosts, indicators..." aria-label="Search" autocomplete="off">
+        </form>
         {% endif %}
       </div>
 
@@ -86,12 +86,47 @@
 
         {% if user.is_authenticated %}
         <!-- Notifications -->
-        <button class="nav-action-btn position-relative" type="button" aria-label="Notifications" title="Notifications">
-          <i class="bi bi-bell"></i>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 9px; padding: 3px 5px; margin-top: 4px; margin-left: -10px;">
-            <span class="visually-hidden">New alerts</span>
-          </span>
-        </button>
+        <div class="dropdown">
+          <button class="nav-action-btn position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications" title="Notifications">
+            <i class="bi bi-bell"></i>
+            {% if navbar_alert_count > 0 %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 9px; padding: 3px 5px; margin-top: 4px; margin-left: -10px;">
+              {{ navbar_alert_count }}
+              <span class="visually-hidden">critical alerts</span>
+            </span>
+            {% endif %}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom" aria-labelledby="notificationDropdown" style="min-width: 280px;">
+            <li class="px-3 py-2 border-bottom" style="border-color: var(--soc-border) !important;">
+              <div class="fw-bold" style="font-size: 13px; color: var(--soc-text-primary);">Alerts Summary</div>
+            </li>
+            {% if navbar_alert_count > 0 %}
+            <li>
+              <a class="dropdown-item d-flex align-items-center justify-content-between py-2" href="{% url 'dashboard:alerts' %}?severity=CRITICAL">
+                <span><i class="bi bi-shield-x text-danger me-2"></i> Critical Alerts</span>
+                <span class="badge bg-danger rounded-pill">{{ navbar_critical_count }}</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center justify-content-between py-2" href="{% url 'dashboard:alerts' %}?severity=HIGH">
+                <span><i class="bi bi-exclamation-triangle text-warning me-2"></i> High Alerts</span>
+                <span class="badge bg-warning text-dark rounded-pill">{{ navbar_high_count }}</span>
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-center fw-semibold" href="{% url 'dashboard:alerts' %}" style="font-size: 13px;">
+                <i class="bi bi-arrow-right me-1"></i> View All Alerts
+              </a>
+            </li>
+            {% else %}
+            <li class="px-3 py-4 text-center">
+              <i class="bi bi-shield-check text-success d-block fs-3 mb-2"></i>
+              <span class="text-muted" style="font-size: 13px;">No critical alerts</span>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
 
         <!-- User Menu -->
         <div class="dropdown ms-1">

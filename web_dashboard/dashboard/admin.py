@@ -420,3 +420,13 @@ class AuditLogAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """Audit logs are append-only — no deletion allowed."""
         return False
+
+
+# ===========================================================================
+# Admin Site Branding
+# ===========================================================================
+
+admin.site.site_header = "SOC Dashboard Administration"
+admin.site.site_title = "SOC Admin Portal"
+admin.site.index_title = "System Management"
+

@@ -12,7 +12,7 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 
 ## 📊 Current Status
 
-- **Current Version**: `v0.10.0` (Post Phase 12 Analytics & Visualization)
+- **Current Version**: `v0.10.1` (RC Stabilization)
 - **Implemented Modules**: `ml_engine` (Parsing, Feature Engineering, Training, Prediction, Pipeline orchestrator, Flask REST API), `web_dashboard` (Django ORM models, custom managers, admin registrations, SQLite migrations, authentication, RBAC/permissions, Upload workflow, API client, Dashboard Foundation with Sidebar layout, reusable templates, Alerts system with search/filter/pagination, Incident detail pages).
 
 ### Completed Phases
