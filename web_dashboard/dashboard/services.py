@@ -148,7 +148,7 @@ class FlaskAPIClient:
 
     CONFIGURATION:
       - settings.FLASK_API_BASE_URL — Base URL (default: http://127.0.0.1:5000)
-      - settings.FLASK_API_TIMEOUT  — Request timeout in seconds (default: 120)
+      - settings.FLASK_API_TIMEOUT  — Request timeout in seconds (default: 600)
     """
 
     # API version prefix
@@ -164,7 +164,7 @@ class FlaskAPIClient:
     @classmethod
     def _get_timeout(cls) -> int:
         """Get the request timeout from Django settings."""
-        return getattr(settings, "FLASK_API_TIMEOUT", 120)
+        return getattr(settings, "FLASK_API_TIMEOUT", 600)
 
     @classmethod
     def _build_url(cls, endpoint: str) -> str:

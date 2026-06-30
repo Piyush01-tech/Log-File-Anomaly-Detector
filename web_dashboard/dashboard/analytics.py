@@ -190,7 +190,7 @@ def _login_trends(anomalies_qs, time_cutoff) -> list[dict[str, Any]]:
         lambda: {"failed": 0, "success": 0}
     )
 
-    for anomaly in recent.only("window_start", "feature_data"):
+    for anomaly in recent.only("window_start", "feature_data", "job"):
         if anomaly.window_start is None:
             continue
         date_str = anomaly.window_start.date().isoformat()
@@ -241,7 +241,7 @@ def _top_event_ids(anomalies_qs) -> list[dict[str, Any]]:
         "security_log_cleared",
     ]
 
-    for anomaly in anomalies_qs.only("feature_data"):
+    for anomaly in anomalies_qs.only("feature_data", "job"):
         features = anomaly.feature_data or {}
         for key in event_features:
             val = features.get(key, 0)

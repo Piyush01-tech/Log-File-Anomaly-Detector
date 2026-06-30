@@ -196,7 +196,7 @@ FLASK_API_BASE_URL = os.getenv("FLASK_API_BASE_URL", "http://127.0.0.1:5000")
 
 # Timeout (in seconds) for synchronous Flask API calls.
 # Large .evtx files may require longer processing times.
-FLASK_API_TIMEOUT = int(os.getenv("FLASK_API_TIMEOUT", "120"))
+FLASK_API_TIMEOUT = int(os.getenv("FLASK_API_TIMEOUT", "600"))
 
 # ---------------------------------------------------------------------------
 # File Upload Limits (Phase 10)
