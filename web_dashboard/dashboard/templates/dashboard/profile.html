@@ -1,13 +1,3 @@
-<!-- dashboard/templates/dashboard/profile.html — Phase 11A -->
-<!--
-  Dashboard Profile Page.
-
-  FEATURES:
-    - View current account information (username, role, member since)
-    - View personal stats (analyses count, anomalies detected)
-    - Link to edit profile and change password (in auth app)
-    - Follows dashboard sidebar + breadcrumb layout
--->
 {% extends "dashboard/base.html" %}
 
 {% block title %}My Profile{% endblock %}
@@ -18,92 +8,92 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-8 col-lg-6">
-    <!-- Account Info Card -->
-    <div class="card shadow-sm mb-4 soc-card">
-      <div class="card-header d-flex align-items-center">
-        <i class="bi bi-person-badge me-2 text-accent"></i>
-        <h2 class="h5 mb-0 fw-bold">Account Information</h2>
-      </div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-sm-6">
-            <p class="text-muted small mb-1">Username</p>
-            <p class="fw-semibold fs-5 mb-0">{{ user.username }}</p>
+<div class="row justify-content-center">
+  <div class="col-lg-8 col-xl-7">
+
+    <!-- Profile Header -->
+    <div class="soc-card mb-4" style="border-top: 3px solid var(--soc-accent);">
+      <div class="soc-card-body p-4">
+        <div class="d-flex align-items-center flex-wrap gap-4">
+          <div class="sidebar-user-avatar" style="width: 64px; height: 64px; font-size: 28px;">
+            <i class="bi bi-person-fill"></i>
           </div>
-          <div class="col-sm-6">
-            <p class="text-muted small mb-1">Email</p>
-            <p class="fw-semibold mb-0">{{ user.email|default:"Not provided" }}</p>
-          </div>
-          <div class="col-sm-6">
-            <p class="text-muted small mb-1">First Name</p>
-            <p class="fw-semibold mb-0">{{ user.first_name|default:"Not provided" }}</p>
-          </div>
-          <div class="col-sm-6">
-            <p class="text-muted small mb-1">Last Name</p>
-            <p class="fw-semibold mb-0">{{ user.last_name|default:"Not provided" }}</p>
-          </div>
-          <div class="col-sm-6">
-            <p class="text-muted small mb-1">Role</p>
-            <p class="fw-semibold mb-0">
-              <span class="badge bg-accent text-uppercase">
-                {{ user.get_role_display }}
+          <div class="flex-grow-1">
+            <h2 class="fw-bold mb-1" style="font-size: 22px;">{{ user.get_full_name|default:user.username }}</h2>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+              <span class="soc-badge badge-medium px-3 py-1">{{ user.get_role_display }}</span>
+              <span class="text-muted small fw-medium">
+                <i class="bi bi-calendar3 me-1"></i>Member since {{ user.date_joined|date:"M d, Y" }}
               </span>
-            </p>
-          </div>
-          <div class="col-sm-6">
-            <p class="text-muted small mb-1">Member Since</p>
-            <p class="fw-semibold mb-0">{{ user.date_joined|date:"M d, Y" }}</p>
-          </div>
-        </div>
-
-        <hr class="border-secondary my-4">
-        
-        <div class="d-flex gap-2">
-          {% if perms.dashboard.edit_own_profile %}
-          <a href="{% url 'auth:profile' %}" class="btn btn-accent btn-sm">
-            <i class="bi bi-pencil-square me-1"></i> Edit Profile
-          </a>
-          {% endif %}
-          <a href="{% url 'auth:password_change' %}" class="btn btn-outline-light btn-sm">
-            <i class="bi bi-key me-1"></i> Change Password
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-4 col-lg-6">
-    <!-- Activity Stats Card -->
-    <div class="card shadow-sm mb-4 soc-card">
-      <div class="card-header d-flex align-items-center">
-        <i class="bi bi-activity me-2 text-accent"></i>
-        <h2 class="h5 mb-0 fw-bold">My Activity</h2>
-      </div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-sm-6">
-            <div class="p-3 border border-secondary rounded text-center">
-              <div class="text-accent fs-3 fw-bold">{{ my_jobs_count|default:"0" }}</div>
-              <div class="text-muted small text-uppercase">Total Analyses</div>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="p-3 border border-warning rounded text-center">
-              <div class="text-warning fs-3 fw-bold">{{ my_anomalies_count|default:"0" }}</div>
-              <div class="text-muted small text-uppercase">Anomalies Found</div>
             </div>
           </div>
         </div>
-        
-        <div class="mt-4 text-center">
-          <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-outline-light btn-sm w-100">
-            <i class="bi bi-clock-history me-1"></i> View Full History
-          </a>
+      </div>
+    </div>
+
+    <!-- Activity Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-6">
+        {% include "dashboard/includes/_stats_card.html" with icon="bi-file-earmark-bar-graph" value=my_jobs_count label="My Analyses" color="text-accent" glow="glow-accent" %}
+      </div>
+      <div class="col-6">
+        {% include "dashboard/includes/_stats_card.html" with icon="bi-shield-exclamation" value=my_anomalies_count label="Anomalies Found" color="text-warning" glow="glow-warning" %}
+      </div>
+    </div>
+
+    <!-- Account Info Card -->
+    <div class="soc-card mb-4">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-person-badge"></i> Account Information</h2>
+      </div>
+      <div class="soc-card-body">
+        <div class="row g-4">
+          <div class="col-sm-4">
+            <div class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px; font-size: 11px;">Username</div>
+            <div class="fw-semibold">{{ user.username }}</div>
+          </div>
+          <div class="col-sm-4">
+            <div class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px; font-size: 11px;">Role</div>
+            <div><span class="badge bg-accent text-uppercase">{{ user.get_role_display }}</span></div>
+          </div>
+          <div class="col-sm-4">
+            <div class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px; font-size: 11px;">Member Since</div>
+            <div class="fw-semibold">{{ user.date_joined|date:"M d, Y" }}</div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Quick Links -->
+    <div class="row g-3">
+      <div class="col-sm-6">
+        <a href="{% url 'auth:profile' %}" class="soc-card d-block text-decoration-none h-100 mb-0" style="cursor: pointer;">
+          <div class="soc-card-body p-4 d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(var(--soc-accent-rgb), 0.1); border-radius: var(--soc-radius); flex-shrink: 0;">
+              <i class="bi bi-pencil-square text-accent fs-5"></i>
+            </div>
+            <div>
+              <div class="fw-bold" style="color: var(--soc-text-primary); font-size: 14px;">Edit Profile</div>
+              <div class="text-muted small">Update your name and email</div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-sm-6">
+        <a href="{% url 'auth:password_change' %}" class="soc-card d-block text-decoration-none h-100 mb-0" style="cursor: pointer;">
+          <div class="soc-card-body p-4 d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: rgba(var(--soc-accent-rgb), 0.1); border-radius: var(--soc-radius); flex-shrink: 0;">
+              <i class="bi bi-shield-lock text-accent fs-5"></i>
+            </div>
+            <div>
+              <div class="fw-bold" style="color: var(--soc-text-primary); font-size: 14px;">Change Password</div>
+              <div class="text-muted small">Update your security credentials</div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}

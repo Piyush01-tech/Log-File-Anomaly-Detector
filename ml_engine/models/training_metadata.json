@@ -1,5 +1,5 @@
 {
-  "training_timestamp": "2026-06-27T17:56:27.487861+00:00",
+  "training_timestamp": "2026-06-29T19:59:13.729246+00:00",
   "phase": "Phase 5 \u2014 Model Training",
   "hyperparameters": {
     "algorithm": "IsolationForest",
@@ -26,7 +26,7 @@
     "process_ratio"
   ],
   "dataset": {
-    "source_file": "C:\\Users\\daspi\\Desktop\\log anomaly detection\\Log-File-Anomaly-Detector\\data\\processed\\features.csv",
+    "source_file": "C:\\Users\\daspi\\Desktop\\Log-File-Anomaly-Detector\\data\\processed\\features.csv",
     "total_rows": 360,
     "n_features": 15,
     "feature_statistics": {
@@ -134,11 +134,11 @@
     "score_median": 0.084685
   },
   "artifacts": {
-    "model_file": "C:\\Users\\daspi\\Desktop\\log anomaly detection\\Log-File-Anomaly-Detector\\ml_engine\\models\\isolation_model.joblib",
-    "model_sha256": "8fc52ea2a42645280242ea141d0c317097e70fce0752642bfd5be85d4978268e",
-    "model_size_bytes": 2594073,
-    "scaler_file": "C:\\Users\\daspi\\Desktop\\log anomaly detection\\Log-File-Anomaly-Detector\\ml_engine\\models\\scaler.joblib",
-    "scaler_sha256": "97b4887b47d924ee2e11766f9c14bc18f0caa34075bc983e2698138f4f03ffb8",
+    "model_file": "C:\\Users\\daspi\\Desktop\\Log-File-Anomaly-Detector\\ml_engine\\models\\isolation_model.joblib",
+    "model_sha256": "63dba50daa488731748f4f6a01d8c08460e1e5132e955ec8bd94dd72a077b2c5",
+    "model_size_bytes": 2581272,
+    "scaler_file": "C:\\Users\\daspi\\Desktop\\Log-File-Anomaly-Detector\\ml_engine\\models\\scaler.joblib",
+    "scaler_sha256": "45e18b788e172bf9c114f0685bf7c6146e26a51a89f49c20af13dae15a720e2e",
     "scaler_size_bytes": 1271
   }
 }

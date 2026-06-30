@@ -1,31 +1,25 @@
-<!-- dashboard/templates/dashboard/includes/_empty_state.html — Phase 11A -->
+<!-- dashboard/templates/dashboard/includes/_empty_state.html — UI/UX Redesign v2 -->
 <!--
-  Reusable empty state component for sections with no data.
+  Reusable empty state component.
 
-  CONTEXT VARIABLES (pass via {% include ... with %}):
-    - icon:       Bootstrap Icon class (e.g., "bi-inbox")
-    - title:      Heading text (e.g., "No analyses yet")
+  CONTEXT VARIABLES:
+    - icon:       Bootstrap Icon class
+    - title:      Heading text
     - message:    Description text
     - action_url: Optional URL for CTA button
     - action_text: Optional CTA button text
-
-  USAGE:
-    {% include "dashboard/includes/_empty_state.html" with
-       icon="bi-cloud-arrow-up" title="No uploads yet"
-       message="Upload your first .evtx file to get started."
-       action_url="/upload/" action_text="Upload File" %}
 -->
 
-<div class="empty-state text-center py-4">
+<div class="empty-state text-center py-5">
   <div class="empty-state-icon mb-3">
     <i class="bi {{ icon|default:'bi-inbox' }}"></i>
   </div>
-  <h6 class="empty-state-title">{{ title|default:"No data available" }}</h6>
-  <p class="empty-state-message text-muted small mb-3">
+  <h6 class="empty-state-title fw-bold">{{ title|default:"No data available" }}</h6>
+  <p class="empty-state-message text-muted small mb-4">
     {{ message|default:"There's nothing to display here yet." }}
   </p>
   {% if action_url and action_text %}
-  <a href="{{ action_url }}" class="btn btn-accent btn-sm">
+  <a href="{{ action_url }}" class="btn-soc btn-primary-soc px-4">
     <i class="bi bi-plus-lg me-1"></i> {{ action_text }}
   </a>
   {% endif %}

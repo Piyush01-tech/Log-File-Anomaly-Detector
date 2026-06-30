@@ -1,23 +1,3 @@
-<!-- dashboard/templates/dashboard/alerts.html — Phase 11B -->
-<!--
-  Alerts list page — paginated, searchable, filterable table of all anomalies.
-
-  FEATURES:
-    - Severity summary cards (Critical, High, Medium, Low counts)
-    - Search by computer name or job filename
-    - Filter by severity level
-    - Responsive table with severity badges, scores, time windows
-    - Links to individual alert detail and parent analysis job
-    - Reusable pagination include with query string preservation
-    - User isolation (analysts see only their alerts)
-    - Empty state with upload CTA
-
-  CONTEXT VARIABLES:
-    - alerts: Page of Anomaly objects (from AlertsListView)
-    - total_alerts, critical_count, high_count, medium_count, low_count
-    - current_search, current_severity, has_active_filters
-    - page_obj, is_paginated (from ListView pagination)
--->
 {% extends "dashboard/base.html" %}
 {% load dashboard_filters %}
 
@@ -31,13 +11,15 @@
 {% block content %}
 
 <!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
   <div>
-    <h2 class="fw-bold mb-1">
-      <i class="bi bi-shield-exclamation text-accent me-2"></i>
+    <h2 class="fw-bold mb-1 d-flex align-items-center">
+      <div class="d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: rgba(var(--soc-accent-rgb), 0.1); border-radius: var(--soc-radius); border: 1px solid rgba(var(--soc-accent-rgb), 0.2);">
+        <i class="bi bi-shield-exclamation text-accent fs-5"></i>
+      </div>
       Security Alerts
     </h2>
-    <p class="text-muted mb-0">
+    <p class="text-muted mb-0 ms-5 ps-2" style="font-size: 13px;">
       {% if perms.dashboard.view_all_incidents %}
         All detected anomalies across the system.
       {% else %}
@@ -46,7 +28,7 @@
     </p>
   </div>
   <div>
-    <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm">
+    <a href="{% url 'dashboard:upload' %}" class="btn-soc btn-primary-soc px-3">
       <i class="bi bi-upload me-1"></i> New Upload
     </a>
   </div>
@@ -56,37 +38,33 @@
 {% if total_alerts > 0 %}
 <div class="row g-3 mb-4" id="alerts-severity-summary">
   <div class="col-6 col-lg-3">
-    <div class="stat-card text-center h-100 d-flex flex-column justify-content-center
-                {% if critical_count > 0 %}border-danger border-bottom border-3{% endif %}">
-      <div class="stat-value {% if critical_count > 0 %}text-danger{% else %}text-muted{% endif %}">
+    <div class="stat-card h-100 {% if critical_count > 0 %}glow-danger{% endif %} text-center py-4">
+      <div class="stat-value {% if critical_count > 0 %}text-danger{% else %}text-muted{% endif %} mb-2" style="font-size: 40px;">
         {{ critical_count }}
       </div>
-      <div class="stat-label">Critical</div>
+      <div class="stat-title text-uppercase fw-bold" style="letter-spacing: 1px;">Critical</div>
     </div>
   </div>
   <div class="col-6 col-lg-3">
-    <div class="stat-card text-center h-100 d-flex flex-column justify-content-center
-                {% if high_count > 0 %}border-bottom border-3{% endif %}"
-         {% if high_count > 0 %}style="border-bottom-color: #fb923c !important;"{% endif %}>
-      <div class="stat-value" {% if high_count > 0 %}style="color: #fb923c;"{% endif %}>
-        {% if high_count > 0 %}{{ high_count }}{% else %}<span class="text-muted">{{ high_count }}</span>{% endif %}
+    <div class="stat-card h-100 {% if high_count > 0 %}glow-warning{% endif %} text-center py-4">
+      <div class="stat-value {% if high_count > 0 %}text-warning{% else %}text-muted{% endif %} mb-2" style="font-size: 40px;">
+        {{ high_count }}
       </div>
-      <div class="stat-label">High</div>
+      <div class="stat-title text-uppercase fw-bold" style="letter-spacing: 1px;">High</div>
     </div>
   </div>
   <div class="col-6 col-lg-3">
-    <div class="stat-card text-center h-100 d-flex flex-column justify-content-center
-                {% if medium_count > 0 %}border-warning border-bottom border-3{% endif %}">
-      <div class="stat-value {% if medium_count > 0 %}text-warning{% else %}text-muted{% endif %}">
+    <div class="stat-card h-100 {% if medium_count > 0 %}glow-accent{% endif %} text-center py-4">
+      <div class="stat-value {% if medium_count > 0 %}text-info{% else %}text-muted{% endif %} mb-2" style="font-size: 40px;">
         {{ medium_count }}
       </div>
-      <div class="stat-label">Medium</div>
+      <div class="stat-title text-uppercase fw-bold" style="letter-spacing: 1px;">Medium</div>
     </div>
   </div>
   <div class="col-6 col-lg-3">
-    <div class="stat-card text-center h-100 d-flex flex-column justify-content-center">
-      <div class="stat-value text-muted">{{ low_count }}</div>
-      <div class="stat-label">Low</div>
+    <div class="stat-card h-100 text-center py-4">
+      <div class="stat-value text-muted mb-2" style="font-size: 40px;">{{ low_count }}</div>
+      <div class="stat-title text-uppercase fw-bold" style="letter-spacing: 1px;">Low</div>
     </div>
   </div>
 </div>
@@ -97,23 +75,23 @@
 
 {% if alerts %}
 <!-- Alerts Table -->
-<div class="card soc-card mb-4" id="alerts-table-card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <div>
-      <i class="bi bi-exclamation-triangle me-2 text-accent"></i>
-      <span class="fw-bold">Detected Anomalies</span>
+<div class="soc-card mb-4" id="alerts-table-card">
+  <div class="soc-card-header">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-shield-exclamation text-danger me-2"></i>
+      <h2 class="soc-card-title m-0">Detected Anomalies</h2>
     </div>
-    <span class="text-muted small">
+    <span class="soc-badge badge-medium">
       {{ total_alerts }} alert{{ total_alerts|pluralize }}
       {% if has_active_filters %}(filtered){% endif %}
     </span>
   </div>
-  <div class="card-body p-0">
-    <div class="table-responsive">
-      <table class="table table-hover analysis-table mb-0" id="alerts-table">
+  <div class="soc-card-body p-0">
+    <div class="table-responsive border-0 border-radius-0">
+      <table class="soc-table" id="alerts-table">
         <thead>
           <tr>
-            <th class="ps-3">Severity</th>
+            <th>Severity</th>
             <th>Score</th>
             <th>Time Window</th>
             <th>Computer</th>
@@ -121,41 +99,39 @@
             {% if perms.dashboard.view_all_incidents %}
             <th>Analyst</th>
             {% endif %}
-            <th class="text-end pe-3">Action</th>
+            <th class="text-end pe-4">Action</th>
           </tr>
         </thead>
         <tbody>
           {% for alert in alerts %}
-          <tr class="anomaly-row severity-row-{{ alert.severity|lower }}" id="alert-row-{{ alert.pk }}">
-            <td class="ps-3">
+          <tr class="anomaly-row severity-row-{{ alert.severity|lower }}" id="alert-row-{{ alert.pk }}" onclick="window.location='{% url 'dashboard:alert_detail' pk=alert.pk %}'">
+            <td>
               {% include "dashboard/includes/_severity_badge.html" with severity=alert.severity severity_display=alert.get_severity_display %}
             </td>
             <td>
-              <code class="anomaly-score">{{ alert.anomaly_score|floatformat:4 }}</code>
+              <span class="score-badge">{{ alert.anomaly_score|floatformat:4 }}</span>
             </td>
             <td>
-              <span class="small">{{ alert.window_start|date:"M d, Y H:i" }}</span>
+              <span class="text-muted fw-medium" style="font-size: 13px;">{{ alert.window_start|date:"M d, Y H:i" }}</span>
             </td>
             <td>
-              <span class="small">{{ alert.computer_name|default:"—" }}</span>
+              <span class="fw-semibold">{{ alert.computer_name|default:"—" }}</span>
             </td>
             <td>
-              <a href="{% url 'dashboard:analysis_detail' pk=alert.job.pk %}"
-                 class="text-decoration-none small"
-                 title="View analysis job">
-                <i class="bi bi-file-earmark-binary me-1 text-muted"></i>
-                <span class="text-truncate-name">{{ alert.job.original_filename }}</span>
-              </a>
+              <div class="d-flex align-items-center">
+                <i class="bi bi-file-earmark-binary text-muted me-2" style="font-size: 14px;"></i>
+                <span class="text-truncate-name text-muted" style="max-width: 140px; font-size: 13px;">{{ alert.job.original_filename }}</span>
+              </div>
             </td>
             {% if perms.dashboard.view_all_incidents %}
             <td>
-              <span class="small text-muted">{{ alert.job.user.username }}</span>
+              <span class="text-muted fw-medium" style="font-size: 13px;">{{ alert.job.user.username }}</span>
             </td>
             {% endif %}
-            <td class="text-end pe-3">
+            <td class="text-end pe-4">
               <a href="{% url 'dashboard:alert_detail' pk=alert.pk %}"
-                 class="btn btn-sm btn-outline-light py-0 px-2"
-                 title="View alert details">
+                 class="btn-soc btn-outline-soc py-1 px-3"
+                 style="font-size: 12px;">
                 <i class="bi bi-eye me-1"></i>Details
               </a>
             </td>
@@ -173,27 +149,31 @@
 {% else %}
 <!-- Empty State -->
 {% if has_active_filters %}
-<div class="card soc-card">
-  <div class="card-body text-center py-5" id="alerts-empty-filtered">
-    <i class="bi bi-funnel text-muted" style="font-size: 3rem;"></i>
-    <h4 class="mt-3 fw-bold">No Matching Alerts</h4>
-    <p class="text-muted mb-4">
-      No alerts match your current search and filter criteria.
+<div class="soc-card">
+  <div class="soc-card-body text-center py-5" id="alerts-empty-filtered">
+    <div class="mx-auto mb-4 d-inline-flex align-items-center justify-content-center" style="width: 72px; height: 72px; background: var(--soc-bg-inset); border-radius: 50%; border: 1px solid var(--soc-border);">
+      <i class="bi bi-funnel text-muted fs-1"></i>
+    </div>
+    <h4 class="fw-bold mb-2">No Matching Alerts</h4>
+    <p class="text-muted mb-4 mx-auto" style="max-width: 400px; font-size: 14px;">
+      No alerts match your current search and filter criteria. Try adjusting your filters.
     </p>
-    <a href="{% url 'dashboard:alerts' %}" class="btn btn-outline-light">
+    <a href="{% url 'dashboard:alerts' %}" class="btn-soc btn-outline-soc px-4 py-2">
       <i class="bi bi-x-lg me-1"></i> Clear Filters
     </a>
   </div>
 </div>
 {% else %}
-<div class="card soc-card">
-  <div class="card-body text-center py-5" id="alerts-empty-state">
-    <i class="bi bi-shield-check text-accent" style="font-size: 3rem;"></i>
-    <h4 class="mt-3 fw-bold">No Alerts</h4>
-    <p class="text-muted mb-4">
-      No anomalies have been detected yet. Upload a Windows Event Log file to start analyzing.
+<div class="soc-card">
+  <div class="soc-card-body text-center py-5" id="alerts-empty-state">
+    <div class="mx-auto mb-4 d-inline-flex align-items-center justify-content-center" style="width: 72px; height: 72px; background: rgba(var(--soc-success-rgb), 0.08); border-radius: 50%; border: 1px solid rgba(var(--soc-success-rgb), 0.2);">
+      <i class="bi bi-shield-check text-success fs-1"></i>
+    </div>
+    <h4 class="fw-bold mb-2">No Alerts Found</h4>
+    <p class="text-muted mb-4 mx-auto" style="max-width: 400px; font-size: 14px;">
+      No anomalies have been detected yet. Your systems are secure. Upload a Windows Event Log file to run a new analysis.
     </p>
-    <a href="{% url 'dashboard:upload' %}" class="btn btn-accent">
+    <a href="{% url 'dashboard:upload' %}" class="btn-soc btn-primary-soc px-4 py-2">
       <i class="bi bi-upload me-1"></i> Upload .evtx File
     </a>
   </div>

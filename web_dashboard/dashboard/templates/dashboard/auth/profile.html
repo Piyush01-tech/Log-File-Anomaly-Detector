@@ -1,73 +1,57 @@
-<!-- dashboard/templates/dashboard/auth/profile.html — Phase 9A -->
-<!--
-  User profile management page.
-
-  FEATURES:
-    - View current account information (username, role, member since)
-    - Edit first name, last name, and email
-    - Link to password change page
-    - CSRF-protected form
--->
+<!-- dashboard/templates/dashboard/auth/profile.html — UI/UX Redesign v2 -->
 {% extends "dashboard/base.html" %}
 
-{% block title %}My Profile{% endblock %}
+{% block title %}Edit Profile{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-8 col-lg-6">
+
     <!-- Account Info Card -->
-    <div class="card shadow-sm mb-4 soc-card">
-      <div class="card-header d-flex align-items-center">
-        <i class="bi bi-person-badge me-2 text-accent"></i>
-        <h2 class="h5 mb-0 fw-bold">Account Information</h2>
+    <div class="soc-card mb-4">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-person-badge"></i> Account Information</h2>
       </div>
-      <div class="card-body">
-        <div class="row">
+      <div class="soc-card-body">
+        <div class="row g-4">
           <div class="col-sm-4">
-            <p class="text-muted small mb-1">Username</p>
-            <p class="fw-semibold">{{ user.username }}</p>
+            <div class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px; font-size: 11px;">Username</div>
+            <div class="fw-semibold">{{ user.username }}</div>
           </div>
           <div class="col-sm-4">
-            <p class="text-muted small mb-1">Role</p>
-            <p class="fw-semibold">
-              <span class="badge bg-accent text-uppercase">
-                {{ user.get_role_display }}
-              </span>
-            </p>
+            <div class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px; font-size: 11px;">Role</div>
+            <div><span class="badge bg-accent text-uppercase">{{ user.get_role_display }}</span></div>
           </div>
           <div class="col-sm-4">
-            <p class="text-muted small mb-1">Member Since</p>
-            <p class="fw-semibold">{{ user.date_joined|date:"M d, Y" }}</p>
+            <div class="text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px; font-size: 11px;">Member Since</div>
+            <div class="fw-semibold">{{ user.date_joined|date:"M d, Y" }}</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Edit Profile Card -->
-    <div class="card shadow-sm mb-4 soc-card">
-      <div class="card-header d-flex align-items-center">
-        <i class="bi bi-pencil-square me-2 text-accent"></i>
-        <h2 class="h5 mb-0 fw-bold">Edit Profile</h2>
+    <div class="soc-card mb-4">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-pencil-square"></i> Edit Profile</h2>
       </div>
-      <div class="card-body">
+      <div class="soc-card-body">
         <form method="post" action="{% url 'auth:profile' %}" id="profile-form" novalidate>
           {% csrf_token %}
 
           <!-- Non-field errors -->
           {% if form.non_field_errors %}
-          <div class="alert alert-danger alert-sm py-2 px-3" role="alert">
+          <div class="mb-4 p-3 rounded-3" style="background: rgba(var(--soc-danger-rgb), 0.06); border: 1px solid rgba(var(--soc-danger-rgb), 0.2);" role="alert">
             {% for error in form.non_field_errors %}
-            <small>{{ error }}</small>
+            <small class="text-danger fw-semibold">{{ error }}</small>
             {% endfor %}
           </div>
           {% endif %}
 
-          <div class="row">
+          <div class="row g-3">
             <!-- First Name -->
-            <div class="col-md-6 mb-3">
-              <label for="id_profile_first_name" class="form-label small fw-semibold">
-                First Name
-              </label>
+            <div class="col-md-6">
+              <label for="id_profile_first_name" class="form-label">First Name</label>
               {{ form.first_name }}
               {% if form.first_name.errors %}
               <div class="invalid-feedback d-block">
@@ -77,10 +61,8 @@
             </div>
 
             <!-- Last Name -->
-            <div class="col-md-6 mb-3">
-              <label for="id_profile_last_name" class="form-label small fw-semibold">
-                Last Name
-              </label>
+            <div class="col-md-6">
+              <label for="id_profile_last_name" class="form-label">Last Name</label>
               {{ form.last_name }}
               {% if form.last_name.errors %}
               <div class="invalid-feedback d-block">
@@ -91,8 +73,8 @@
           </div>
 
           <!-- Email -->
-          <div class="mb-4">
-            <label for="id_profile_email" class="form-label small fw-semibold">
+          <div class="mt-3">
+            <label for="id_profile_email" class="form-label">
               <i class="bi bi-envelope me-1"></i> Email Address
             </label>
             {{ form.email }}
@@ -103,27 +85,25 @@
             {% endif %}
           </div>
 
-          <button type="submit" class="btn btn-accent py-2 px-4 fw-semibold"
-                  id="btn-save-profile">
-            <i class="bi bi-check-lg me-1"></i> Save Changes
-          </button>
+          <div class="mt-4">
+            <button type="submit" class="btn-soc btn-primary-soc px-4 py-2 fw-semibold" id="btn-save-profile">
+              <i class="bi bi-check-lg me-1"></i> Save Changes
+            </button>
+          </div>
         </form>
       </div>
     </div>
 
     <!-- Security Card -->
-    <div class="card shadow-sm soc-card">
-      <div class="card-header d-flex align-items-center">
-        <i class="bi bi-shield-lock me-2 text-accent"></i>
-        <h2 class="h5 mb-0 fw-bold">Security</h2>
+    <div class="soc-card">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-shield-lock"></i> Security</h2>
       </div>
-      <div class="card-body">
+      <div class="soc-card-body">
         <p class="text-muted small mb-3">
           Manage your password and account security settings.
         </p>
-        <a href="{% url 'auth:password_change' %}"
-           class="btn btn-outline-light btn-sm"
-           id="btn-change-password">
+        <a href="{% url 'auth:password_change' %}" class="btn-soc btn-outline-soc" id="btn-change-password">
           <i class="bi bi-key me-1"></i> Change Password
         </a>
       </div>

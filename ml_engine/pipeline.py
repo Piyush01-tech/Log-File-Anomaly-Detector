@@ -101,7 +101,6 @@ class AnalysisPipeline:
             FeatureEngineeringConfig(
                 feature_columns=self._config.feature_columns,
                 window_freq=self._config.window_freq,
-                monitored_event_ids=self._config.monitored_event_ids,
             )
         )
 
@@ -152,7 +151,7 @@ class AnalysisPipeline:
 
         # Step 1: Parse
         logger.info("  Step 1/3: Parsing EVTX file...")
-        raw_events_df = self._parser.parse_file(evtx_path)
+        raw_events_df = self._parser.parse(evtx_path)
 
         if raw_events_df.empty:
             raise ValueError(

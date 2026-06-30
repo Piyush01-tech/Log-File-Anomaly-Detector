@@ -1,16 +1,3 @@
-<!-- dashboard/templates/dashboard/upload.html — Phase 10 -->
-<!--
-  EVTX file upload page.
-
-  FEATURES:
-    - Clean upload card with file input
-    - Drag-and-drop visual zone
-    - Client-side file validation (extension, size)
-    - Upload progress feedback
-    - Double-submit prevention
-    - Server-side error display via Django messages
-    - Dark SOC theme consistent with auth pages
--->
 {% extends "dashboard/base.html" %}
 
 {% block title %}Upload .evtx File{% endblock %}
@@ -25,9 +12,9 @@
   <div class="col-lg-8 col-xl-7">
 
     <!-- Page Header -->
-    <div class="text-center mb-4">
-      <div class="auth-icon-wrapper mb-3 mx-auto">
-        <i class="bi bi-cloud-arrow-up auth-icon"></i>
+    <div class="text-center mb-4 pb-2">
+      <div class="mb-3 mx-auto d-inline-flex align-items-center justify-content-center" style="width: 72px; height: 72px; background: rgba(var(--soc-accent-rgb), 0.1); border-radius: 50%; box-shadow: 0 0 24px rgba(var(--soc-accent-rgb), 0.15); border: 1px solid rgba(var(--soc-accent-rgb), 0.2);">
+        <i class="bi bi-cloud-arrow-up text-accent" style="font-size: 32px;"></i>
       </div>
       <h2 class="fw-bold mb-1">Upload Event Log</h2>
       <p class="text-muted">
@@ -36,8 +23,8 @@
     </div>
 
     <!-- Upload Card -->
-    <div class="card soc-card">
-      <div class="card-body p-4">
+    <div class="soc-card mb-4" style="border-top: 3px solid var(--soc-accent);">
+      <div class="soc-card-body p-4 p-md-5">
         <form method="post"
               enctype="multipart/form-data"
               id="upload-form"
@@ -45,13 +32,13 @@
           {% csrf_token %}
 
           <!-- Drop Zone -->
-          <div class="upload-dropzone" id="upload-dropzone">
-            <div class="upload-dropzone-content">
-              <i class="bi bi-file-earmark-binary upload-dropzone-icon"></i>
-              <p class="upload-dropzone-text mb-1">
+          <div class="dropzone-container" id="upload-dropzone">
+            <div class="upload-dropzone-content py-2">
+              <i class="bi bi-file-earmark-binary dropzone-icon"></i>
+              <p class="dropzone-title">
                 Drag and drop your .evtx file here
               </p>
-              <p class="text-muted small mb-3">or click to browse</p>
+              <p class="dropzone-subtitle">or click to browse</p>
 
               <!-- Actual file input -->
               <div class="mb-0">
@@ -61,71 +48,70 @@
           </div>
 
           <!-- File Info (shown after selection) -->
-          <div class="file-info-panel mt-3" id="file-info-panel" style="display: none;">
+          <div class="file-info-panel mt-3 p-3 rounded-3" id="file-info-panel" style="display: none; background: var(--soc-bg-inset); border: 1px solid var(--soc-border);">
             <div class="d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center">
-                <i class="bi bi-file-earmark-check text-accent me-2 fs-5"></i>
+                <div class="d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: rgba(var(--soc-accent-rgb), 0.1); border-radius: 10px;">
+                  <i class="bi bi-file-earmark-check text-accent fs-5"></i>
+                </div>
                 <div>
-                  <div class="fw-semibold small" id="selected-filename">—</div>
-                  <div class="text-muted" style="font-size: 0.78rem;" id="selected-filesize">—</div>
+                  <div class="fw-bold" id="selected-filename" style="font-size: 14px; color: var(--soc-text-primary);">—</div>
+                  <div class="text-muted small" id="selected-filesize">—</div>
                 </div>
               </div>
               <button type="button"
-                      class="btn btn-sm btn-outline-danger"
+                      class="btn-soc btn-danger-soc px-3 py-1"
                       id="clear-file-btn"
                       title="Remove file">
-                <i class="bi bi-x-lg"></i>
+                <i class="bi bi-x-lg me-1"></i>Remove
               </button>
             </div>
           </div>
 
           <!-- Validation errors from Django -->
           {% if form.evtx_file.errors %}
-          <div class="alert alert-danger mt-3 mb-0 py-2">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            {% for error in form.evtx_file.errors %}
-              {{ error }}{% if not forloop.last %}<br>{% endif %}
-            {% endfor %}
+          <div class="mt-3 mb-0 p-3 rounded-3" style="background: rgba(var(--soc-danger-rgb), 0.06); border: 1px solid rgba(var(--soc-danger-rgb), 0.2);">
+            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+            <span class="text-danger fw-semibold" style="font-size: 13px;">
+              {% for error in form.evtx_file.errors %}
+                {{ error }}{% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
+            </span>
           </div>
           {% endif %}
 
           <!-- Upload Guidelines -->
-          <div class="upload-guidelines mt-3">
-            <div class="row g-2">
-              <div class="col-sm-4">
-                <div class="d-flex align-items-center">
-                  <i class="bi bi-check-circle text-accent me-2 small"></i>
-                  <span class="text-muted small">.evtx files only</span>
-                </div>
+          <div class="upload-guidelines mt-4 pt-4 border-top" style="border-color: var(--soc-border) !important;">
+            <div class="row g-3">
+              <div class="col-sm-4 text-center">
+                <i class="bi bi-check-circle-fill text-accent fs-4 mb-2 d-block"></i>
+                <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">.evtx only</span>
               </div>
-              <div class="col-sm-4">
-                <div class="d-flex align-items-center">
-                  <i class="bi bi-check-circle text-accent me-2 small"></i>
-                  <span class="text-muted small">Max 50 MB</span>
-                </div>
+              <div class="col-sm-4 text-center">
+                <i class="bi bi-hdd-fill text-accent fs-4 mb-2 d-block"></i>
+                <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Max 50 MB</span>
               </div>
-              <div class="col-sm-4">
-                <div class="d-flex align-items-center">
-                  <i class="bi bi-check-circle text-accent me-2 small"></i>
-                  <span class="text-muted small">Secure upload</span>
-                </div>
+              <div class="col-sm-4 text-center">
+                <i class="bi bi-shield-check text-accent fs-4 mb-2 d-block"></i>
+                <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Secure Upload</span>
               </div>
             </div>
           </div>
 
           <!-- Submit Button -->
-          <div class="d-grid mt-4">
+          <div class="d-grid mt-4 pt-3">
             <button type="submit"
-                    class="btn btn-accent btn-lg"
+                    class="btn-soc btn-primary-soc btn-lg py-3 fw-bold"
                     id="upload-submit-btn"
-                    disabled>
+                    disabled
+                    style="font-size: 15px; border-radius: var(--soc-radius);">
               <span id="upload-btn-text">
-                <i class="bi bi-shield-check me-2"></i>
-                Analyze for Anomalies
+                <i class="bi bi-cloud-arrow-up-fill me-2 fs-5 align-middle"></i>
+                <span class="align-middle">Analyze for Anomalies</span>
               </span>
               <span id="upload-btn-loading" style="display: none;">
                 <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                Analyzing — this may take a moment...
+                <span class="align-middle">Analyzing — this may take a moment...</span>
               </span>
             </button>
           </div>
@@ -134,34 +120,33 @@
     </div>
 
     <!-- How It Works -->
-    <div class="card soc-card mt-4">
-      <div class="card-header">
-        <i class="bi bi-info-circle me-2 text-accent"></i>
-        <span class="fw-bold">How It Works</span>
+    <div class="soc-card border-0 mt-4">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-lightbulb"></i> How It Works</h2>
       </div>
-      <div class="card-body">
-        <div class="row g-3">
+      <div class="soc-card-body p-4">
+        <div class="row g-4">
           <div class="col-md-4 text-center">
-            <div class="mb-2">
-              <span class="badge bg-accent rounded-pill px-3 py-2">1</span>
+            <div class="mb-3 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(var(--soc-accent-rgb), 0.1); border-radius: 50%; border: 1px solid rgba(var(--soc-accent-rgb), 0.2);">
+              <span class="text-accent fw-bold" style="font-size: 15px;">1</span>
             </div>
-            <p class="small text-muted mb-0">
+            <p class="small text-muted fw-medium mb-0">
               Upload your .evtx file from Windows Event Viewer
             </p>
           </div>
           <div class="col-md-4 text-center">
-            <div class="mb-2">
-              <span class="badge bg-accent rounded-pill px-3 py-2">2</span>
+            <div class="mb-3 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(var(--soc-accent-rgb), 0.1); border-radius: 50%; border: 1px solid rgba(var(--soc-accent-rgb), 0.2);">
+              <span class="text-accent fw-bold" style="font-size: 15px;">2</span>
             </div>
-            <p class="small text-muted mb-0">
+            <p class="small text-muted fw-medium mb-0">
               AI analyzes events using Isolation Forest anomaly detection
             </p>
           </div>
           <div class="col-md-4 text-center">
-            <div class="mb-2">
-              <span class="badge bg-accent rounded-pill px-3 py-2">3</span>
+            <div class="mb-3 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: rgba(var(--soc-accent-rgb), 0.1); border-radius: 50%; border: 1px solid rgba(var(--soc-accent-rgb), 0.2);">
+              <span class="text-accent fw-bold" style="font-size: 15px;">3</span>
             </div>
-            <p class="small text-muted mb-0">
+            <p class="small text-muted fw-medium mb-0">
               Review flagged anomalies with severity scores and details
             </p>
           </div>
@@ -188,6 +173,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const btnLoading = document.getElementById('upload-btn-loading');
 
   const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+
+  // --- Style the file input to fill dropzone securely ---
+  if(fileInput) {
+    fileInput.style.position = 'absolute';
+    fileInput.style.top = '0';
+    fileInput.style.left = '0';
+    fileInput.style.width = '100%';
+    fileInput.style.height = '100%';
+    fileInput.style.opacity = '0';
+    fileInput.style.cursor = 'pointer';
+  }
 
   // --- Format file size ---
   function formatSize(bytes) {
@@ -237,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
       filesizeEl.classList.remove('text-danger');
       fileInfoPanel.style.display = 'block';
       submitBtn.disabled = false;
-      dropzone.classList.add('has-file');
+      dropzone.classList.add('drag-over');
     } else {
       clearFile();
     }
@@ -248,50 +244,32 @@ document.addEventListener('DOMContentLoaded', function() {
     fileInput.value = '';
     fileInfoPanel.style.display = 'none';
     submitBtn.disabled = true;
-    dropzone.classList.remove('has-file');
+    dropzone.classList.remove('drag-over');
     filesizeEl.classList.remove('text-danger');
   }
 
   // --- File input change ---
-  fileInput.addEventListener('change', onFileSelected);
+  if(fileInput) {
+    fileInput.addEventListener('change', onFileSelected);
+  }
 
   // --- Clear button ---
-  clearBtn.addEventListener('click', clearFile);
-
-  // --- Drag and drop ---
-  dropzone.addEventListener('dragover', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    dropzone.classList.add('drag-over');
-  });
-
-  dropzone.addEventListener('dragleave', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    dropzone.classList.remove('drag-over');
-  });
-
-  dropzone.addEventListener('drop', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    dropzone.classList.remove('drag-over');
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      fileInput.files = e.dataTransfer.files;
-      onFileSelected();
-    }
-  });
+  if(clearBtn) {
+    clearBtn.addEventListener('click', clearFile);
+  }
 
   // --- Form submit: prevent double-submit ---
-  form.addEventListener('submit', function(e) {
-    if (submitBtn.disabled) {
-      e.preventDefault();
-      return;
-    }
-    submitBtn.disabled = true;
-    btnText.style.display = 'none';
-    btnLoading.style.display = 'inline';
-  });
+  if(form) {
+    form.addEventListener('submit', function(e) {
+      if (submitBtn.disabled) {
+        e.preventDefault();
+        return;
+      }
+      submitBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnLoading.style.display = 'inline';
+    });
+  }
 });
 </script>
 {% endblock %}

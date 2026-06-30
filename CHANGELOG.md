@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.9.1] - 2026-06-29 — Phase 11C: UI/UX Redesign
+
+### Completed Phase
+- **Phase 11C**: UI/UX Redesign
+
+### Modified
+- `web_dashboard/dashboard/static/dashboard/css/main.css`: Completely overhauled with a premium CSS variable system for colors (dark/light themes) and 8px spacing utility classes.
+- `web_dashboard/dashboard/static/dashboard/js/main.js`: Added JS interactivity for theme toggling via `localStorage` and responsive sidebar collapse/expand.
+- `web_dashboard/dashboard/templates/dashboard/base.html`: Refactored layout shell to include a fixed top navbar (search, theme toggle, notifications) and fixed/offcanvas sidebar.
+- `web_dashboard/dashboard/templates/dashboard/includes/_sidebar.html`: Made sidebar responsive, collapsible on desktop, offcanvas on mobile.
+- Component refactoring: Upgraded `_stats_card.html`, `_status_badge.html`, `_severity_badge.html`, `_empty_state.html`, `_table_filter.html`, `_pagination.html` to align with the new design tokens.
+- Page Template Redesign: Modernized `home.html`, `upload.html`, `alerts.html`, `analysis_detail.html`, `analysis_history.html`, `login.html`, `register.html`, `password_change.html`, and `profile.html` with `.border-0`, `.shadow-sm`, and custom layout components ensuring a professional cybersecurity layout.
+
+### Architecture Changes
+- Client-side theme switching logic implemented via `[data-theme="dark"]` attribute on `<html>`.
+
+### Summary
+The dashboard's frontend has been significantly upgraded. The layout is now highly responsive, visually appealing (Sentinel/Splunk inspired), and incorporates a robust design token system (CSS variables) to support advanced theming. All pre-existing business logic, backend URLs, permissions, and models remain completely intact.
+
+---
+
 ## [0.9.0] - 2026-06-29 — Phase 11B: Dashboard Features
 
 ### Completed Phase

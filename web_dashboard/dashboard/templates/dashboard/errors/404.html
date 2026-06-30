@@ -1,0 +1,37 @@
+<!-- dashboard/templates/dashboard/errors/404.html — UI/UX Redesign v2 -->
+{% extends "dashboard/base.html" %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6 col-lg-5">
+    <div class="text-center mb-5">
+      <div class="mx-auto mb-4 d-inline-flex align-items-center justify-content-center" style="width: 96px; height: 96px; background: rgba(var(--soc-warning-rgb), 0.08); border-radius: 50%; border: 1px solid rgba(var(--soc-warning-rgb), 0.2); box-shadow: 0 0 32px rgba(var(--soc-warning-rgb), 0.15);">
+        <i class="bi bi-binoculars text-warning" style="font-size: 44px;"></i>
+      </div>
+      <h1 class="display-3 fw-bold text-warning mb-2" style="letter-spacing: -0.03em;">404</h1>
+      <h2 class="h3 fw-bold mb-3">Page Not Found</h2>
+    </div>
+
+    <div class="soc-card mb-4">
+      <div class="soc-card-body text-center py-5">
+        <p class="text-muted mb-4 fw-medium" style="font-size: 15px;">
+          The page you're looking for doesn't exist or has been moved.
+        </p>
+        <p class="text-muted small mb-5">
+          Check the URL or navigate back to the dashboard.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="{% url 'dashboard:home' %}" class="btn-soc btn-primary-soc px-4 py-2">
+            <i class="bi bi-house me-2"></i> Dashboard
+          </a>
+          <button onclick="history.back()" class="btn-soc btn-outline-soc px-4 py-2">
+            <i class="bi bi-arrow-left me-2"></i> Go Back
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

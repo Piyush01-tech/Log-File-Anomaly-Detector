@@ -1,35 +1,15 @@
-<!-- dashboard/templates/dashboard/base.html — Phase 11A -->
-<!--
-  Production base template for the SOC Anomaly Detection Dashboard.
-
-  DESIGN:
-    - Dark theme (navy/slate) matching SOC tooling aesthetics.
-    - Bootstrap 5.3 for responsive layout and components.
-    - Google Fonts (Inter) for clean, modern typography.
-    - Auth-aware navigation (Login/Register vs Profile/Logout).
-    - Sidebar layout for authenticated users.
-    - Django messages framework integration with Bootstrap alerts.
-
-  LAYOUT:
-    - Authenticated: Navbar + Sidebar + Content area with breadcrumbs.
-    - Unauthenticated: Navbar + Full-width content (no sidebar).
-
-  BLOCKS:
-    - title:            Page title suffix (prepended with "SOC Dashboard —").
-    - extra_css:        Additional page-specific stylesheets.
-    - breadcrumb_items: Breadcrumb navigation items.
-    - content:          Main page content.
-    - extra_js:         Additional page-specific scripts.
--->
+<!-- dashboard/templates/dashboard/base.html — UI/UX Redesign v2 -->
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="AI-Based Windows Event Log Anomaly Detection System — SOC Dashboard">
   <meta name="csrf-token" content="{{ csrf_token }}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light dark">
 
   <title>SOC Dashboard — {% block title %}Home{% endblock %}</title>
 
@@ -39,146 +19,157 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Bootstrap 5.3 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YcnS/1DtSAm52W1DB5+OH3fNT/SQKGO+snBP"
-        crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-        rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <!-- Application Stylesheet -->
-  <link rel="stylesheet" href="{% static 'dashboard/css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'dashboard/css/main.css' %}?v=12">
 
   {% block extra_css %}{% endblock %}
 </head>
+
 <body>
+  <!-- ============================================================ -->
+  <!-- Ambient Parallax Background                                   -->
+  <!-- ============================================================ -->
+  <div class="ambient-background" id="ambient-bg">
+    <div class="ambient-blob blob-1"></div>
+    <div class="ambient-blob blob-2"></div>
+    <div class="ambient-blob blob-3"></div>
+    <div class="ambient-grid"></div>
+  </div>
+
   <!-- ============================================================ -->
   <!-- Navigation Bar                                                -->
   <!-- ============================================================ -->
-  <nav class="navbar navbar-expand-lg navbar-dark soc-navbar" id="main-navbar">
-    <div class="container-fluid px-3">
-      <!-- Mobile Sidebar Toggle (visible < lg, authenticated only) -->
+  <nav class="navbar navbar-expand-lg soc-navbar" id="main-navbar">
+    <div class="container-fluid px-0">
+      
+      <!-- Brand -->
+      <a class="navbar-brand" href="{% url 'dashboard:home' %}">
+        <div class="brand-icon">
+          <i class="bi bi-shield-check"></i>
+        </div>
+        SOC Dashboard
+      </a>
+
+      <!-- Sidebar Toggles -->
       {% if user.is_authenticated %}
-      <button class="btn btn-link text-light me-2 d-lg-none sidebar-toggle-btn p-0"
-              type="button"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#sidebar-mobile"
-              aria-controls="sidebar-mobile"
-              aria-label="Toggle sidebar">
-        <i class="bi bi-list fs-4"></i>
+      <button class="nav-action-btn ms-3 d-none d-lg-flex" type="button" id="sidebar-toggle" aria-label="Toggle sidebar">
+        <i class="bi bi-layout-sidebar-inset"></i>
+      </button>
+      
+      <!-- Mobile Offcanvas Toggle -->
+      <button class="nav-action-btn ms-2 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar-mobile" aria-controls="sidebar-mobile" aria-label="Toggle sidebar">
+        <i class="bi bi-list"></i>
       </button>
       {% endif %}
 
-      <!-- Brand -->
-      <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard:home' %}">
-        <i class="bi bi-shield-lock-fill me-2 text-accent"></i>
-        <span class="fw-bold">SOC Dashboard</span>
-      </a>
-
-      <!-- Mobile Toggle -->
-      <button class="navbar-toggler" type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarMain"
-              aria-controls="navbarMain"
-              aria-expanded="false"
-              aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <!-- Navigation Links -->
-      <div class="collapse navbar-collapse" id="navbarMain">
+      <!-- Search Bar -->
+      <div class="me-auto d-none d-md-block ms-4">
         {% if user.is_authenticated %}
-        <!-- Authenticated Navigation (minimal — sidebar has primary nav) -->
-        <ul class="navbar-nav me-auto">
-          <!-- Navbar items kept minimal; primary nav is in sidebar -->
-        </ul>
+        <div class="search-container">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" class="form-control" placeholder="Search alerts, hosts, indicators..." aria-label="Search">
+        </div>
+        {% endif %}
+      </div>
 
-        <!-- User Menu (Right-aligned) -->
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center"
-               href="#" id="userDropdown" role="button"
-               data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-person-circle me-1"></i>
-              {{ user.username }}
-              <span class="badge bg-accent ms-2 text-uppercase small">
-                {{ user.get_role_display }}
-              </span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark"
-                aria-labelledby="userDropdown">
-              <li>
-                <a class="dropdown-item" href="{% url 'dashboard:profile' %}">
-                  <i class="bi bi-person-gear me-2"></i> Profile
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{% url 'auth:password_change' %}">
-                  <i class="bi bi-key me-2"></i> Change Password
-                </a>
-              </li>
-              {% if perms.dashboard.dashboard_full_access %}
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <a class="dropdown-item" href="{% url 'admin:index' %}">
-                  <i class="bi bi-gear me-2"></i> Admin Panel
-                </a>
-              </li>
-              {% endif %}
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <form method="post" action="{% url 'auth:logout' %}" class="d-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="dropdown-item text-danger">
-                    <i class="bi bi-box-arrow-right me-2"></i> Sign Out
-                  </button>
-                </form>
-              </li>
-            </ul>
-          </li>
-        </ul>
+      <!-- Right Navigation Items -->
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <!-- Theme Toggle -->
+        <button class="nav-action-btn" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme">
+          <i class="bi bi-moon-fill" id="theme-icon"></i>
+        </button>
+
+        {% if user.is_authenticated %}
+        <!-- Notifications -->
+        <button class="nav-action-btn position-relative" type="button" aria-label="Notifications" title="Notifications">
+          <i class="bi bi-bell"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 9px; padding: 3px 5px; margin-top: 4px; margin-left: -10px;">
+            <span class="visually-hidden">New alerts</span>
+          </span>
+        </button>
+
+        <!-- User Menu -->
+        <div class="dropdown ms-1">
+          <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--soc-text-primary);">
+            <div style="width: 34px; height: 34px; background: linear-gradient(135deg, var(--soc-accent), #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 8px; color: white; font-size: 14px;">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <span class="d-none d-sm-inline fw-semibold" style="font-size: 13px;">{{ user.username }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom" aria-labelledby="userDropdown">
+            <li class="px-3 py-2 border-bottom mb-1" style="border-color: var(--soc-border) !important;">
+              <div class="fw-bold" style="font-size: 14px; color: var(--soc-text-primary);">{{ user.username }}</div>
+              <div class="text-accent small text-uppercase" style="font-size: 10px; font-weight: 700; letter-spacing: 0.8px; margin-top: 2px;">{{ user.get_role_display }}</div>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'dashboard:profile' %}">
+                <i class="bi bi-person-gear me-2"></i> Profile
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'auth:password_change' %}">
+                <i class="bi bi-shield-lock me-2"></i> Security
+              </a>
+            </li>
+            {% if perms.dashboard.dashboard_full_access %}
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'admin:index' %}">
+                <i class="bi bi-terminal me-2"></i> Admin Panel
+              </a>
+            </li>
+            {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form method="post" action="{% url 'auth:logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item d-flex align-items-center text-danger">
+                  <i class="bi bi-box-arrow-right me-2"></i> Sign Out
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
         {% else %}
-        <!-- Unauthenticated Navigation -->
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'auth:login' %}">
-              <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link btn btn-outline-accent btn-sm ms-2 px-3"
-               href="{% url 'auth:register' %}">
-              <i class="bi bi-person-plus me-1"></i> Register
-            </a>
-          </li>
-        </ul>
+        <!-- Unauthenticated Links -->
+        <a class="btn-soc btn-outline-soc px-3" href="{% url 'auth:login' %}">
+          Sign In
+        </a>
+        <a class="btn-soc btn-primary-soc ms-1 px-3" href="{% url 'auth:register' %}">
+          Register
+        </a>
         {% endif %}
       </div>
     </div>
   </nav>
 
   <!-- ============================================================ -->
-  <!-- Django Messages                                               -->
+  <!-- Django Messages (Toasts)                                      -->
   <!-- ============================================================ -->
   {% if messages %}
-  <div class="{% if user.is_authenticated %}dashboard-messages{% else %}container{% endif %} mt-3" id="messages-container">
+  <div class="dashboard-messages" id="messages-container">
     {% for message in messages %}
-    <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
-         role="alert" id="message-{{ forloop.counter }}">
-      {% if message.tags == 'success' %}
-        <i class="bi bi-check-circle-fill me-2"></i>
-      {% elif message.tags == 'error' or message.tags == 'danger' %}
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-      {% elif message.tags == 'warning' %}
-        <i class="bi bi-exclamation-circle-fill me-2"></i>
-      {% elif message.tags == 'info' %}
-        <i class="bi bi-info-circle-fill me-2"></i>
-      {% endif %}
-      {{ message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"
-              aria-label="Close"></button>
+    <div class="soc-toast soc-toast-{{ message.tags }}" role="alert" id="message-{{ forloop.counter }}">
+      <div class="d-flex gap-3 align-items-start">
+        {% if message.tags == 'success' %}
+        <i class="bi bi-check-circle-fill text-success fs-5 flex-shrink-0"></i>
+        {% elif message.tags == 'error' or message.tags == 'danger' %}
+        <i class="bi bi-exclamation-triangle-fill text-danger fs-5 flex-shrink-0"></i>
+        {% elif message.tags == 'warning' %}
+        <i class="bi bi-exclamation-circle-fill text-warning fs-5 flex-shrink-0"></i>
+        {% elif message.tags == 'info' %}
+        <i class="bi bi-info-circle-fill text-info fs-5 flex-shrink-0"></i>
+        {% endif %}
+        <div style="line-height: 1.5;">{{ message }}</div>
+      </div>
+      <button type="button" class="toast-close" onclick="this.parentElement.classList.add('toast-hide'); setTimeout(() => this.parentElement.remove(), 300);" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
     {% endfor %}
   </div>
@@ -196,8 +187,8 @@
     <!-- Content Area -->
     <main class="dashboard-content" id="main-content">
       <!-- Breadcrumbs -->
-      <nav aria-label="breadcrumb" class="soc-breadcrumbs mb-3">
-        <ol class="breadcrumb mb-0">
+      <nav aria-label="breadcrumb" class="soc-breadcrumbs">
+        <ol class="breadcrumb">
           {% block breadcrumb_items %}
           <li class="breadcrumb-item active" aria-current="page">
             <i class="bi bi-house-door me-1"></i> Dashboard
@@ -205,50 +196,41 @@
           {% endblock %}
         </ol>
       </nav>
-
-      <!-- Page Content -->
-      {% block content %}{% endblock %}
-    </main>
-  </div>
   {% else %}
   <!-- Unauthenticated Layout: Full-width -->
   <main class="container py-4" id="main-content">
-    {% block content_unauth %}
+  {% endif %}
+
+      <!-- Page Content -->
       {% block content %}{% endblock %}
-    {% endblock %}
+
+  {% if user.is_authenticated %}
+      <!-- Footer -->
+      <footer class="soc-footer mt-5">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+          <span>© 2026 SOC Dashboard — AI-Based Anomaly Detection</span>
+          <span class="d-flex align-items-center gap-3">
+            <span class="d-flex align-items-center gap-1">
+              <i class="bi bi-circle-fill text-success" style="font-size: 6px;"></i>
+              System Operational
+            </span>
+            <span>v1.0.0</span>
+          </span>
+        </div>
+      </footer>
+    </main>
+  </div>
+  {% else %}
   </main>
   {% endif %}
 
-  <!-- ============================================================ -->
-  <!-- Footer                                                        -->
-  <!-- ============================================================ -->
-  <footer class="soc-footer mt-auto py-3">
-    <div class="container-fluid text-center">
-      <small class="text-muted">
-        SOC Anomaly Detector &copy; 2026 &mdash;
-        AI-Based Windows Event Log Analysis
-      </small>
-    </div>
-  </footer>
-
   <!-- Bootstrap 5.3 JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-          crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Auto-dismiss alerts after 5 seconds -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const alerts = document.querySelectorAll('.alert-dismissible');
-      alerts.forEach(function(alert) {
-        setTimeout(function() {
-          const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-          bsAlert.close();
-        }, 5000);
-      });
-    });
-  </script>
+  <!-- Application Script -->
+  <script src="{% static 'dashboard/js/main.js' %}?v=12"></script>
 
   {% block extra_js %}{% endblock %}
 </body>
+
 </html>

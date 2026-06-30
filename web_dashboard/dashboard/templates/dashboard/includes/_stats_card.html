@@ -1,33 +1,28 @@
-<!-- dashboard/templates/dashboard/includes/_stats_card.html — Phase 11A -->
+<!-- dashboard/templates/dashboard/includes/_stats_card.html — UI/UX Redesign v2 -->
 <!--
   Reusable statistics card component.
 
-  CONTEXT VARIABLES (pass via {% include ... with %}):
+  CONTEXT VARIABLES:
     - icon:       Bootstrap Icon class (e.g., "bi-bar-chart-fill")
     - value:      The numeric value to display
     - label:      Short label below the value
     - subtitle:   Optional smaller text below the label
     - color:      CSS color class for accent (default: "text-accent")
-    - border:     Border accent class (default: "border-accent")
-    - icon_bg:    Background class for icon container (default: uses accent)
-
-  USAGE:
-    {% include "dashboard/includes/_stats_card.html" with
-       icon="bi-file-earmark-check" value=total_jobs label="Total Analyses"
-       subtitle="System Wide" color="text-accent" border="border-accent" %}
+    - glow:       Glow variant class (e.g., "glow-accent", "glow-danger")
 -->
 
-<div class="stat-card d-flex align-items-center {{ border|default:'border-accent' }} border-start border-3">
-  <div class="stat-card-icon me-3">
-    <div class="stat-icon-wrapper {{ icon_bg|default:'' }}">
+<div class="stat-card {{ glow|default:'' }}">
+  <div class="stat-card-header">
+    <div class="stat-title">{{ label|default:"Metric" }}</div>
+    <div class="stat-icon" style="background: rgba(var(--soc-accent-rgb), 0.08);">
       <i class="bi {{ icon|default:'bi-bar-chart' }} {{ color|default:'text-accent' }}"></i>
     </div>
   </div>
-  <div class="stat-card-content">
-    <div class="stat-value {{ color|default:'text-accent' }}">{{ value|default:"0" }}</div>
-    <div class="stat-label">{{ label|default:"Metric" }}</div>
-    {% if subtitle %}
-    <small class="text-muted">{{ subtitle }}</small>
-    {% endif %}
+  <div class="stat-value">{{ value|default:"0" }}</div>
+  {% if subtitle %}
+  <div class="stat-trend">
+    {% if trend_icon %}<i class="bi {{ trend_icon }}"></i>{% endif %}
+    {{ subtitle }}
   </div>
+  {% endif %}
 </div>

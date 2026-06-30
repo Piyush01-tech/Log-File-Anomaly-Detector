@@ -1,34 +1,20 @@
-<!-- dashboard/templates/dashboard/includes/_sidebar.html — Phase 11B -->
+<!-- dashboard/templates/dashboard/includes/_sidebar.html — UI/UX Redesign v2 -->
 <!--
   Collapsible sidebar navigation for authenticated users.
-
-  FEATURES:
-    - Active state highlighting via `active_nav` context variable
-    - Role-aware links (Admin Panel visible only to Super Admins)
-    - Responsive: offcanvas on mobile (<992px), fixed on desktop
-    - Bootstrap Icons for each navigation item
-    - SOC dark theme styling
-    - Alerts link with severity indicator (Phase 11B)
-
-  CONTEXT VARIABLES:
-    - active_nav: Current navigation item identifier (from context_processors.py)
-    - perms: Django permission object (from auth context processor)
-    - user: Current authenticated user
-
-  USAGE:
-    {% include "dashboard/includes/_sidebar.html" %}
+  Desktop: Persistent sidebar with collapse/expand.
+  Mobile: Bootstrap offcanvas overlay.
 -->
 
 <!-- Desktop Sidebar (visible >= lg) -->
-<aside class="soc-sidebar d-none d-lg-flex flex-column" id="sidebar-desktop">
+<aside class="soc-sidebar d-none d-lg-flex" id="sidebar-desktop">
   <nav class="sidebar-nav flex-grow-1">
-    <ul class="nav flex-column">
+    <ul class="nav flex-column gap-1">
       <!-- Dashboard Home -->
       <li class="nav-item">
         <a class="nav-link sidebar-link{% if active_nav == 'dashboard' %} active{% endif %}"
-           href="{% url 'dashboard:home' %}">
+           href="{% url 'dashboard:home' %}" title="Dashboard" data-bs-toggle="tooltip" data-bs-placement="right">
           <i class="bi bi-grid-1x2-fill"></i>
-          <span>Dashboard</span>
+          <span class="sidebar-text">Dashboard</span>
         </a>
       </li>
 
@@ -36,28 +22,28 @@
       {% if perms.dashboard.upload_evtx %}
       <li class="nav-item">
         <a class="nav-link sidebar-link{% if active_nav == 'upload' %} active{% endif %}"
-           href="{% url 'dashboard:upload' %}">
+           href="{% url 'dashboard:upload' %}" title="Upload File" data-bs-toggle="tooltip" data-bs-placement="right">
           <i class="bi bi-cloud-arrow-up"></i>
-          <span>Upload File</span>
+          <span class="sidebar-text">Upload File</span>
         </a>
       </li>
       {% endif %}
 
-      <!-- Alerts (Phase 11B) -->
+      <!-- Alerts -->
       <li class="nav-item">
         <a class="nav-link sidebar-link{% if active_nav == 'alerts' %} active{% endif %}"
-           href="{% url 'dashboard:alerts' %}">
+           href="{% url 'dashboard:alerts' %}" title="Alerts" data-bs-toggle="tooltip" data-bs-placement="right">
           <i class="bi bi-shield-exclamation"></i>
-          <span>Alerts</span>
+          <span class="sidebar-text">Alerts</span>
         </a>
       </li>
 
       <!-- Analysis History -->
       <li class="nav-item">
         <a class="nav-link sidebar-link{% if active_nav == 'history' %} active{% endif %}"
-           href="{% url 'dashboard:analysis_history' %}">
+           href="{% url 'dashboard:analysis_history' %}" title="History" data-bs-toggle="tooltip" data-bs-placement="right">
           <i class="bi bi-clock-history"></i>
-          <span>History</span>
+          <span class="sidebar-text">History</span>
         </a>
       </li>
 
@@ -67,9 +53,9 @@
       <!-- Profile -->
       <li class="nav-item">
         <a class="nav-link sidebar-link{% if active_nav == 'profile' %} active{% endif %}"
-           href="{% url 'dashboard:profile' %}">
+           href="{% url 'dashboard:profile' %}" title="Profile" data-bs-toggle="tooltip" data-bs-placement="right">
           <i class="bi bi-person-gear"></i>
-          <span>Profile</span>
+          <span class="sidebar-text">Profile</span>
         </a>
       </li>
 
@@ -79,9 +65,9 @@
       <li class="sidebar-section-label">Administration</li>
       <li class="nav-item">
         <a class="nav-link sidebar-link{% if active_nav == 'admin' %} active{% endif %}"
-           href="{% url 'admin:index' %}">
+           href="{% url 'admin:index' %}" title="Admin Panel" data-bs-toggle="tooltip" data-bs-placement="right">
           <i class="bi bi-gear-wide-connected"></i>
-          <span>Admin Panel</span>
+          <span class="sidebar-text">Admin Panel</span>
         </a>
       </li>
       {% endif %}
@@ -90,13 +76,13 @@
 
   <!-- Sidebar Footer -->
   <div class="sidebar-footer">
-    <div class="d-flex align-items-center px-3 py-2">
-      <div class="sidebar-user-avatar">
-        <i class="bi bi-person-circle"></i>
+    <div class="d-flex align-items-center sidebar-user-info">
+      <div class="sidebar-user-avatar me-3">
+        <i class="bi bi-person-fill"></i>
       </div>
-      <div class="ms-2 overflow-hidden">
+      <div class="overflow-hidden">
         <div class="sidebar-user-name text-truncate">{{ user.username }}</div>
-        <div class="sidebar-user-role">
+        <div class="sidebar-user-role mt-1">
           <span class="badge bg-accent text-uppercase">{{ user.get_role_display }}</span>
         </div>
       </div>
@@ -108,16 +94,17 @@
 <div class="offcanvas offcanvas-start soc-offcanvas" tabindex="-1"
      id="sidebar-mobile" aria-labelledby="sidebar-mobile-label">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="sidebar-mobile-label">
-      <i class="bi bi-shield-lock-fill me-2 text-accent"></i>
-      Navigation
+    <h5 class="offcanvas-title d-flex align-items-center" id="sidebar-mobile-label">
+      <div class="brand-icon me-2" style="width: 28px; height: 28px; font-size: 13px;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <span class="fw-bold fs-6">SOC Navigation</span>
     </h5>
-    <button type="button" class="btn-close btn-close-white"
-            data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body p-0">
     <nav class="sidebar-nav">
-      <ul class="nav flex-column">
+      <ul class="nav flex-column gap-1">
         <li class="nav-item">
           <a class="nav-link sidebar-link{% if active_nav == 'dashboard' %} active{% endif %}"
              href="{% url 'dashboard:home' %}" data-bs-dismiss="offcanvas">
@@ -136,7 +123,6 @@
         </li>
         {% endif %}
 
-        <!-- Alerts (Phase 11B) -->
         <li class="nav-item">
           <a class="nav-link sidebar-link{% if active_nav == 'alerts' %} active{% endif %}"
              href="{% url 'dashboard:alerts' %}" data-bs-dismiss="offcanvas">

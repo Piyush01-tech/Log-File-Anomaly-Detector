@@ -1,30 +1,20 @@
-<!-- dashboard/templates/dashboard/includes/_pagination.html — Phase 11B -->
+<!-- dashboard/templates/dashboard/includes/_pagination.html — UI/UX Redesign v2 -->
+{% load dashboard_filters %}
 <!--
-  Reusable pagination component for paginated list views.
-
-  FEATURES:
-    - First/Previous/Next/Last navigation
-    - Page number display with window (±2 pages)
-    - Preserves existing query string parameters (search, filters)
-    - Page info text (e.g., "Showing page 1 of 5")
-    - SOC dark theme styling
+  Reusable SOC-themed pagination component.
 
   CONTEXT VARIABLES:
-    - page_obj: Django Page object (from ListView pagination)
-    - is_paginated: Boolean indicating if pagination is active
-    - request: The current HTTP request (for query string preservation)
-
-  USAGE:
-    {% include "dashboard/includes/_pagination.html" %}
+    - page_obj: Django Page object
+    - is_paginated: Boolean
 -->
 
 {% if is_paginated %}
 <nav aria-label="Page navigation" class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 gap-3">
   <!-- Page info -->
-  <div class="pagination-info text-muted small order-2 order-sm-1">
-    Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+  <div class="text-muted small fw-medium order-2 order-sm-1">
+    Showing page <strong>{{ page_obj.number }}</strong> of <strong>{{ page_obj.paginator.num_pages }}</strong>
     <span class="d-none d-md-inline">
-      ({{ page_obj.paginator.count }} total record{{ page_obj.paginator.count|pluralize }})
+      &middot; {{ page_obj.paginator.count }} record{{ page_obj.paginator.count|pluralize }}
     </span>
   </div>
 
@@ -65,7 +55,7 @@
       </li>
       {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
       <li class="page-item disabled">
-        <span class="page-link">…</span>
+        <span class="page-link">&hellip;</span>
       </li>
       {% endif %}
     {% endfor %}

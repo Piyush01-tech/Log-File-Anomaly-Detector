@@ -1,59 +1,38 @@
-<!-- dashboard/templates/dashboard/includes/_table_filter.html — Phase 11B -->
+<!-- dashboard/templates/dashboard/includes/_table_filter.html — UI/UX Redesign v2 -->
 <!--
   Reusable search and filter bar for paginated list views.
-
-  FEATURES:
-    - Search text input with icon
-    - Optional severity filter dropdown
-    - Optional status filter dropdown
-    - Clear filters button (visible when filters are active)
-    - Form submits via GET for bookmarkable URLs
-    - Preserves filter state across page loads
 
   CONTEXT VARIABLES:
     - search_placeholder: Placeholder text for the search input
     - search_value: Current search query value
     - show_severity_filter: Boolean to show severity dropdown
     - show_status_filter: Boolean to show status dropdown
-    - current_severity: Currently selected severity filter
-    - current_status: Currently selected status filter
+    - current_severity / current_status: Currently selected filter
     - filter_action: Form action URL (defaults to current page)
     - has_active_filters: Boolean indicating if any filter is active
-
-  USAGE:
-    {% include "dashboard/includes/_table_filter.html" with
-       search_placeholder="Search alerts..."
-       search_value=current_search
-       show_severity_filter=True
-       current_severity=current_severity
-       has_active_filters=has_active_filters
-    %}
 -->
 
-<div class="card soc-card mb-4" id="table-filter-bar">
-  <div class="card-body py-3">
+<div class="soc-card mb-4" id="table-filter-bar">
+  <div class="soc-card-body py-3 px-4">
     <form method="get" action="{{ filter_action|default:'' }}" class="soc-filter-form" id="filter-form">
-      <div class="row g-2 align-items-end">
+      <div class="filter-panel bg-transparent border-0 p-0 m-0">
         <!-- Search Input -->
-        <div class="col-12 col-md-4 col-lg-5">
-          <div class="input-group input-group-sm">
-            <span class="input-group-text bg-transparent border-end-0">
-              <i class="bi bi-search text-muted"></i>
-            </span>
-            <input type="text"
-                   class="form-control border-start-0 ps-0"
-                   name="q"
-                   id="filter-search-input"
-                   placeholder="{{ search_placeholder|default:'Search...' }}"
-                   value="{{ search_value|default:'' }}"
-                   autocomplete="off">
-          </div>
+        <div class="search-container flex-grow-1" style="min-width: 220px; width: auto;">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text"
+                 class="form-control"
+                 name="q"
+                 id="filter-search-input"
+                 placeholder="{{ search_placeholder|default:'Search...' }}"
+                 value="{{ search_value|default:'' }}"
+                 autocomplete="off"
+                 style="border-radius: 6px; padding-left: 36px; width: 100%; height: 38px;">
         </div>
 
         {% if show_severity_filter %}
         <!-- Severity Filter -->
-        <div class="col-6 col-md-3 col-lg-2">
-          <select name="severity" class="form-select form-select-sm" id="filter-severity-select">
+        <div style="min-width: 150px;">
+          <select name="severity" class="form-select" id="filter-severity-select" style="height: 38px;">
             <option value="">All Severities</option>
             <option value="CRITICAL" {% if current_severity == 'CRITICAL' %}selected{% endif %}>Critical</option>
             <option value="HIGH" {% if current_severity == 'HIGH' %}selected{% endif %}>High</option>
@@ -65,8 +44,8 @@
 
         {% if show_status_filter %}
         <!-- Status Filter -->
-        <div class="col-6 col-md-3 col-lg-2">
-          <select name="status" class="form-select form-select-sm" id="filter-status-select">
+        <div style="min-width: 150px;">
+          <select name="status" class="form-select" id="filter-status-select" style="height: 38px;">
             <option value="">All Statuses</option>
             <option value="COMPLETED" {% if current_status == 'COMPLETED' %}selected{% endif %}>Completed</option>
             <option value="FAILED" {% if current_status == 'FAILED' %}selected{% endif %}>Failed</option>
@@ -77,38 +56,36 @@
         {% endif %}
 
         <!-- Action Buttons -->
-        <div class="col-12 col-md-2 col-lg-{% if show_severity_filter and show_status_filter %}3{% elif show_severity_filter or show_status_filter %}3{% else %}7{% endif %}">
-          <div class="d-flex gap-2 justify-content-end">
-            <button type="submit" class="btn btn-accent btn-sm" id="filter-apply-btn">
-              <i class="bi bi-funnel me-1"></i>Apply
-            </button>
-            {% if has_active_filters %}
-            <a href="{{ filter_action|default:request.path }}" class="btn btn-outline-light btn-sm" id="filter-clear-btn">
-              <i class="bi bi-x-lg me-1"></i>Clear
-            </a>
-            {% endif %}
-          </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn-soc btn-primary-soc" id="filter-apply-btn">
+            <i class="bi bi-funnel me-1"></i>Apply
+          </button>
+          {% if has_active_filters %}
+          <a href="{{ filter_action|default:request.path }}" class="btn-soc btn-outline-soc" id="filter-clear-btn">
+            <i class="bi bi-x-lg me-1"></i>Clear
+          </a>
+          {% endif %}
         </div>
       </div>
 
       {% if has_active_filters %}
       <!-- Active Filters Summary -->
-      <div class="active-filters mt-2 pt-2 border-top border-secondary" id="active-filters-bar">
-        <small class="text-muted me-2">
+      <div class="active-filters mt-3 pt-3 border-top" style="border-color: var(--soc-border) !important;" id="active-filters-bar">
+        <small class="text-muted me-2 fw-bold">
           <i class="bi bi-funnel-fill text-accent me-1"></i>Active filters:
         </small>
         {% if search_value %}
-        <span class="filter-tag" id="filter-tag-search">
+        <span class="soc-badge badge-medium ms-1" id="filter-tag-search">
           <i class="bi bi-search me-1"></i>"{{ search_value }}"
         </span>
         {% endif %}
         {% if current_severity %}
-        <span class="filter-tag" id="filter-tag-severity">
+        <span class="soc-badge badge-medium ms-1" id="filter-tag-severity">
           <i class="bi bi-shield-exclamation me-1"></i>{{ current_severity }}
         </span>
         {% endif %}
         {% if current_status %}
-        <span class="filter-tag" id="filter-tag-status">
+        <span class="soc-badge badge-medium ms-1" id="filter-tag-status">
           <i class="bi bi-circle-fill me-1"></i>{{ current_status }}
         </span>
         {% endif %}

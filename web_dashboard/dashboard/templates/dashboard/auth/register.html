@@ -1,30 +1,20 @@
-<!-- dashboard/templates/dashboard/auth/register.html — Phase 9A -->
-<!--
-  Registration page for the SOC Anomaly Detection Dashboard.
-
-  FEATURES:
-    - Username, email, password, confirm password fields
-    - Password strength hints
-    - Server-side validation error display
-    - CSRF-protected form
-    - Link to login page
--->
+<!-- dashboard/templates/dashboard/auth/register.html — UI/UX Redesign v2 -->
 {% extends "dashboard/base.html" %}
 
 {% block title %}Create Account{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center min-vh-75">
-  <div class="col-md-6 col-lg-5">
-    <div class="auth-card card shadow-lg">
-      <div class="card-body p-4 p-md-5">
+<div class="row justify-content-center align-items-center min-vh-75 mt-5">
+  <div class="col-md-7 col-lg-6 col-xl-5">
+    <div class="soc-card mb-4" style="border-top: 3px solid; border-image: linear-gradient(90deg, var(--soc-accent), #8b5cf6) 1;">
+      <div class="soc-card-body p-4 p-md-5">
         <!-- Header -->
-        <div class="text-center mb-4">
-          <div class="auth-icon-wrapper mb-3">
-            <i class="bi bi-person-plus-fill auth-icon"></i>
+        <div class="text-center mb-5">
+          <div class="mx-auto mb-4 d-inline-flex align-items-center justify-content-center" style="width: 72px; height: 72px; background: rgba(var(--soc-accent-rgb), 0.08); border-radius: 50%; border: 1px solid rgba(var(--soc-accent-rgb), 0.2); box-shadow: 0 0 24px rgba(var(--soc-accent-rgb), 0.15);">
+            <i class="bi bi-person-plus-fill text-accent" style="font-size: 32px;"></i>
           </div>
-          <h1 class="h3 fw-bold">Create Account</h1>
-          <p class="text-muted small">Register for SOC Dashboard access</p>
+          <h1 class="h3 fw-bold mb-1">Create Account</h1>
+          <p class="text-muted small fw-medium">Register for SOC Dashboard access</p>
         </div>
 
         <!-- Registration Form -->
@@ -33,83 +23,92 @@
 
           <!-- Non-field errors -->
           {% if form.non_field_errors %}
-          <div class="alert alert-danger alert-sm py-2 px-3" role="alert">
+          <div class="mb-4 p-3 rounded-3" style="background: rgba(var(--soc-danger-rgb), 0.06); border: 1px solid rgba(var(--soc-danger-rgb), 0.2);" role="alert">
             {% for error in form.non_field_errors %}
-            <small>{{ error }}</small>
+            <small class="fw-bold d-flex align-items-center text-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ error }}
+            </small>
             {% endfor %}
           </div>
           {% endif %}
 
-          <!-- Username -->
-          <div class="mb-3">
-            <label for="id_register_username" class="form-label small fw-semibold">
-              <i class="bi bi-person me-1"></i> Username
-            </label>
-            {{ form.username }}
-            {% if form.username.errors %}
-            <div class="invalid-feedback d-block">
-              {% for error in form.username.errors %}{{ error }}{% endfor %}
+          <div class="row g-4">
+            <!-- Username -->
+            <div class="col-sm-6">
+              <label for="id_register_username" class="form-label">Username</label>
+              <div class="position-relative">
+                <i class="bi bi-person position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                {{ form.username }}
+              </div>
+              {% if form.username.errors %}
+              <div class="invalid-feedback d-block mt-2">
+                {% for error in form.username.errors %}<span class="text-danger fw-semibold small">{{ error }}</span>{% endfor %}
+              </div>
+              {% endif %}
             </div>
-            {% endif %}
-            {% if form.username.help_text %}
-            <div class="form-text small">{{ form.username.help_text }}</div>
-            {% endif %}
-          </div>
 
-          <!-- Email -->
-          <div class="mb-3">
-            <label for="id_register_email" class="form-label small fw-semibold">
-              <i class="bi bi-envelope me-1"></i> Email Address
-            </label>
-            {{ form.email }}
-            {% if form.email.errors %}
-            <div class="invalid-feedback d-block">
-              {% for error in form.email.errors %}{{ error }}{% endfor %}
+            <!-- Email -->
+            <div class="col-sm-6">
+              <label for="id_register_email" class="form-label">Email Address</label>
+              <div class="position-relative">
+                <i class="bi bi-envelope position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                {{ form.email }}
+              </div>
+              {% if form.email.errors %}
+              <div class="invalid-feedback d-block mt-2">
+                {% for error in form.email.errors %}<span class="text-danger fw-semibold small">{{ error }}</span>{% endfor %}
+              </div>
+              {% endif %}
             </div>
-            {% endif %}
-          </div>
 
-          <!-- Password -->
-          <div class="mb-3">
-            <label for="id_register_password1" class="form-label small fw-semibold">
-              <i class="bi bi-lock me-1"></i> Password
-            </label>
-            {{ form.password1 }}
-            {% if form.password1.errors %}
-            <div class="invalid-feedback d-block">
-              {% for error in form.password1.errors %}{{ error }}{% endfor %}
+            <!-- Password -->
+            <div class="col-sm-6">
+              <label for="id_register_password1" class="form-label">Password</label>
+              <div class="position-relative">
+                <i class="bi bi-lock position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                {{ form.password1 }}
+              </div>
+              {% if form.password1.errors %}
+              <div class="invalid-feedback d-block mt-2">
+                {% for error in form.password1.errors %}<span class="text-danger fw-semibold small">{{ error }}</span>{% endfor %}
+              </div>
+              {% endif %}
             </div>
-            {% endif %}
-            {% if form.password1.help_text %}
-            <div class="form-text small">{{ form.password1.help_text }}</div>
-            {% endif %}
-          </div>
 
-          <!-- Confirm Password -->
-          <div class="mb-4">
-            <label for="id_register_password2" class="form-label small fw-semibold">
-              <i class="bi bi-lock-fill me-1"></i> Confirm Password
-            </label>
-            {{ form.password2 }}
-            {% if form.password2.errors %}
-            <div class="invalid-feedback d-block">
-              {% for error in form.password2.errors %}{{ error }}{% endfor %}
+            <!-- Confirm Password -->
+            <div class="col-sm-6">
+              <label for="id_register_password2" class="form-label">Confirm Password</label>
+              <div class="position-relative">
+                <i class="bi bi-lock-fill position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                {{ form.password2 }}
+              </div>
+              {% if form.password2.errors %}
+              <div class="invalid-feedback d-block mt-2">
+                {% for error in form.password2.errors %}<span class="text-danger fw-semibold small">{{ error }}</span>{% endfor %}
+              </div>
+              {% endif %}
             </div>
-            {% endif %}
+
+            <div class="col-12 text-center mt-3">
+              {% if form.password1.help_text %}
+              <div class="form-text small fw-medium text-muted" style="font-size: 11px;">{{ form.password1.help_text }}</div>
+              {% endif %}
+            </div>
           </div>
 
           <!-- Submit -->
-          <button type="submit" class="btn btn-accent w-100 py-2 fw-semibold"
-                  id="btn-register">
-            <i class="bi bi-person-plus me-1"></i> Create Account
-          </button>
+          <div class="mt-5">
+            <button type="submit" class="btn-soc btn-primary-soc w-100 py-3 fw-bold" id="btn-register" style="font-size: 14px; border-radius: var(--soc-radius);">
+              <i class="bi bi-person-plus me-2 fs-5"></i> Create Account
+            </button>
+          </div>
         </form>
 
         <!-- Login Link -->
-        <div class="text-center mt-4 pt-3 border-top border-secondary">
-          <small class="text-muted">
+        <div class="text-center mt-5 pt-4 border-top" style="border-color: var(--soc-border) !important;">
+          <small class="text-muted fw-medium">
             Already have an account?
-            <a href="{% url 'auth:login' %}" class="text-accent text-decoration-none fw-semibold">
+            <a href="{% url 'auth:login' %}" class="text-accent text-decoration-none fw-bold ms-1">
               Sign in
             </a>
           </small>

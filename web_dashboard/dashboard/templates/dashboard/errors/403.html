@@ -1,17 +1,4 @@
-<!-- dashboard/templates/dashboard/errors/403.html — Phase 9B -->
-<!--
-  Custom 403 Forbidden / Access Denied page.
-
-  DESIGN:
-    - Matches SOC dark theme from base.html.
-    - Shows the user what permission they lack (without exposing internals).
-    - Provides a "Go Back" button and link to dashboard home.
-    - Consistent with the enterprise SOC aesthetic.
-
-  TRIGGERED BY:
-    - PermissionDenied exceptions from RBAC mixins/decorators.
-    - Django middleware denying access to /admin/ for non-admin users.
--->
+<!-- dashboard/templates/dashboard/errors/403.html — UI/UX Redesign v2 -->
 {% extends "dashboard/base.html" %}
 
 {% block title %}Access Denied{% endblock %}
@@ -19,47 +6,49 @@
 {% block content %}
 <div class="row justify-content-center mt-5">
   <div class="col-md-6 col-lg-5">
-    <div class="text-center mb-4">
-      <div class="mb-3">
-        <i class="bi bi-shield-exclamation text-danger" style="font-size: 4rem;"></i>
+    <div class="text-center mb-5">
+      <div class="mx-auto mb-4 d-inline-flex align-items-center justify-content-center" style="width: 96px; height: 96px; background: rgba(var(--soc-danger-rgb), 0.08); border-radius: 50%; border: 1px solid rgba(var(--soc-danger-rgb), 0.2); box-shadow: 0 0 32px rgba(var(--soc-danger-rgb), 0.15);">
+        <i class="bi bi-shield-lock-fill text-danger" style="font-size: 44px;"></i>
       </div>
-      <h1 class="display-6 fw-bold text-danger mb-2">403</h1>
-      <h2 class="h4 text-light mb-3">Access Denied</h2>
+      <h1 class="display-3 fw-bold text-danger mb-2" style="letter-spacing: -0.03em;">403</h1>
+      <h2 class="h3 fw-bold mb-3">Access Denied</h2>
     </div>
 
-    <div class="card soc-card">
-      <div class="card-body text-center py-4">
-        <p class="text-muted mb-3">
+    <div class="soc-card mb-4">
+      <div class="soc-card-body text-center py-5">
+        <p class="text-muted mb-4 fw-medium" style="font-size: 15px;">
           You do not have the required permissions to access this resource.
         </p>
 
         {% if exception %}
-        <div class="alert alert-danger bg-dark border-danger mb-3 small">
-          <i class="bi bi-exclamation-triangle-fill me-1"></i>
-          {{ exception }}
+        <div class="mb-4 p-3 rounded-3 mx-auto" role="alert" style="background: rgba(var(--soc-danger-rgb), 0.06); border: 1px solid rgba(var(--soc-danger-rgb), 0.2); max-width: 400px;">
+          <small class="fw-bold text-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ exception }}
+          </small>
         </div>
         {% endif %}
 
-        <p class="text-muted small mb-4">
+        <p class="text-muted small mb-5">
           If you believe this is an error, contact your system administrator.
         </p>
 
         <div class="d-flex justify-content-center gap-3">
-          <a href="{% url 'dashboard:home' %}" class="btn btn-accent">
-            <i class="bi bi-house me-1"></i> Go to Dashboard
+          <a href="{% url 'dashboard:home' %}" class="btn-soc btn-primary-soc px-4 py-2">
+            <i class="bi bi-house me-2"></i> Dashboard
           </a>
-          <button onclick="history.back()" class="btn btn-outline-light">
-            <i class="bi bi-arrow-left me-1"></i> Go Back
+          <button onclick="history.back()" class="btn-soc btn-outline-soc px-4 py-2">
+            <i class="bi bi-arrow-left me-2"></i> Go Back
           </button>
         </div>
       </div>
     </div>
 
     {% if user.is_authenticated %}
-    <div class="text-center mt-3">
-      <small class="text-muted">
-        Signed in as <strong>{{ user.username }}</strong>
-        (<span class="text-uppercase">{{ user.get_role_display }}</span>)
+    <div class="text-center mt-4">
+      <small class="text-muted fw-medium">
+        Signed in as <strong style="color: var(--soc-text-primary);">{{ user.username }}</strong>
+        <span class="mx-1">&middot;</span>
+        <span class="soc-badge badge-medium py-1">{{ user.get_role_display }}</span>
       </small>
     </div>
     {% endif %}

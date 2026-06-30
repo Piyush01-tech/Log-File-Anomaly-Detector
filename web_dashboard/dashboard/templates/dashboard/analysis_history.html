@@ -1,23 +1,3 @@
-<!-- dashboard/templates/dashboard/analysis_history.html — Phase 11B -->
-<!--
-  Analysis history page — paginated list of user's analysis jobs.
-
-  FEATURES:
-    - Search by filename (Phase 11B)
-    - Filter by status (Phase 11B)
-    - Sortable table of analysis jobs
-    - Reusable status badges via _status_badge.html include
-    - Anomaly count and rate display
-    - Clickable rows linking to detail pages
-    - Reusable pagination via _pagination.html include
-    - Empty state with upload CTA
-    - User isolation (analysts see only their jobs)
-
-  CONTEXT VARIABLES:
-    - jobs: Page of AnalysisJob objects
-    - current_search, current_status, has_active_filters (Phase 11B)
-    - page_obj, is_paginated (from ListView pagination)
--->
 {% extends "dashboard/base.html" %}
 {% load dashboard_filters %}
 
@@ -31,59 +11,63 @@
 {% block content %}
 
 <!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
   <div>
-    <h2 class="fw-bold mb-1">
-      <i class="bi bi-clock-history text-accent me-2"></i>
+    <h2 class="fw-bold mb-1 d-flex align-items-center">
+      <div class="d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: rgba(var(--soc-accent-rgb), 0.1); border-radius: var(--soc-radius); border: 1px solid rgba(var(--soc-accent-rgb), 0.2);">
+        <i class="bi bi-clock-history text-accent fs-5"></i>
+      </div>
       Analysis History
     </h2>
-    <p class="text-muted mb-0">
-      {% if perms.dashboard.view_all_logs %}
+    <p class="text-muted mb-0 ms-5 ps-2" style="font-size: 13px;">
+      {% if perms.dashboard.view_all_incidents %}
         All analysis jobs across the system.
       {% else %}
-        Your uploaded log files and their analysis results.
+        Your personal analysis history.
       {% endif %}
     </p>
   </div>
-  <a href="{% url 'dashboard:upload' %}" class="btn btn-accent btn-sm">
-    <i class="bi bi-upload me-1"></i> New Upload
-  </a>
+  <div>
+    {% if perms.dashboard.upload_evtx %}
+    <a href="{% url 'dashboard:upload' %}" class="btn-soc btn-primary-soc px-3">
+      <i class="bi bi-upload me-1"></i> New Upload
+    </a>
+    {% endif %}
+  </div>
 </div>
 
-<!-- Search & Filter Bar (Phase 11B) -->
-{% include "dashboard/includes/_table_filter.html" with search_placeholder="Search by filename..." search_value=current_search show_status_filter=True current_status=current_status has_active_filters=has_active_filters %}
+<!-- Search & Filter Bar -->
+{% include "dashboard/includes/_table_filter.html" with search_placeholder="Search by filename or ID..." search_value=current_search show_status_filter=True current_status=current_status has_active_filters=has_active_filters %}
 
 {% if jobs %}
-<!-- Jobs Table -->
-<div class="card soc-card mb-4">
-  <div class="card-body p-0">
-    <div class="table-responsive">
-      <table class="table table-hover analysis-table mb-0" id="history-table">
+<!-- Analysis Jobs Table -->
+<div class="soc-card" id="analysis-history-card">
+  <div class="soc-card-body p-0">
+    <div class="table-responsive border-0">
+      <table class="soc-table" id="analysis-history-table">
         <thead>
           <tr>
-            <th class="ps-3">#</th>
-            <th>File</th>
+            <th>ID</th>
+            <th>Filename</th>
             <th>Status</th>
             <th>Anomalies</th>
-            <th>Rate</th>
             <th>Uploaded</th>
-            {% if perms.dashboard.view_all_logs %}
+            {% if perms.dashboard.view_all_incidents %}
             <th>Analyst</th>
             {% endif %}
-            <th class="text-end pe-3">Action</th>
+            <th class="text-end pe-4">Action</th>
           </tr>
         </thead>
         <tbody>
           {% for job in jobs %}
-          <tr class="history-row" id="history-row-{{ job.pk }}">
-            <td class="ps-3 text-muted">{{ job.pk }}</td>
+          <tr id="job-row-{{ job.pk }}" onclick="window.location='{% url 'dashboard:analysis_detail' pk=job.pk %}'">
+            <td>
+              <span style="font-family: var(--soc-font-mono); color: var(--soc-text-muted); font-size: 13px;">#{{ job.pk }}</span>
+            </td>
             <td>
               <div class="d-flex align-items-center">
-                <i class="bi bi-file-earmark-binary text-accent me-2"></i>
-                <span class="fw-semibold small text-truncate" style="max-width: 250px;"
-                      title="{{ job.original_filename }}">
-                  {{ job.original_filename }}
-                </span>
+                <i class="bi bi-file-earmark-binary text-muted me-2"></i>
+                <span class="text-truncate-name fw-semibold" style="max-width: 200px; font-size: 13px;">{{ job.original_filename }}</span>
               </div>
             </td>
             <td>
@@ -91,32 +75,30 @@
             </td>
             <td>
               {% if job.status == 'COMPLETED' %}
-                <span class="{% if job.total_anomalies > 0 %}text-warning fw-bold{% else %}text-muted{% endif %}">
-                  {{ job.total_anomalies }}
-                </span>
-                <span class="text-muted small">/ {{ job.total_samples }}</span>
+                {% if job.total_anomalies > 0 %}
+                  <span class="fw-bold text-warning">{{ job.total_anomalies }}</span>
+                  <span class="text-muted small">/ {{ job.total_samples }}</span>
+                {% else %}
+                  <span class="text-success fw-semibold">
+                    <i class="bi bi-check-circle me-1"></i>Clean
+                  </span>
+                {% endif %}
               {% else %}
                 <span class="text-muted">—</span>
               {% endif %}
             </td>
             <td>
-              {% if job.status == 'COMPLETED' and job.anomaly_rate is not None %}
-                <span class="small">{{ job.anomaly_rate|floatformat:1 }}%</span>
-              {% else %}
-                <span class="text-muted">—</span>
-              {% endif %}
+              <span class="text-muted fw-medium" style="font-size: 13px;">{{ job.uploaded_at|date:"M d, Y H:i" }}</span>
             </td>
+            {% if perms.dashboard.view_all_incidents %}
             <td>
-              <span class="small text-muted">{{ job.uploaded_at|date:"M d, Y H:i" }}</span>
-            </td>
-            {% if perms.dashboard.view_all_logs %}
-            <td>
-              <span class="small">{{ job.user.username }}</span>
+              <span class="text-muted fw-medium" style="font-size: 13px;">{{ job.user.username }}</span>
             </td>
             {% endif %}
-            <td class="text-end pe-3">
+            <td class="text-end pe-4">
               <a href="{% url 'dashboard:analysis_detail' pk=job.pk %}"
-                 class="btn btn-sm btn-outline-light py-0 px-2">
+                 class="btn-soc btn-outline-soc py-1 px-3"
+                 style="font-size: 12px;">
                 <i class="bi bi-eye me-1"></i>View
               </a>
             </td>
@@ -128,36 +110,17 @@
   </div>
 </div>
 
-<!-- Pagination (reusable include, Phase 11B) -->
+<!-- Pagination -->
 {% include "dashboard/includes/_pagination.html" %}
 
 {% else %}
-<!-- Empty State -->
 {% if has_active_filters %}
-<div class="card soc-card">
-  <div class="card-body text-center py-5" id="history-empty-filtered">
-    <i class="bi bi-funnel text-muted" style="font-size: 3rem;"></i>
-    <h4 class="mt-3 fw-bold">No Matching Jobs</h4>
-    <p class="text-muted mb-4">
-      No analysis jobs match your current search and filter criteria.
-    </p>
-    <a href="{% url 'dashboard:analysis_history' %}" class="btn btn-outline-light">
-      <i class="bi bi-x-lg me-1"></i> Clear Filters
-    </a>
-  </div>
+<div class="soc-card">
+  {% include "dashboard/includes/_empty_state.html" with icon="bi-funnel" title="No matching jobs" message="No analysis jobs match your current filters. Try adjusting your search." %}
 </div>
 {% else %}
-<div class="card soc-card">
-  <div class="card-body text-center py-5">
-    <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
-    <h4 class="mt-3 fw-bold">No Analyses Yet</h4>
-    <p class="text-muted mb-4">
-      Upload your first Windows Event Log file to get started.
-    </p>
-    <a href="{% url 'dashboard:upload' %}" class="btn btn-accent">
-      <i class="bi bi-upload me-1"></i> Upload .evtx File
-    </a>
-  </div>
+<div class="soc-card">
+  {% include "dashboard/includes/_empty_state.html" with icon="bi-cloud-arrow-up" title="No analyses yet" message="Upload your first .evtx file to begin anomaly detection." action_url="/upload/" action_text="Upload File" %}
 </div>
 {% endif %}
 {% endif %}
