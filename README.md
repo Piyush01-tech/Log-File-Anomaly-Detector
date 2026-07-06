@@ -6,7 +6,7 @@
 
 An enterprise-grade Security Operations Center (SOC) platform designed to detect anomalous behavior in Windows Event Logs (`.evtx`). The system uses a hybrid architecture, combining a Flask-based Machine Learning microservice for log parsing and anomaly detection (via Isolation Forest) with a Django-based web dashboard for user management, log uploading, and alerting.
 
-**[Read the Documentation Index](DOCUMENTATION_INDEX.md)** for a complete guide to the project's architecture, design, and roadmap.
+
 
 ---
 
@@ -16,7 +16,7 @@ An enterprise-grade Security Operations Center (SOC) platform designed to detect
 - **Feature Engineering**: Automated extraction of security-relevant features across 10 MITRE ATT&CK tactics (e.g., failed logins, process creation anomalies, audit log clears).
 - **Machine Learning Detection**: Unsupervised anomaly detection using `scikit-learn`'s Isolation Forest.
 - **Scalable Architecture**: Strict decoupling between the ML inference engine (Flask) and the web presentation layer (Django).
-- **Upcoming**: Retrieval-Augmented Generation (RAG) explanation layer to provide LLM-driven incident context.
+- **Futuristic Scope**: Retrieval-Augmented Generation (RAG) explanation layer to provide LLM-driven incident context.
 
 ---
 
@@ -35,7 +35,7 @@ graph LR
     Django -->|Renders UI| User
 ```
 
-*(See [ARCHITECTURE.md](ARCHITECTURE.md) for full details)*
+
 
 ---
 
@@ -118,15 +118,14 @@ python -m ml_engine.pipeline
 
 ## 🗺️ Current Status & Roadmap
 
-- ✅ **Phases 1-6**: Complete. The core ML pipeline (Parsing, Feature Engineering, Training, Prediction) is fully implemented and recently refactored into a cohesive Python package.
-- ✅ **Phase 7A**: Complete. ML engine structural refactoring.
-- ➡️ **Current Phase**: Generating comprehensive project documentation.
-- 🔜 **Upcoming**:
-  - Phase 7B: Flask REST API
-  - Phase 8: Django Database Models
-  - Phase 9: Django Authentication & Views
+- ✅ **Phases 1-12**: Complete. The core ML pipeline (Parsing, Feature Engineering, Training, Prediction) and full Django web dashboard (Authentication, RBAC, Upload workflow, Alerts, Analytics) are fully implemented.
+- 🔜 **Futuristic Scope**:
+  - Phases 13-14: RAG Knowledge Base and Explanation Layer
+  - Phase 15: Automated Reporting
+  - Phase 16: Admin & Settings
+  - Phase 17: Deployment Infrastructure (Docker, PostgreSQL, Nginx)
 
-*(See [ROADMAP.md](ROADMAP.md) for the complete phase-by-phase roadmap)*
+
 
 ---
 

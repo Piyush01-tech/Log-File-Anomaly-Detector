@@ -33,9 +33,6 @@ To build a production-quality, enterprise-grade Security Operations Center (SOC)
 - `Phase 11C`: UI/UX Redesign (Enterprise cybersecurity aesthetics, CSS variables for theming, enhanced responsive sidebar, Bootstrap component refactoring, premium card layouts, interactive theme toggle).
 - `Phase 12`: Analytics & Visualization Framework (Chart.js integration, Django JSON API, role-aware scoped chart data, interactive themed charts, dynamic updates).
 
-### Pending Phases (Immediate)
-- **Phase 13**: RAG Knowledge Base Setup
-
 *(See [ROADMAP.md](ROADMAP.md) for full phase details)*
 
 ---
@@ -132,7 +129,7 @@ The project strictly follows a **Decoupled Hybrid Architecture**:
 
 ---
 
-## 🔮 Future Architecture
+## 🔮 Futuristic Scope (Future Architecture)
 
 1. **RAG Explanation Layer**: Integration of an LLM and Vector Database to automatically generate human-readable incident summaries for detected anomalies. *(See [RAG_DESIGN.md](RAG_DESIGN.md))*
 2. **PostgreSQL Migration**: Moving Django from SQLite to PostgreSQL for concurrent writes and scalable storage.

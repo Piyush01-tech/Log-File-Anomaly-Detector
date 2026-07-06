@@ -22,102 +22,77 @@ The Log File Anomaly Detector is being built in distinct phases. This roadmap ou
   - Packaged the `ml_engine`, decoupled `train.py` from `predict.py`, and introduced `AnalysisPipeline`.
 - **Phase 7B: Flask REST API** 
   - Application factory, `/health`, `/analyze`, `/stats` endpoints, JSON serialization, error handling.
+- **Phase 8: Django Database Models**
+  - Implemented schema for `User`, `AnalysisJob`, `Anomaly`, and `AuditLog`.
+  - Implemented custom `UserManager` with role enforcement.
+  - Implemented Django admin registrations for all models.
+  - Configured `AUTH_USER_MODEL` and `DashboardConfig`.
+  - Generated and applied SQLite migrations.
+- **Phase 9A: Django Authentication**
+  - Implemented login, logout, and registration views.
+  - Created authentication forms with crispy-bootstrap5.
+  - Added "Remember Me" session control and AuditLog for LOGIN/LOGOUT events.
+  - Created dark SOC-themed templates with Bootstrap 5.
+  - Implemented auth-aware navigation, profile management, and password change.
+  - Configured session security settings and CSRF protection.
+- **Phase 9B: Django Role-Based Access Control**
+  - Implemented Analyst and Super Admin permission enforcement (Django Groups).
+  - Added view-level permission decorators and mixins (`rbac_mixins.py`, `rbac_decorators.py`).
+  - Restricted admin panel access to ADMIN role (middleware + UserAdmin).
+  - Implemented `setup_rbac` management command.
+- **Phase 10: Upload & Analysis Workflow**
+  - Created UI for uploading `.evtx` files.
+  - Implemented `FlaskAPIClient` in Django to trigger analysis.
+  - Saved results to the database upon API completion.
+- **Phase 11A: Dashboard Foundation**
+  - Implemented reusable layout with Sidebar and Breadcrumbs.
+  - Enhanced Home page with stats and recent activity tables.
+  - Created reusable UI components (empty states, loading states, stats cards).
+  - Created dedicated user profile page.
+- **Phase 11B: Dashboard Features**
+  - Built the main SOC view (Alerts table with search, filter, pagination).
+  - Built incident detail pages (single anomaly drill-down).
+  - Added search and filter to Analysis History.
+  - Created reusable template components (pagination, status/severity badges, filter bar).
+  - Implemented role-specific dashboards (Admin: system-wide, Analyst: personal).
+  - Added critical alert banner and recent alerts to home page.
+  - Updated sidebar navigation with Alerts link.
+  - Implemented responsive tables for mobile.
+- **Phase 11C: UI/UX Redesign**
+  - Overhauled CSS with a premium variable system for colors (dark/light themes).
+  - Added JS interactivity for theme toggling via `localStorage`.
+  - Modernized all pages with custom layout components for a professional cybersecurity layout.
+- **Phase 12: Charts & Visualization**
+  - Integrated Chart.js to visualize anomaly distributions over time.
+  - Created backend JSON API for aggregating stats from DB.
+  - Created modular JS framework for rendering charts with dynamic themes.
 
 ---
 
-## 🚧 Current Phase: Completed — Awaiting Approval
+## 🔮 Futuristic Scope
 
-### Phase 8: Django Database Models ✅
-- [x] Implement schema for `User`, `AnalysisJob`, `Anomaly`, and `AuditLog`.
-- [x] Implement custom `UserManager` with role enforcement.
-- [x] Implement Django admin registrations for all models.
-- [x] Configure `AUTH_USER_MODEL` and `DashboardConfig`.
-- [x] Generate and apply SQLite migrations.
+These phases are planned for future major releases to evolve the platform into a fully automated, AI-driven SIEM and ensure production readiness at scale.
 
-### Phase 9A: Django Authentication ✅
-- [x] Implement login, logout, and registration views.
-- [x] Create authentication forms with crispy-bootstrap5.
-- [x] Add "Remember Me" session control.
-- [x] Integrate AuditLog for LOGIN/LOGOUT events.
-- [x] Create dark SOC-themed templates with Bootstrap 5.
-- [x] Implement auth-aware navigation (navbar).
-- [x] Add SessionSecurityMiddleware (idle timeout, security headers).
-- [x] Implement profile management (name, email).
-- [x] Implement password change with validation.
-- [x] Configure session security settings and CSRF protection.
-
-### Phase 9B: Django Role-Based Access Control ✅
-- [x] Implement Analyst and Super Admin permission enforcement (Django Groups).
-- [x] Add view-level permission decorators and mixins (`rbac_mixins.py`, `rbac_decorators.py`).
-- [x] Restrict admin panel access to ADMIN role (middleware + UserAdmin).
-- [x] Implement `setup_rbac` management command.
-
----
-
-### Phase 10: Upload & Analysis Workflow ✅
-- [x] Create UI for uploading `.evtx` files.
-- [x] Implement `FlaskAPIClient` in Django to trigger analysis.
-- [x] Save results to the database upon API completion.
-
-### Phase 11A: Dashboard Foundation ✅
-- [x] Implement reusable layout with Sidebar and Breadcrumbs.
-- [x] Enhance Home page with stats and recent activity tables.
-- [x] Create reusable UI components (empty states, loading states, stats cards).
-- [x] Create dedicated user profile page.
-
-### Phase 11B: Dashboard Features ✅
-- [x] Build the main SOC view (Alerts table with search, filter, pagination).
-- [x] Build incident detail pages (single anomaly drill-down).
-- [x] Add search and filter to Analysis History.
-- [x] Create reusable template components (pagination, status/severity badges, filter bar).
-- [x] Implement role-specific dashboards (Admin: system-wide, Analyst: personal).
-- [x] Add critical alert banner and recent alerts to home page.
-- [x] Update sidebar navigation with Alerts link.
-- [x] Implement responsive tables for mobile.
-
-## 🔜 Near-Term Milestones (Web UI)
-
-### Phase 11B: Dashboard Data ✅
-- [x] Build the main SOC view (Alerts table).
-- [x] Build incident detail pages.
-
-### Phase 12: Charts & Visualization ✅
-- [x] Integrate Chart.js to visualize anomaly distributions over time.
-- [x] Create backend JSON API for aggregating stats from DB.
-- [x] Create modular JS framework for rendering charts with dynamic themes.
-
----
-
-## 🧠 Mid-Term Milestones (AI Integration)
-
-### 🚧 Current Phase: Phase 13
 ### Phase 13: RAG Knowledge Base Setup
-- [ ] Set up Vector Database (e.g., ChromaDB).
-- [ ] Ingest MITRE ATT&CK patterns and Windows Event ID definitions.
+- Set up Vector Database (e.g., ChromaDB).
+- Ingest MITRE ATT&CK patterns and Windows Event ID definitions.
 
 ### Phase 14: RAG Explanation Layer
-- [ ] Integrate LLM (OpenAI or local Ollama).
-- [ ] Generate incident reports for High/Critical anomalies.
-
----
-
-## 🚀 Long-Term Milestones (Production Readiness)
+- Integrate LLM (OpenAI or local Ollama).
+- Generate incident reports for High/Critical anomalies.
 
 ### Phase 15: Automated Reporting
-- [ ] PDF generation for weekly/monthly SOC executive summaries.
+- PDF generation for weekly/monthly SOC executive summaries.
 
 ### Phase 16: Admin & Settings
-- [ ] System settings panel for tweaking ML thresholds from the UI.
+- System settings panel for tweaking ML thresholds from the UI.
 
 ### Phase 17: Deployment Infrastructure
-- [ ] Dockerize Flask and Django into separate containers.
-- [ ] Migrate from SQLite to PostgreSQL.
-- [ ] Add Nginx for reverse proxying.
+- Dockerize Flask and Django into separate containers.
+- Migrate from SQLite to PostgreSQL.
+- Add Nginx for reverse proxying.
 
----
-
-## 🔮 Future / Stretch Goals
-
+### Additional Stretch Goals
 - **Live Ingestion**: Replace manual uploads with a REST endpoint that accepts streaming JSON from Windows Event Forwarding (WEF).
 - **Asynchronous Queues**: Add Celery + Redis to handle concurrent analysis of massive log files without HTTP timeouts.
 - **Model Feedback Loop**: Allow analysts to mark false positives in the UI, which are periodically fed back to retrain the Isolation Forest model.

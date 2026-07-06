@@ -53,7 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Summary
 The dashboard now features a comprehensive analytics layer. Eight dynamic visualizations provide insights into security trends, login failures, top event IDs, and targeted hosts. The implementation tightly integrates with the Phase 11C theming engine, ensuring dark/light mode transitions are seamless.
 
-### Future Work
+### Futuristic Scope
 - Phase 13: RAG Knowledge Base Setup.
 
 ## [0.9.1] - 2026-06-29 — Phase 11C: UI/UX Redesign
